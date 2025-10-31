@@ -1,0 +1,17 @@
+{
+  "name": "个人工时记录系统",
+  "short_name": "工时记录",
+  "description": "记录您的工作时间，轻松计算工资",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#3498db",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMzNDk4REIiLz4KPHBhdGggZD0iTTk2IDQ4QzEwOC44IDQ4IDEyMCA1OS4yIDEyMCA3MkMxMjAgODQuOCAxMDguOCA5NiA5NiA5NkM4My4yIDk2IDcyIDg0LjggNzIgNzJDNzIgNTkuMiA4My4yIDQ4IDk2IDQ4Wk05NiAxNDRDMTE1LjggMTQ0IDEzMiAxMjcuOCAxMzIgMTA4QzEzMiA4OC4yIDExNS44IDcyIDk2IDcyQzc2LjIgNzIgNjAgODguMiA2MCAxMDhDNjAgMTI3LjggNzYuMiAxNDQgOTYgMTQ0Wk05NiAxOTJDNzYuMiAxOTIgNjAgMTc1LjggNjAgMTU2QzYwIDEzNi4yIDc2LjIgMTIwIDk2IDEyMEMxMTUuOCAxMjAgMTMyIDEzNi4yIDEzMiAxNTZDMTMyIDE3NS44IDExNS44IDE5MiA5NiAxOTJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
