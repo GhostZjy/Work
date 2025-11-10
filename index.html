@@ -521,6 +521,31 @@
             background-color: #e9ecef;
         }
         
+        /* 新增保存成功提示 */
+        .save-success {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeInOut 2s ease-in-out;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; top: 10px; }
+            20% { opacity: 1; top: 20px; }
+            80% { opacity: 1; top: 20px; }
+            100% { opacity: 0; top: 10px; }
+        }
+        
         @media (min-width: 768px) {
             .container {
                 max-width: 750px;
@@ -1151,9 +1176,25 @@
             saveData();
             renderCalendar();
             updateStats();
-            renderRecordsList(date);
-            resetWorkForm();
-            state.currentEditingRecord = null;
+            
+            // 显示保存成功提示
+            showSaveSuccess();
+            
+            // 关闭模态框
+            closeWorkModal();
+        }
+
+        // 显示保存成功提示
+        function showSaveSuccess() {
+            const successMsg = document.createElement('div');
+            successMsg.className = 'save-success';
+            successMsg.innerHTML = '<i class="fas fa-check-circle"></i> 记录已保存';
+            document.body.appendChild(successMsg);
+            
+            // 2秒后自动移除提示
+            setTimeout(() => {
+                document.body.removeChild(successMsg);
+            }, 2000);
         }
 
         // 生成唯一ID
@@ -1287,7 +1328,17 @@
             
             saveData();
             updateStats();
-            alert('设置已保存');
+            
+            // 显示保存成功提示
+            const successMsg = document.createElement('div');
+            successMsg.className = 'save-success';
+            successMsg.innerHTML = '<i class="fas fa-check-circle"></i> 设置已保存';
+            document.body.appendChild(successMsg);
+            
+            // 2秒后自动移除提示
+            setTimeout(() => {
+                document.body.removeChild(successMsg);
+            }, 2000);
         }
 
         // 清除所有数据
@@ -1309,7 +1360,17 @@
                 saveData();
                 renderCalendar();
                 updateStats();
-                alert('所有数据已清除');
+                
+                // 显示清除成功提示
+                const successMsg = document.createElement('div');
+                successMsg.className = 'save-success';
+                successMsg.innerHTML = '<i class="fas fa-check-circle"></i> 所有数据已清除';
+                document.body.appendChild(successMsg);
+                
+                // 2秒后自动移除提示
+                setTimeout(() => {
+                    document.body.removeChild(successMsg);
+                }, 2000);
             }
         }
 
@@ -1439,7 +1500,16 @@
             link.click();
             document.body.removeChild(link);
             
-            alert('数据已导出为CSV文件');
+            // 显示导出成功提示
+            const successMsg = document.createElement('div');
+            successMsg.className = 'save-success';
+            successMsg.innerHTML = '<i class="fas fa-check-circle"></i> 数据已导出为CSV文件';
+            document.body.appendChild(successMsg);
+            
+            // 2秒后自动移除提示
+            setTimeout(() => {
+                document.body.removeChild(successMsg);
+            }, 2000);
         }
 
         // 初始化应用
