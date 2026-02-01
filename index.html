@@ -146,6 +146,11 @@
             color: var(--secondary-color);
         }
         
+        .work-info .normal-work-station {
+            background-color: #fff8e8;
+            color: #e6a700; /* 金色 */
+        }
+        
         .work-info .field-hourly {
             background-color: #e8f4fd;
             color: #3498db; /* 蓝色 */
@@ -209,6 +214,10 @@
             color: var(--secondary-color);
         }
         
+        .stats-item.danger .stats-value {
+            color: var(--danger-color);
+        }
+        
         .progress-bar {
             height: 6px;
             background-color: #eee;
@@ -234,12 +243,24 @@
             font-size: 0.9rem;
         }
         
-        .settings-group input {
+        .settings-group input, .settings-group select {
             width: 100%;
             padding: 8px 10px;
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 0.9rem;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.2);
         }
         
         .btn {
@@ -546,6 +567,13 @@
             100% { opacity: 0; top: 10px; }
         }
         
+        /* 驻站工资显示 */
+        .station-salary-item {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+        
         @media (min-width: 768px) {
             .container {
                 max-width: 750px;
@@ -605,13 +633,14 @@
                         <div>当月工时</div>
                         <div class="stats-value" id="month-hours">0 小时</div>
                     </div>
-                    <div class="stats-item">
-                        <div>外勤次数</div>
-                        <div class="stats-value" id="field-trips">0 次</div>
+                    <div class="stats-item station-salary-item">
+                        <div>驻站工资</div>
+                        <div class="stats-value success" id="station-salary">0 元</div>
                     </div>
-                    <div class="stats-item">
-                        <div>外勤总工资</div>
-                        <div class="stats-value success" id="field-salary">0 元</div>
+                    <!-- 社保扣除项 - 根据设置显示/隐藏 -->
+                    <div class="stats-item" id="social-security-item" style="display: none;">
+                        <div>社保扣除</div>
+                        <div class="stats-value danger" id="social-security-deduction">0 元</div>
                     </div>
                     <div class="stats-item">
                         <div>预计总工资</div>
@@ -632,11 +661,23 @@
                     </div>
                     <div class="settings-group">
                         <label for="basic-salary-input"><i class="fas fa-money-bill-wave"></i> 基础工资 (元)</label>
-                        <input type="number" id="basic-salary-input" value="3000">
+                        <input type="number" id="basic-salary-input" value="3200">
                     </div>
                     <div class="settings-group">
                         <label for="overtime-rate-input"><i class="fas fa-coins"></i> 加班时薪 (元/小时)</label>
                         <input type="number" id="overtime-rate-input" value="21.55" step="0.01">
+                    </div>
+                    <div class="settings-group">
+                        <label for="station-salary-input"><i class="fas fa-home"></i> 驻站工资 (元/次)</label>
+                        <input type="number" id="station-salary-input" value="20" step="0.01">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="deduct-social-security">
+                        <label for="deduct-social-security">扣除社保</label>
+                    </div>
+                    <div class="settings-group" id="social-security-amount-group" style="display: none;">
+                        <label for="social-security-input"><i class="fas fa-shield-alt"></i> 社保金额 (元)</label>
+                        <input type="number" id="social-security-input" value="740" step="0.01">
                     </div>
                     <button class="btn btn-success" id="save-settings"><i class="fas fa-save"></i> 保存设置</button>
                     <button class="btn btn-danger" id="clear-data" style="margin-top: 10px;"><i class="fas fa-trash-alt"></i> 清除所有数据</button>
@@ -675,6 +716,12 @@
             <div class="form-group" id="work-description-group">
                 <label for="work-description"><i class="fas fa-file-alt"></i> 工作描述</label>
                 <input type="text" id="work-description" placeholder="例如：上班">
+            </div>
+            
+            <!-- 驻站选项 -->
+            <div class="checkbox-group" id="station-checkbox-group">
+                <input type="checkbox" id="is-station">
+                <label for="is-station">是否驻站</label>
             </div>
             
             <div id="field-payment-group" style="display: none;">
@@ -730,8 +777,11 @@
             workData: {},
             settings: {
                 basicHours: 174,
-                basicSalary: 3000,
-                overtimeRate: 21.55
+                basicSalary: 3200,
+                overtimeRate: 21.55,
+                stationSalary: 20,
+                deductSocialSecurity: false,
+                socialSecurityAmount: 740
             },
             currentEditingRecord: null
         };
@@ -757,15 +807,22 @@
             basicHoursInput: document.getElementById('basic-hours-input'),
             basicSalaryInput: document.getElementById('basic-salary-input'),
             overtimeRateInput: document.getElementById('overtime-rate-input'),
+            stationSalaryInput: document.getElementById('station-salary-input'),
+            deductSocialSecurity: document.getElementById('deduct-social-security'),
+            socialSecurityInput: document.getElementById('social-security-input'),
+            socialSecurityAmountGroup: document.getElementById('social-security-amount-group'),
             saveSettings: document.getElementById('save-settings'),
             clearData: document.getElementById('clear-data'),
             basicHours: document.getElementById('basic-hours'),
             basicHoursPercent: document.getElementById('basic-hours-percent'),
             basicHoursProgress: document.getElementById('basic-hours-progress'),
             monthHours: document.getElementById('month-hours'),
-            fieldTrips: document.getElementById('field-trips'),
-            fieldSalary: document.getElementById('field-salary'),
+            stationSalary: document.getElementById('station-salary'),
             totalSalary: document.getElementById('total-salary'),
+            socialSecurityItem: document.getElementById('social-security-item'),
+            socialSecurityDeduction: document.getElementById('social-security-deduction'),
+            isStation: document.getElementById('is-station'),
+            stationCheckboxGroup: document.getElementById('station-checkbox-group'),
             tabs: document.querySelectorAll('.tab'),
             tabContents: document.querySelectorAll('.tab-content'),
             exportData: document.getElementById('export-data'),
@@ -796,6 +853,14 @@
                 elements.basicHoursInput.value = state.settings.basicHours;
                 elements.basicSalaryInput.value = state.settings.basicSalary;
                 elements.overtimeRateInput.value = state.settings.overtimeRate;
+                elements.stationSalaryInput.value = state.settings.stationSalary;
+                elements.deductSocialSecurity.checked = state.settings.deductSocialSecurity;
+                elements.socialSecurityInput.value = state.settings.socialSecurityAmount;
+                
+                // 更新社保输入框显示状态
+                if (state.settings.deductSocialSecurity) {
+                    elements.socialSecurityAmountGroup.style.display = 'block';
+                }
             }
         }
 
@@ -815,6 +880,11 @@
             elements.clearData.addEventListener('click', clearAllData);
             elements.exportData.addEventListener('click', exportToCSV);
             elements.addRecord.addEventListener('click', addNewRecord);
+            
+            // 社保扣除复选框事件
+            elements.deductSocialSecurity.addEventListener('change', function() {
+                elements.socialSecurityAmountGroup.style.display = this.checked ? 'block' : 'none';
+            });
             
             // 工作类型切换
             elements.workTypeBtns.forEach(btn => {
@@ -959,6 +1029,15 @@
                         workInfo.appendChild(workElement);
                     }
                     
+                    // 显示驻站记录
+                    const stationRecords = records.filter(r => r.type === 'normal' && r.isStation);
+                    if (stationRecords.length > 0) {
+                        const stationElement = document.createElement('p');
+                        stationElement.className = 'normal-work-station';
+                        stationElement.textContent = `驻站`;
+                        workInfo.appendChild(stationElement);
+                    }
+                    
                     // 显示外勤记录
                     const fieldRecords = records.filter(r => r.type === 'field');
                     fieldRecords.forEach(record => {
@@ -1025,9 +1104,13 @@
                 document.getElementById('work-description-group').style.display = 'block';
                 document.getElementById('field-payment-group').style.display = 'none';
                 document.getElementById('normal-hours-group').style.display = 'block';
+                elements.stationCheckboxGroup.style.display = 'flex';
             } else if (type === 'field') {
                 document.getElementById('work-description-group').style.display = 'none';
                 document.getElementById('field-payment-group').style.display = 'block';
+                elements.stationCheckboxGroup.style.display = 'none';
+                elements.isStation.checked = false;
+                
                 // 外勤工作时长输入框的显示由计薪方式决定
                 togglePaymentType(document.querySelector('.payment-type-btn.active').dataset.type);
             }
@@ -1059,6 +1142,7 @@
             elements.fieldRate.value = '';
             elements.fieldFixed.value = '';
             elements.fieldTotal.value = '';
+            elements.isStation.checked = false;
             
             // 默认选择正常工时
             elements.workTypeBtns[0].click();
@@ -1104,10 +1188,18 @@
                     return;
                 }
                 
+                const isStation = elements.isStation.checked;
+                let stationSalary = 0;
+                if (isStation) {
+                    stationSalary = parseFloat(state.settings.stationSalary) || 0;
+                }
+                
                 record = {
                     type: 'normal',
                     hours: hours,
                     description: elements.workDescription.value,
+                    isStation: isStation,
+                    stationSalary: stationSalary,
                     id: state.currentEditingRecord ? state.currentEditingRecord.id : generateId()
                 };
             } else if (workType === 'field') {
@@ -1230,7 +1322,11 @@
                 recordDetails.className = 'record-details';
                 
                 if (record.type === 'normal') {
-                    recordType.textContent = `正常工时 - ${record.description || '无描述'}`;
+                    let typeText = `正常工时 - ${record.description || '无描述'}`;
+                    if (record.isStation) {
+                        typeText += ' (驻站)';
+                    }
+                    recordType.textContent = typeText;
                     recordDetails.textContent = `${record.hours} 小时`;
                 } else if (record.type === 'field') {
                     recordType.textContent = `外勤工作 - ${record.description || '无描述'}`;
@@ -1279,6 +1375,7 @@
                 elements.workTypeBtns[0].click();
                 elements.workHours.value = record.hours;
                 elements.workDescription.value = record.description || '';
+                elements.isStation.checked = record.isStation || false;
             } else if (record.type === 'field') {
                 elements.workTypeBtns[1].click();
                 elements.workHours.value = record.hours;
@@ -1323,8 +1420,11 @@
         // 保存设置
         function saveSettings() {
             state.settings.basicHours = parseInt(elements.basicHoursInput.value) || 174;
-            state.settings.basicSalary = parseInt(elements.basicSalaryInput.value) || 3000;
+            state.settings.basicSalary = parseInt(elements.basicSalaryInput.value) || 3200;
             state.settings.overtimeRate = parseFloat(elements.overtimeRateInput.value) || 21.55;
+            state.settings.stationSalary = parseFloat(elements.stationSalaryInput.value) || 20;
+            state.settings.deductSocialSecurity = elements.deductSocialSecurity.checked;
+            state.settings.socialSecurityAmount = parseFloat(elements.socialSecurityInput.value) || 740;
             
             saveData();
             updateStats();
@@ -1349,13 +1449,20 @@
                 state.workData = {};
                 state.settings = {
                     basicHours: 174,
-                    basicSalary: 3000,
-                    overtimeRate: 21.55
+                    basicSalary: 3200,
+                    overtimeRate: 21.55,
+                    stationSalary: 20,
+                    deductSocialSecurity: false,
+                    socialSecurityAmount: 740
                 };
                 
                 elements.basicHoursInput.value = state.settings.basicHours;
                 elements.basicSalaryInput.value = state.settings.basicSalary;
                 elements.overtimeRateInput.value = state.settings.overtimeRate;
+                elements.stationSalaryInput.value = state.settings.stationSalary;
+                elements.deductSocialSecurity.checked = state.settings.deductSocialSecurity;
+                elements.socialSecurityInput.value = state.settings.socialSecurityAmount;
+                elements.socialSecurityAmountGroup.style.display = 'none';
                 
                 saveData();
                 renderCalendar();
@@ -1374,14 +1481,14 @@
             }
         }
 
-        // 更新统计信息
+        // 更新统计信息 - 修复：添加外勤工资计算
         function updateStats() {
             const year = state.currentDate.getFullYear();
             const month = state.currentDate.getMonth();
             
             let totalHours = 0;
-            let fieldTrips = 0;
-            let fieldSalary = 0;
+            let stationSalary = 0;
+            let fieldSalary = 0; // 新增：外勤工资累加变量
             
             // 遍历当月所有日期
             const lastDay = new Date(year, month + 1, 0).getDate();
@@ -1393,8 +1500,11 @@
                     records.forEach(record => {
                         if (record.type === 'normal') {
                             totalHours += record.hours;
+                            if (record.isStation) {
+                                stationSalary += parseFloat(record.stationSalary) || 0;
+                            }
                         } else if (record.type === 'field') {
-                            fieldTrips++;
+                            // 新增：累加外勤工资
                             fieldSalary += parseFloat(record.total) || 0;
                         }
                     });
@@ -1421,7 +1531,14 @@
             baseSalary = parseFloat(baseSalary.toFixed(1));
             overtimeSalary = parseFloat(overtimeSalary.toFixed(1));
             
-            const totalSalary = baseSalary + overtimeSalary + fieldSalary;
+            // 计算社保扣除
+            let socialSecurityDeduction = 0;
+            if (state.settings.deductSocialSecurity) {
+                socialSecurityDeduction = parseFloat(state.settings.socialSecurityAmount) || 0;
+            }
+            
+            // 修复：总工资计算包含外勤工资
+            const totalSalary = baseSalary + overtimeSalary + stationSalary + fieldSalary - socialSecurityDeduction;
             
             // 计算基础工时百分比
             const basicHoursPercent = Math.min(100, Math.round((totalHours / basicHours) * 100));
@@ -1431,9 +1548,17 @@
             elements.basicHoursPercent.textContent = `${basicHoursPercent}%`;
             elements.basicHoursProgress.style.width = `${basicHoursPercent}%`;
             elements.monthHours.textContent = `${totalHours} 小时`;
-            elements.fieldTrips.textContent = `${fieldTrips} 次`;
-            elements.fieldSalary.textContent = `${fieldSalary.toFixed(1)} 元`;
-            elements.totalSalary.textContent = `${totalSalary.toFixed(1)} 元`;
+            elements.stationSalary.textContent = `${stationSalary.toFixed(1)} 元`;
+            
+            // 更新社保扣除显示 - 根据设置决定是否显示
+            if (state.settings.deductSocialSecurity) {
+                elements.socialSecurityItem.style.display = 'block';
+                elements.socialSecurityDeduction.textContent = `${socialSecurityDeduction.toFixed(1)} 元`;
+            } else {
+                elements.socialSecurityItem.style.display = 'none';
+            }
+            
+            elements.totalSalary.textContent = `${Math.max(0, totalSalary).toFixed(1)} 元`;
         }
 
         // 切换到上个月
@@ -1458,7 +1583,7 @@
             }
             
             // CSV表头
-            const headers = ['日期', '类型', '工作时长(小时)', '描述', '计薪方式', '时薪(元/小时)', '单次工资(元)', '总金额(元)'];
+            const headers = ['日期', '类型', '工作时长(小时)', '描述', '是否驻站', '驻站工资(元)', '计薪方式', '时薪(元/小时)', '单次工资(元)', '总金额(元)'];
             
             // 构建CSV内容
             let csvContent = headers.join(',') + '\n';
@@ -1475,6 +1600,8 @@
                         record.type === 'normal' ? '正常工时' : '外勤工作',
                         record.hours || '',
                         record.description || '',
+                        record.isStation ? '是' : '否',
+                        record.stationSalary || '',
                         record.paymentType === 'hourly' ? '按时薪' : (record.paymentType === 'fixed' ? '按次数' : ''),
                         record.rate || '',
                         record.fixed || '',
