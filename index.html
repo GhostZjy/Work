@@ -451,10 +451,10 @@ function renderCalendar(){el.calendarGrid.innerHTML='';const monthNames=['一月
 function createDayElement(day,isOtherMonth,year,month){const node=document.createElement('div');node.className='calendar-day';if(isOtherMonth)node.classList.add('other-month');const today=new Date();const isToday=!isOtherMonth&&day===today.getDate()&&month===today.getMonth()&&year===today.getFullYear();if(isToday)node.classList.add('today');const dayNumber=document.createElement('div');dayNumber.className='day-number';dayNumber.textContent=day;node.appendChild(dayNumber);const workInfo=document.createElement('div');workInfo.className='work-info';if(!isOtherMonth){const dateKey=formatDateKey(year,month,day);const records=state.workData[dateKey];if(records&&records.length>0){node.classList.add('has-records');const normalH=records.filter(r=>r.type==='normal').reduce((s,r)=>s+(r.hours||0),0);const hasStation=records.some(r=>r.type==='normal'&&r.isStation);const items=[];if(normalH>0)items.push({cls:'normal-work',text:`${fmtH(normalH)}H`});if(hasStation)items.push({cls:'normal-work-station',text:'驻站'});records.filter(r=>r.type==='field').forEach(r=>{if(r.paymentType==='hourly')items.push({cls:'field-hourly',text:`${fmtH(r.hours)}H`});else items.push({cls:'field-fixed',text:`${fmtMoney(r.total)}元`});});items.slice(0,2).forEach(it=>{const p=document.createElement('p');p.className=it.cls;p.textContent=it.text;workInfo.appendChild(p);});if(items.length>2){const m=document.createElement('p');m.className='more-indicator';m.textContent=`+${items.length-2}`;workInfo.appendChild(m);}node.setAttribute('aria-label',`${month+1}月${day}日，${records.length}条记录，工时${fmtH(normalH)}小时`);}else{node.setAttribute('aria-label',`${month+1}月${day}日，无记录`);}node.dataset.datekey=dateKey;node.setAttribute('role','gridcell');node.setAttribute('tabindex','0');}node.appendChild(workInfo);return node;}
 
 /* ============================================================
- * 统计与工资计算（核心逻辑）
+ * 统计与工资计算
  * ============================================================
  * 1. 基础工资达标判断：正常 + 法定 ≥ 基础工时 → 全额
- * 2. 基础工资未达标：基础工资 × (正常工时 / 基础工时)  ← 只用正常工时
+ * 2. 基础工资未达标：基础工资 × (正常工时 / 基础工时)
  * 3. 超时加班 = max(0, 正常工时 − 基础工时) × 超时薪
  * 4. 法定加班 = 法定工时 × 法定薪（独立累加）
  * 5. 外勤 / 驻站 / 补贴独立累加
@@ -685,6 +685,9 @@ function clearDayRecords(dateKey){const records=state.workData[dateKey];if(!reco
 
 function refreshAll(){renderCalendar();updateStats();}
 
+/* ============================================================
+ * 导出当月 Excel —— 全居中 + 框线
+ * ============================================================ */
 function exportMonthToXLS(){
   const year=state.currentDate.getFullYear();const month=state.currentDate.getMonth();
   const monthNames=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
@@ -717,22 +720,23 @@ function exportMonthToXLS(){
   h+='<style>';
   h+='body{font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;}';
   h+='table{border-collapse:collapse;}';
-  /* 所有单元格：居中 + 实线框 */
-  h+='td{border:1px solid #a8b2bd;padding:8px 10px;font-size:11pt;vertical-align:middle;text-align:center;}';
-  h+='.title{font-size:18pt;font-weight:bold;text-align:center;background:#3498db;color:#ffffff;padding:14px;letter-spacing:2px;}';
-  h+='.subtitle{text-align:center;background:#eaf4fd;color:#2c3e50;font-size:10pt;padding:6px;}';
-  h+='.section{font-size:12pt;font-weight:bold;background:#ecf0f1;color:#2c3e50;padding:9px 12px;text-align:center;}';
-  h+='.th{background:#3498db;color:#ffffff;font-weight:bold;text-align:center;font-size:10.5pt;padding:8px;}';
+  /* 所有单元格统一：居中 + 加粗黑色框线 */
+  h+='td{border:1.5px solid #7f8c8d;padding:8px 10px;font-size:11pt;vertical-align:middle;text-align:center;}';
+  h+='.title{font-size:18pt;font-weight:bold;background:#3498db;color:#ffffff;padding:14px;letter-spacing:2px;}';
+  h+='.subtitle{background:#eaf4fd;color:#2c3e50;font-size:10pt;padding:6px;}';
+  h+='.section{font-size:12pt;font-weight:bold;background:#ecf0f1;color:#2c3e50;padding:9px 12px;}';
+  h+='.th{background:#3498db;color:#ffffff;font-weight:bold;font-size:10.5pt;padding:8px;}';
   h+='.alt{background:#f8f9fa;}';
   h+='.weekend{color:#e74c3c;}';
-  h+='.money{color:#c0392b;font-weight:bold;text-align:center;}';
-  h+='.sum-label{background:#f8f9fa;font-weight:bold;color:#2c3e50;font-size:10.5pt;padding:8px 12px;text-align:center;}';
-  h+='.sum-val{background:#ffffff;text-align:center;color:#2c3e50;font-size:10.5pt;padding:8px 12px;}';
+  h+='.money{color:#c0392b;font-weight:bold;}';
+  h+='.sum-label{background:#f8f9fa;font-weight:bold;color:#2c3e50;font-size:10.5pt;padding:8px 12px;}';
+  h+='.sum-val{background:#ffffff;color:#2c3e50;font-size:10.5pt;padding:8px 12px;}';
   h+='.sum-sub{background:#fdfdfd;color:#5b6b7c;font-size:10pt;}';
-  h+='.total-row{background:#f39c12;color:#ffffff;font-weight:bold;font-size:13pt;padding:12px;text-align:center;}';
-  h+='.footer{text-align:center;color:#95a5a6;font-size:9pt;background:#fafbfc;padding:8px;}';
+  h+='.total-row{background:#f39c12;color:#ffffff;font-weight:bold;font-size:13pt;padding:12px;}';
+  h+='.footer{color:#95a5a6;font-size:9pt;background:#fafbfc;padding:8px;}';
   h+='</style></head><body>';
   h+='<table><colgroup><col style="width:85px"><col style="width:50px"><col style="width:95px"><col style="width:80px"><col style="width:210px"><col style="width:60px"><col style="width:100px"></colgroup>';
+
   h+='<tr><td colspan="7" class="title">工时记录 · '+year+'年'+monthNames[month]+'</td></tr>';
   h+='<tr><td colspan="7" class="subtitle">导出时间：'+new Date().toLocaleString('zh-CN')+'</td></tr>';
 
@@ -743,8 +747,8 @@ function exportMonthToXLS(){
       const dt=parseDateKey(r.dateKey);const wd=weekdays[dt.getDay()];const isWeekend=dt.getDay()===0||dt.getDay()===6;
       const otLabel=r.ot==='holiday'?'法定加班':'正常';
       h+='<tr class="'+(i%2===1?'alt':'')+'">';
-      h+='<td class="'+(isWeekend?'weekend':'')+'">'+(month+1)+'月'+r.day+'日</td>';
-      h+='<td class="'+(isWeekend?'weekend':'')+'">'+wd+'</td>';
+      h+='<td'+(isWeekend?' class="weekend"':'')+'>'+(month+1)+'月'+r.day+'日</td>';
+      h+='<td'+(isWeekend?' class="weekend"':'')+'>'+wd+'</td>';
       h+='<td>'+otLabel+'</td>';
       h+='<td>'+fmtH(r.hours)+'</td>';
       h+='<td>'+escapeHtml(r.description||'')+'</td>';
@@ -763,8 +767,8 @@ function exportMonthToXLS(){
       const hoursText=r.paymentType==='hourly'?fmtH(r.hours):'—';
       const rateText=r.paymentType==='hourly'?fmtMoney(r.rate):fmtMoney(r.fixed);
       h+='<tr class="'+(i%2===1?'alt':'')+'">';
-      h+='<td class="'+(isWeekend?'weekend':'')+'">'+(month+1)+'月'+r.day+'日</td>';
-      h+='<td class="'+(isWeekend?'weekend':'')+'">'+wd+'</td>';
+      h+='<td'+(isWeekend?' class="weekend"':'')+'>'+(month+1)+'月'+r.day+'日</td>';
+      h+='<td'+(isWeekend?' class="weekend"':'')+'>'+wd+'</td>';
       h+='<td>'+escapeHtml(r.description||'')+'</td>';
       h+='<td>'+payLabel+'</td>';
       h+='<td>'+hoursText+'</td>';
@@ -798,42 +802,6 @@ function exportMonthToXLS(){
   h+=sumRow('应发合计',fmtMoney(gross)+' 元');
   h+=sumRow('社保扣除','− '+fmtMoney(social)+' 元');
   h+='<tr><td colspan="4" class="total-row">💰 预计实发</td><td colspan="3" class="total-row">'+fmtMoney(net)+' 元</td></tr>';
-  if(allowances.length>0){
-    h+='<tr><td colspan="7"></td></tr>';
-    h+='<tr><td colspan="7" class="section">🎁 额外补贴明细（每周期）</td></tr>';
-    allowances.forEach(a=>{h+=sumRow('　'+escapeHtml(a.name||'补贴'),fmtMoney(a.amount)+' 元',true);});
-    h+=sumRow('　补贴合计',fmtMoney(allowanceTotal)+' 元',true);
-  }
-  h+='<tr><td colspan="7" class="footer">本表由「个人工时记录」生成 · 仅包含 '+year+'年'+(month+1)+'月 的数据 · 金额按当前设置估算</td></tr>';
-  h+='</table></body></html>';
-  const blob=new Blob(['\uFEFF'+h],{type:'application/vnd.ms-excel;charset=utf-8'});
-  downloadBlob(blob,`工时记录_${year}${pad2(month+1)}.xls`);
-  showToast(`已导出 ${year}年${month+1}月 的工时记录（${rows.length} 条）`);
-}
-
-  function sumRow(label,value,sub){const lc=sub?'sum-label sum-sub':'sum-label';const vc=sub?'sum-val sum-sub':'sum-val';return '<tr><td colspan="4" class="'+lc+'">'+label+'</td><td colspan="3" class="'+vc+'">'+value+'</td></tr>';}
-  h+=sumRow('正常工时',fmtH(normalHours)+' 小时');
-  h+=sumRow('法定加班工时',fmtH(otHoliday)+' 小时');
-  h+=sumRow('合计（正常 + 法定）',fmtH(hoursForBase)+' 小时');
-  h+=sumRow('基础工时',basicHours+' 小时');
-  h+=sumRow('超时工时（正常超出基础部分）',fmtH(overtimeHours)+' 小时');
-  h+=sumRow('外勤工时（仅按时薪）',fmtH(fieldHoursSum)+' 小时');
-  h+=sumRow('驻站次数',stationCount+' 次');
-  h+='<tr><td colspan="7"></td></tr>';
-  h+='<tr><td colspan="7" class="section">💰 工资明细</td></tr>';
-  if(basePayFull){
-    h+=sumRow('基础工资（合计 '+fmtH(hoursForBase)+' ≥ '+basicHours+'，全额）',fmtMoney(basePay)+' 元');
-  }else{
-    h+=sumRow('基础工资（正常 '+fmtH(normalHours)+' / '+basicHours+' = '+(normalHours/basicHours*100).toFixed(1)+'%）',fmtMoney(basePay)+' 元');
-  }
-  h+=sumRow('超时加班费（'+fmtH(overtimeHours)+'H × '+fmtMoney(s.overtimeRate)+'）',fmtMoney(regularOTPay)+' 元');
-  h+=sumRow('法定节假日加班费（'+fmtH(otHoliday)+'H × '+fmtMoney(s.otRateHoliday)+'）',fmtMoney(otHolidayPay)+' 元');
-  h+=sumRow('驻站补贴',fmtMoney(stationPay)+' 元');
-  h+=sumRow('外勤工资',fmtMoney(fieldPay)+' 元');
-  h+=sumRow('额外补贴',fmtMoney(allowanceTotal)+' 元');
-  h+=sumRow('应发合计',fmtMoney(gross)+' 元');
-  h+=sumRow('社保扣除','− '+fmtMoney(social)+' 元');
-  h+='<tr><td colspan="4" class="total-row">💰 预计实发</td><td colspan="3" class="total-row" style="text-align:right;">'+fmtMoney(net)+' 元</td></tr>';
   if(allowances.length>0){
     h+='<tr><td colspan="7"></td></tr>';
     h+='<tr><td colspan="7" class="section">🎁 额外补贴明细（每周期）</td></tr>';
