@@ -58,7 +58,6 @@ h1{color:var(--text); font-size:1.35rem; font-weight:700; letter-spacing:.5px;}
 h1 i{color:var(--primary); margin-right:6px;}
 header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 
-/* ---------- 日历 ---------- */
 .calendar-section{
   background:var(--surface); border-radius:14px; padding:14px;
   box-shadow:var(--shadow); margin-bottom:14px;
@@ -104,12 +103,10 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 .field-fixed{background:var(--tag-ff-bg); color:var(--tag-ff-fg);}
 .more-indicator{color:var(--text-3); font-size:.55rem; text-align:center;}
 
-/* 图表 */
 .chart-wrap{margin-top:12px; padding-top:10px; border-top:1px dashed var(--border);}
 .chart-wrap canvas{width:100%; height:96px; display:block;}
 .chart-label{font-size:.68rem; color:var(--text-3); margin-bottom:4px; display:flex; justify-content:space-between;}
 
-/* ---------- 侧栏 ---------- */
 .sidebar{display:flex; flex-direction:column; gap:14px;}
 .tabs{display:flex; background:var(--surface); border-radius:12px; padding:4px; box-shadow:var(--shadow);}
 .tab{
@@ -372,7 +369,6 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
       <button class="tab" data-tab="settings" role="tab" aria-selected="false">设置</button>
     </div>
 
-    <!-- 统计 -->
     <div class="tab-content active" id="stats-tab">
       <div class="stats-panel">
         <div class="cycle-line" id="cycle-line">—</div>
@@ -428,7 +424,6 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
       </div>
     </div>
 
-    <!-- 设置 -->
     <div class="tab-content" id="settings-tab">
       <div class="settings-panel">
         <div class="settings-subtitle">基础工资</div>
@@ -454,7 +449,7 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
         <div class="settings-group">
           <label for="ot-holiday-input"><i class="fas fa-umbrella-beach"></i> 法定节假日加班时薪（元/小时）</label>
           <input type="number" id="ot-holiday-input" min="0" step="0.01">
-          <span class="hint">在“记录工时”弹窗中将工时类型选为“法定加班”后，按此单价计算。</span>
+          <span class="hint">法定节假日工时同时计入基础工时，并额外按此时薪计算加班费。</span>
         </div>
 
         <div class="settings-subtitle">额外补贴（每周期固定发放）</div>
@@ -496,7 +491,6 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
   </aside>
 </div>
 
-<!-- 记录弹窗 -->
 <div class="modal" id="work-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-content">
     <div class="modal-header">
@@ -586,7 +580,7 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 /* ============================================================
  * 常量与工具
  * ============================================================ */
-const SCHEMA_VERSION = 4;
+const SCHEMA_VERSION = 5;
 const LS_DATA = 'workData';
 const LS_SETTINGS = 'settings';
 const LS_VERSION = 'schemaVersion';
@@ -595,14 +589,14 @@ const APP_ID = 'worktime-tracker';
 
 const DEFAULT_SETTINGS = Object.freeze({
   basicHours: 174,
-  basicSalary: 320000,        // 分
-  overtimeRate: 2155,         // 超时加班时薪（分/小时）
-  stationSalary: 2000,        // 分
-  otRateHoliday: 6465,        // 法定节假日加班时薪（分/小时）≈ 21.55 × 3
+  basicSalary: 320000,
+  overtimeRate: 2155,
+  stationSalary: 2000,
+  otRateHoliday: 6465,
   deductSocialSecurity: false,
-  socialSecurityAmount: 74000,// 分
+  socialSecurityAmount: 74000,
   cycleStartDay: 1,
-  extraAllowances: []         // [{id, name, amount(分)}]
+  extraAllowances: []
 });
 
 const $ = id => document.getElementById(id);
@@ -826,20 +820,15 @@ function normalizeSettings(raw) {
       }
     }
   }
-
-  // 旧版倍率迁移：如果 raw 里有 otMultHoliday 且没有 otRateHoliday，转换成具体时薪
-  if (raw && typeof raw === 'object' &&
-      raw.otRateHoliday === undefined) {
+  if (raw && typeof raw === 'object' && raw.otRateHoliday === undefined) {
     const baseRate = Math.max(0, Math.round(Number(raw.overtimeRate) || out.overtimeRate));
     if (raw.otMultHoliday !== undefined) {
       const ho = Number(raw.otMultHoliday);
       out.otRateHoliday = Math.round(baseRate * (isFinite(ho) && ho > 0 ? ho : 3));
     } else if (raw.otRateWeekend !== undefined) {
-      // v3 数据迁移：优先用 weekend 值（数值上接近）
       out.otRateHoliday = Math.max(0, Math.round(Number(raw.otRateWeekend) || out.otRateHoliday));
     }
   }
-
   out.basicHours = Math.max(1, Number(out.basicHours) || 174);
   out.basicSalary = Math.max(0, Math.round(Number(out.basicSalary) || 0));
   out.overtimeRate = Math.max(0, Math.round(Number(out.overtimeRate) || 0));
@@ -848,17 +837,13 @@ function normalizeSettings(raw) {
   out.socialSecurityAmount = Math.max(0, Math.round(Number(out.socialSecurityAmount) || 0));
   out.deductSocialSecurity = !!out.deductSocialSecurity;
   out.cycleStartDay = clamp(parseInt(out.cycleStartDay, 10) || 1, 1, 28);
-
   out.extraAllowances = Array.isArray(out.extraAllowances)
-    ? out.extraAllowances
-        .filter(a => a && typeof a === 'object')
-        .map(a => ({
-          id: String(a.id || generateId()),
-          name: String(a.name || '').slice(0, 20),
-          amount: Math.max(0, Math.round(Number(a.amount) || 0))
-        }))
+    ? out.extraAllowances.filter(a => a && typeof a === 'object').map(a => ({
+        id: String(a.id || generateId()),
+        name: String(a.name || '').slice(0, 20),
+        amount: Math.max(0, Math.round(Number(a.amount) || 0))
+      }))
     : [];
-
   return out;
 }
 
@@ -895,16 +880,13 @@ function migrateSettingsV1toV2(s) {
 function loadState() {
   let version = 1;
   try { version = parseInt(localStorage.getItem(LS_VERSION) || '1', 10) || 1; } catch (e) {}
-
   let workData = {};
   let settings = { ...DEFAULT_SETTINGS, extraAllowances: [] };
-
   try {
     const rawWD = localStorage.getItem(LS_DATA);
     if (rawWD) workData = JSON.parse(rawWD) || {};
     if (!workData || typeof workData !== 'object') workData = {};
   } catch (e) { workData = {}; }
-
   try {
     const rawS = localStorage.getItem(LS_SETTINGS);
     if (rawS) {
@@ -913,15 +895,12 @@ function loadState() {
       settings = normalizeSettings(parsed);
     }
   } catch (e) { settings = normalizeSettings({}); }
-
-  // 记录迁移 + ot 字段净化
   for (const dk in workData) {
     if (!Array.isArray(workData[dk])) { delete workData[dk]; continue; }
     workData[dk] = workData[dk]
       .map(r => version < 2 ? migrateRecordV1toV2(r) : r)
       .map(sanitizeRecordOt);
   }
-
   state.workData = workData;
   state.settings = settings;
   saveState();
@@ -942,15 +921,12 @@ function saveState() {
  * ============================================================ */
 function renderCalendar() {
   el.calendarGrid.innerHTML = '';
-
   const monthNames = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
   const year = state.currentDate.getFullYear();
   const month = state.currentDate.getMonth();
   el.currentMonth.textContent = `${year}年 ${monthNames[month]}`;
-
   const range = getCycleRange(state.currentDate, state.settings.cycleStartDay);
   el.cycleBadge.textContent = `统计周期：${fmtDateShort(range.start)} — ${fmtDateShort(range.end)}`;
-
   ['日','一','二','三','四','五','六'].forEach(d => {
     const n = document.createElement('div');
     n.className = 'weekday-header';
@@ -958,12 +934,10 @@ function renderCalendar() {
     n.textContent = d;
     el.calendarGrid.appendChild(n);
   });
-
   const firstDay = new Date(year, month, 1);
   const lastDate = new Date(year, month + 1, 0);
   const firstDayOfWeek = firstDay.getDay();
   const prevLast = new Date(year, month, 0).getDate();
-
   for (let i = firstDayOfWeek - 1; i >= 0; i--) {
     el.calendarGrid.appendChild(createDayElement(prevLast - i, true, year, month));
   }
@@ -981,30 +955,22 @@ function createDayElement(day, isOtherMonth, year, month) {
   const node = document.createElement('div');
   node.className = 'calendar-day';
   if (isOtherMonth) node.classList.add('other-month');
-
   const today = new Date();
-  const isToday = !isOtherMonth &&
-    day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+  const isToday = !isOtherMonth && day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
   if (isToday) node.classList.add('today');
-
   const dayNumber = document.createElement('div');
   dayNumber.className = 'day-number';
   dayNumber.textContent = day;
   node.appendChild(dayNumber);
-
   const workInfo = document.createElement('div');
   workInfo.className = 'work-info';
-
   if (!isOtherMonth) {
     const dateKey = formatDateKey(year, month, day);
     const records = state.workData[dateKey];
-
     if (records && records.length > 0) {
       node.classList.add('has-records');
-
       const normalH = records.filter(r => r.type === 'normal').reduce((s, r) => s + (r.hours || 0), 0);
       const hasStation = records.some(r => r.type === 'normal' && r.isStation);
-
       const items = [];
       if (normalH > 0) items.push({ cls: 'normal-work', text: `${fmtH(normalH)}H` });
       if (hasStation) items.push({ cls: 'normal-work-station', text: '驻站' });
@@ -1012,7 +978,6 @@ function createDayElement(day, isOtherMonth, year, month) {
         if (r.paymentType === 'hourly') items.push({ cls: 'field-hourly', text: `${fmtH(r.hours)}H` });
         else items.push({ cls: 'field-fixed', text: `${fmtMoney(r.total)}元` });
       });
-
       items.slice(0, 2).forEach(it => {
         const p = document.createElement('p');
         p.className = it.cls;
@@ -1025,31 +990,27 @@ function createDayElement(day, isOtherMonth, year, month) {
         m.textContent = `+${items.length - 2}`;
         workInfo.appendChild(m);
       }
-
-      node.setAttribute('aria-label',
-        `${month + 1}月${day}日，${records.length}条记录，工时${fmtH(normalH)}小时`);
+      node.setAttribute('aria-label', `${month + 1}月${day}日，${records.length}条记录，工时${fmtH(normalH)}小时`);
     } else {
       node.setAttribute('aria-label', `${month + 1}月${day}日，无记录`);
     }
-
     node.dataset.datekey = dateKey;
     node.setAttribute('role', 'gridcell');
     node.setAttribute('tabindex', '0');
   }
-
   node.appendChild(workInfo);
   return node;
 }
 
 /* ============================================================
- * 统计（仅法定节假日加班）
+ * 统计（法定节假日工时计入基础工时）
  * ============================================================ */
 function computeStats() {
   const s = state.settings;
   const range = getCycleRange(state.currentDate, s.cycleStartDay);
 
-  let normalHours = 0;
-  let otHoliday = 0;
+  let normalHours = 0;      // 正常工时（不含法定加班）
+  let otHoliday = 0;        // 法定加班工时
   let stationPay = 0, stationCount = 0, fieldPay = 0;
   const daily = [];
 
@@ -1073,6 +1034,7 @@ function computeStats() {
     daily.push({ key, hours: dayH });
   });
 
+  // 总工时 = 正常工时 + 法定加班工时（法定加班计入基础工时）
   const totalHours = normalHours + otHoliday;
 
   const basicHours = s.basicHours;
@@ -1080,14 +1042,18 @@ function computeStats() {
   const baseOtRate = s.overtimeRate;
 
   let basePay = 0, regularOTPay = 0;
-  if (normalHours <= basicHours) {
-    basePay = basicHours > 0 ? Math.round(normalHours / basicHours * basicSalary) : 0;
+  // 基础工资按总工时判断
+  if (totalHours <= basicHours) {
+    basePay = basicHours > 0 ? Math.round(totalHours / basicHours * basicSalary) : 0;
   } else {
     basePay = basicSalary;
-    regularOTPay = Math.round((normalHours - basicHours) * baseOtRate);
+    // 超时加班只针对正常工时超出基础工时的部分（法定加班已单独算）
+    if (normalHours > basicHours) {
+      regularOTPay = Math.round((normalHours - basicHours) * baseOtRate);
+    }
   }
 
-  // 法定节假日加班：直接按具体时薪计算
+  // 法定加班费 = 法定加班工时 × 法定时薪
   const otHolidayPay = Math.round(otHoliday * s.otRateHoliday);
   const otPay = otHolidayPay;
 
@@ -1114,9 +1080,10 @@ function updateStats() {
   state._lastDaily = s.daily;
 
   const basicHours = state.settings.basicHours;
-  const pct = basicHours > 0 ? Math.min(100, Math.round((s.normalHours / basicHours) * 100)) : 0;
+  // 进度基于总工时（含法定加班）
+  const pct = basicHours > 0 ? Math.min(100, Math.round((s.totalHours / basicHours) * 100)) : 0;
 
-  el.basicHours.textContent = `${fmtH(s.normalHours)} / ${basicHours} 小时`;
+  el.basicHours.textContent = `${fmtH(s.totalHours)} / ${basicHours} 小时`;
   el.basicHoursPercent.textContent = `${pct}%`;
   el.basicHoursProgress.style.width = `${pct}%`;
   el.monthHours.textContent = fmtH(s.totalHours);
@@ -1194,36 +1161,29 @@ function drawChart(daily) {
     const rect = canvas.getBoundingClientRect();
     const W = Math.round(rect.width), H = Math.round(rect.height);
     if (W <= 0 || H <= 0) return;
-
     const dpr = window.devicePixelRatio || 1;
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     const ctx = canvas.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
-
     const style = getComputedStyle(document.documentElement);
     const primary = (style.getPropertyValue('--primary') || '#3498db').trim();
     const border = (style.getPropertyValue('--border') || '#e9ecf0').trim();
     const text3 = (style.getPropertyValue('--text-3') || '#9aa5b1').trim();
-
     const padL = 4, padR = 4, padT = 6, padB = 12;
     const cw = W - padL - padR;
     const ch = H - padT - padB;
     const n = daily.length;
     if (n === 0) return;
-
     const maxV = Math.max(4, ...daily.map(d => d.hours));
     const gap = n > 22 ? 1 : 2;
     const bw = Math.max(1.5, (cw - gap * (n - 1)) / n);
-
     ctx.fillStyle = border;
     ctx.fillRect(padL, padT + ch, cw, 1);
-
     ctx.globalAlpha = 0.5;
     ctx.fillRect(padL, padT + ch / 2, cw, 1);
     ctx.globalAlpha = 1;
-
     daily.forEach((d, i) => {
       const x = padL + i * (bw + gap);
       const h = maxV > 0 ? (d.hours / maxV) * ch : 0;
@@ -1234,12 +1194,10 @@ function drawChart(daily) {
         ctx.fill();
       }
     });
-
     ctx.fillStyle = text3;
     ctx.font = '10px -apple-system, sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText('0', padL, H - 2);
-
     el.chartMax.textContent = `峰值 ${fmtH(maxV)}H`;
   });
 }
@@ -1300,7 +1258,7 @@ function updateOtRateHint() {
   const ot = getSegActive(el.otSeg, 'ot') || 'none';
   const s = state.settings;
   if (ot === 'holiday') {
-    el.otRateHint.textContent = `法定节假日加班时薪：${fmtMoney(s.otRateHoliday)} 元/小时`;
+    el.otRateHint.textContent = `法定节假日加班时薪：${fmtMoney(s.otRateHoliday)} 元/小时（同时计入基础工时）`;
   } else {
     el.otRateHint.textContent = `正常工时按基础工资计算，超出部分按 ${fmtMoney(s.overtimeRate)} 元/小时`;
   }
@@ -1316,10 +1274,8 @@ function openWorkModal(year, month, day) {
   state.editing.record = null;
   state.editing.originalDateKey = null;
   el.modalTitle.innerHTML = '<i class="fas fa-edit"></i> 记录工时';
-
   resetWorkForm();
   renderRecordsList(dateKey);
-
   state.lastModalFocus = document.activeElement;
   el.workModal.classList.add('open');
   setTimeout(() => el.workHours && el.workHours.focus(), 60);
@@ -1345,12 +1301,10 @@ function resetWorkForm() {
   el.fieldRate.value = '';
   el.fieldFixed.value = '';
   el.fieldTotal.value = '';
-
   setSegActive(el.workTypeSeg, 'type', 'normal');
   setSegActive(el.otSeg, 'ot', 'none');
   setSegActive(el.paymentSeg, 'pay', 'hourly');
   el.stationHint.textContent = fmtMoney(state.settings.stationSalary);
-
   toggleWorkType('normal');
   updateOtRateHint();
 }
@@ -1358,7 +1312,6 @@ function resetWorkForm() {
 function renderRecordsList(dateKey) {
   el.recordsList.innerHTML = '';
   const records = state.workData[dateKey];
-
   if (!records || records.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'record-item';
@@ -1367,21 +1320,16 @@ function renderRecordsList(dateKey) {
     el.recordsList.appendChild(empty);
     return;
   }
-
   const frag = document.createDocumentFragment();
   records.forEach(record => {
     const item = document.createElement('div');
     item.className = 'record-item';
-
     const info = document.createElement('div');
     info.className = 'record-info';
-
     const typeNode = document.createElement('div');
     typeNode.className = 'record-type';
-
     const detailNode = document.createElement('div');
     detailNode.className = 'record-details';
-
     if (record.type === 'normal') {
       const otLabel = record.ot === 'holiday' ? ' · 法定加班' : '';
       let text = `正常工时 · ${record.description || '无描述'}${otLabel}`;
@@ -1396,35 +1344,28 @@ function renderRecordsList(dateKey) {
         detailNode.textContent = `固定工资：${fmtMoney(record.total)} 元`;
       }
     }
-
     info.appendChild(typeNode);
     info.appendChild(detailNode);
-
     const actions = document.createElement('div');
     actions.className = 'record-actions';
-
     const editBtn = document.createElement('button');
     editBtn.className = 'record-action-btn';
     editBtn.dataset.action = 'edit';
     editBtn.dataset.id = record.id;
     editBtn.innerHTML = '<i class="fas fa-edit"></i>';
     editBtn.setAttribute('aria-label', '编辑记录');
-
     const delBtn = document.createElement('button');
     delBtn.className = 'record-action-btn';
     delBtn.dataset.action = 'delete';
     delBtn.dataset.id = record.id;
     delBtn.innerHTML = '<i class="fas fa-trash"></i>';
     delBtn.setAttribute('aria-label', '删除记录');
-
     actions.appendChild(editBtn);
     actions.appendChild(delBtn);
-
     item.appendChild(info);
     item.appendChild(actions);
     frag.appendChild(item);
   });
-
   el.recordsList.appendChild(frag);
 }
 
@@ -1434,18 +1375,14 @@ function renderRecordsList(dateKey) {
 function saveWorkRecord() {
   const dateKey = el.workDate.value;
   if (!dateKey) { showToast('请选择日期', { type: 'error' }); return; }
-
   const workType = getSegActive(el.workTypeSeg, 'type') || 'normal';
   const editing = state.editing.record;
   let record = null;
-
   if (workType === 'normal') {
     const hours = parseFloat(el.workHours.value);
     if (isNaN(hours) || hours <= 0) { showToast('请填写有效的工作时长', { type: 'error' }); return; }
-
     const isStation = el.isStation.checked;
     const ot = getSegActive(el.otSeg, 'ot') || 'none';
-
     record = {
       id: editing ? editing.id : generateId(),
       type: 'normal',
@@ -1459,15 +1396,12 @@ function saveWorkRecord() {
   } else {
     const description = (el.fieldDescription.value || '').trim();
     if (!description) { showToast('请填写外勤活动描述', { type: 'error' }); return; }
-
     const payType = getSegActive(el.paymentSeg, 'pay') || 'hourly';
-
     if (payType === 'hourly') {
       const h = parseFloat(el.fieldHours.value);
       const rate = parseFloat(el.fieldRate.value);
       if (isNaN(h) || h <= 0) { showToast('请填写有效的工作时长', { type: 'error' }); return; }
       if (isNaN(rate) || rate <= 0) { showToast('请填写有效的时薪', { type: 'error' }); return; }
-
       const hoursC = Math.round(h * 100);
       const rateC = yuan2cent(rate);
       record = {
@@ -1496,7 +1430,6 @@ function saveWorkRecord() {
       };
     }
   }
-
   if (editing) {
     const oldKey = state.editing.originalDateKey;
     if (oldKey && state.workData[oldKey]) {
@@ -1505,7 +1438,6 @@ function saveWorkRecord() {
     }
     if (!state.workData[dateKey]) state.workData[dateKey] = [];
     state.workData[dateKey].push(record);
-
     state.editing.record = null;
     state.editing.originalDateKey = null;
     el.workDate.disabled = false;
@@ -1516,7 +1448,6 @@ function saveWorkRecord() {
     state.workData[dateKey].push(record);
     showToast('记录已保存');
   }
-
   saveState();
   refreshAll();
   renderRecordsList(dateKey);
@@ -1530,11 +1461,9 @@ function saveWorkRecord() {
 function editRecord(dateKey, record) {
   state.editing.record = record;
   state.editing.originalDateKey = dateKey;
-
   el.workDate.value = dateKey;
   el.workDate.disabled = true;
   el.modalTitle.innerHTML = '<i class="fas fa-pen"></i> 编辑记录';
-
   if (record.type === 'normal') {
     setSegActive(el.workTypeSeg, 'type', 'normal');
     toggleWorkType('normal');
@@ -1559,7 +1488,6 @@ function editRecord(dateKey, record) {
     }
     calculateFieldTotal();
   }
-
   const content = el.workModal.querySelector('.modal-content');
   if (content) content.scrollTop = 0;
 }
@@ -1569,14 +1497,11 @@ function deleteRecord(dateKey, id) {
   if (!arr) return;
   const idx = arr.findIndex(r => r.id === id);
   if (idx < 0) return;
-
   const [removed] = arr.splice(idx, 1);
   if (arr.length === 0) delete state.workData[dateKey];
-
   saveState();
   refreshAll();
   renderRecordsList(dateKey);
-
   if (state.editing.record && state.editing.record.id === id) {
     state.editing.record = null;
     state.editing.originalDateKey = null;
@@ -1584,11 +1509,9 @@ function deleteRecord(dateKey, id) {
     el.modalTitle.innerHTML = '<i class="fas fa-edit"></i> 记录工时';
     resetWorkForm();
   }
-
   if (state.pendingUndo && state.pendingUndo.toast) {
     state.pendingUndo.toast.remove();
   }
-
   const toastRef = showToast('已删除 1 条记录', {
     duration: 5000,
     action: {
@@ -1605,7 +1528,6 @@ function deleteRecord(dateKey, id) {
       }
     }
   });
-
   state.pendingUndo = { dateKey, record: removed, index: idx, toast: toastRef };
 }
 
@@ -1618,10 +1540,8 @@ function openCtxMenu(dateKey, x, y) {
   prevDate.setDate(prevDate.getDate() - 1);
   const prevKey = formatDateKey(prevDate.getFullYear(), prevDate.getMonth(), prevDate.getDate());
   const prevRecords = state.workData[prevKey] || [];
-
   el.ctxMenu.innerHTML = '';
   el.ctxMenu.dataset.datekey = dateKey;
-
   function addItem(icon, label, fn, danger) {
     const b = document.createElement('button');
     b.className = 'ctx-item' + (danger ? ' danger' : '');
@@ -1635,21 +1555,17 @@ function openCtxMenu(dateKey, x, y) {
     d.className = 'ctx-sep';
     el.ctxMenu.appendChild(d);
   }
-
   addItem('fa-pen', '打开编辑', () => {
     const d = parseDateKey(dateKey);
     openWorkModal(d.getFullYear(), d.getMonth(), d.getDate());
   });
-
   if (prevRecords.length > 0) {
     addItem('fa-copy', '复制前一天的记录', () => copyDayRecords(prevKey, dateKey));
   }
-
   if (records.length > 0) {
     addSep();
     addItem('fa-eraser', `清空当天（${records.length} 条）`, () => clearDayRecords(dateKey), true);
   }
-
   el.ctxMenu.classList.add('open');
   const rect = el.ctxMenu.getBoundingClientRect();
   const vw = window.innerWidth, vh = window.innerHeight;
@@ -1668,12 +1584,10 @@ function copyDayRecords(fromKey, toKey) {
   const src = state.workData[fromKey];
   if (!src || src.length === 0) return;
   if (!state.workData[toKey]) state.workData[toKey] = [];
-
   src.forEach(r => {
     const clone = { ...r, id: generateId(), createdAt: Date.now() };
     state.workData[toKey].push(clone);
   });
-
   saveState();
   refreshAll();
   showToast(`已复制 ${src.length} 条记录`);
@@ -1683,7 +1597,6 @@ function clearDayRecords(dateKey) {
   const records = state.workData[dateKey];
   if (!records || records.length === 0) return;
   if (!confirm(`确定清空 ${dateKey} 的 ${records.length} 条记录吗？`)) return;
-
   delete state.workData[dateKey];
   saveState();
   refreshAll();
@@ -1706,13 +1619,10 @@ function exportToCSV() {
     showToast('没有数据可导出', { type: 'error' });
     return;
   }
-
   const headers = ['日期','类型','工时类型','工作时长(小时)','描述','是否驻站',
     '驻站补贴(元)','计薪方式','时薪(元/小时)','单次工资(元)','总金额(元)'];
-
   const rows = [headers.map(csvEscape).join(',')];
   const sorted = Object.keys(state.workData).sort();
-
   sorted.forEach(date => {
     state.workData[date].forEach(r => {
       const otLabel = r.type === 'normal'
@@ -1735,13 +1645,11 @@ function exportToCSV() {
       ].map(csvEscape).join(','));
     });
   });
-
   const s = state.settings;
   rows.push('');
   rows.push(['【当前工资设置】'].map(csvEscape).join(','));
   rows.push(['超时加班时薪', fmtMoney(s.overtimeRate) + ' 元/小时'].map(csvEscape).join(','));
   rows.push(['法定节假日加班时薪', fmtMoney(s.otRateHoliday) + ' 元/小时'].map(csvEscape).join(','));
-
   const allowances = (s.extraAllowances || []).filter(a => a.name || a.amount > 0);
   if (allowances.length > 0) {
     rows.push(['额外补贴：'].map(csvEscape).join(','));
@@ -1751,7 +1659,6 @@ function exportToCSV() {
     const total = allowances.reduce((sum, a) => sum + a.amount, 0);
     rows.push(['补贴合计', fmtMoney(total) + ' 元'].map(csvEscape).join(','));
   }
-
   const csv = '\uFEFF' + rows.join('\r\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   downloadBlob(blob, `工时记录_${todayStamp()}.csv`);
@@ -1794,7 +1701,6 @@ function handleImportFile(file) {
     try {
       const raw = JSON.parse(reader.result);
       const payload = normalizeImportPayload(raw);
-
       const mode = confirm(
         '数据校验通过：\n' +
         `· 记录日期：${Object.keys(payload.workData).length} 天\n` +
@@ -1802,7 +1708,6 @@ function handleImportFile(file) {
         `· 备份版本：v${payload.version}\n\n` +
         '点击【确定】= 覆盖现有数据\n点击【取消】= 与现有数据合并'
       ) ? 'replace' : 'merge';
-
       if (mode === 'replace') {
         state.workData = payload.workData;
         state.settings = payload.settings;
@@ -1816,7 +1721,6 @@ function handleImportFile(file) {
         }
         state.settings = payload.settings;
       }
-
       saveState();
       fillSettingsForm();
       refreshAll();
@@ -1832,15 +1736,12 @@ function handleImportFile(file) {
 
 function normalizeImportPayload(raw) {
   if (!raw || typeof raw !== 'object') throw new Error('文件内容不是有效对象');
-
   let version = parseInt(raw.version || raw.schemaVersion || 1, 10) || 1;
   let workData = raw.workData;
   let settings = raw.settings || {};
-
   if (!workData || typeof workData !== 'object' || Array.isArray(workData)) {
     throw new Error('缺少 workData 字段');
   }
-
   if (version < 2) {
     settings = migrateSettingsV1toV2(settings);
     const wd = {};
@@ -1851,7 +1752,6 @@ function normalizeImportPayload(raw) {
     workData = wd;
     version = 2;
   }
-
   const clean = {};
   for (const dk in workData) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dk)) continue;
@@ -1876,7 +1776,6 @@ function normalizeImportPayload(raw) {
       return sanitizeRecordOt(rec);
     });
   }
-
   return { version: SCHEMA_VERSION, workData: clean, settings: normalizeSettings(settings) };
 }
 
@@ -1886,7 +1785,6 @@ function normalizeImportPayload(raw) {
 function renderAllowanceList() {
   el.allowanceList.innerHTML = '';
   const allowances = state.settings.extraAllowances || [];
-
   if (allowances.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'allowance-empty';
@@ -1894,7 +1792,6 @@ function renderAllowanceList() {
     el.allowanceList.appendChild(empty);
     return;
   }
-
   const frag = document.createDocumentFragment();
   allowances.forEach(a => {
     frag.appendChild(createAllowanceRow(a));
@@ -1906,14 +1803,12 @@ function createAllowanceRow(a) {
   const row = document.createElement('div');
   row.className = 'allowance-item';
   row.dataset.id = a.id || generateId();
-
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.className = 'allowance-name';
   nameInput.placeholder = '补贴名称';
   nameInput.maxLength = 20;
   nameInput.value = a.name || '';
-
   const amountInput = document.createElement('input');
   amountInput.type = 'number';
   amountInput.className = 'allowance-amount';
@@ -1922,7 +1817,6 @@ function createAllowanceRow(a) {
   amountInput.step = '0.01';
   amountInput.inputMode = 'decimal';
   amountInput.value = a.amount ? cent2yuan(a.amount).toFixed(2) : '';
-
   const delBtn = document.createElement('button');
   delBtn.type = 'button';
   delBtn.className = 'allowance-del';
@@ -1937,7 +1831,6 @@ function createAllowanceRow(a) {
       el.allowanceList.appendChild(empty);
     }
   });
-
   row.appendChild(nameInput);
   row.appendChild(amountInput);
   row.appendChild(delBtn);
@@ -1947,7 +1840,6 @@ function createAllowanceRow(a) {
 function collectAllowances() {
   const empty = el.allowanceList.querySelector('.allowance-empty');
   if (empty) empty.remove();
-
   const rows = el.allowanceList.querySelectorAll('.allowance-item');
   const result = [];
   rows.forEach(row => {
@@ -1979,7 +1871,6 @@ function fillSettingsForm() {
   el.socialSecurityAmountGroup.style.display = s.deductSocialSecurity ? 'block' : 'none';
   el.stationHint.textContent = fmtMoney(s.stationSalary);
   el.themeSelect.value = localStorage.getItem(LS_THEME) || 'auto';
-
   renderAllowanceList();
   updateOtRateHint();
 }
@@ -1995,7 +1886,6 @@ function saveSettings() {
   s.deductSocialSecurity = el.deductSocialSecurity.checked;
   s.socialSecurityAmount = yuan2cent(el.socialSecurityInput.value);
   s.extraAllowances = collectAllowances();
-
   saveState();
   el.stationHint.textContent = fmtMoney(s.stationSalary);
   updateOtRateHint();
@@ -2005,13 +1895,11 @@ function saveSettings() {
 
 function clearAllData() {
   if (!confirm('确定要清除所有数据吗？此操作不可恢复！\n建议先导出 JSON 备份。')) return;
-
   try {
     localStorage.removeItem(LS_DATA);
     localStorage.removeItem(LS_SETTINGS);
     localStorage.removeItem(LS_VERSION);
   } catch (e) {}
-
   state.workData = {};
   state.settings = normalizeSettings({});
   saveState();
@@ -2042,7 +1930,6 @@ function setupPWA() {
     const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="104" fill="#3498db"/><text x="256" y="340" font-size="250" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="700">工</text></svg>`;
     const iconUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(iconSvg)));
     $('apple-icon').href = iconUrl;
-
     const manifest = {
       name: '个人工时记录系统',
       short_name: '工时记录',
@@ -2158,7 +2045,6 @@ function setupEventListeners() {
 
   document.addEventListener('keydown', e => {
     if (!el.workModal.classList.contains('open')) return;
-
     if (e.key === 'Escape') {
       e.preventDefault();
       closeWorkModal();
@@ -2256,7 +2142,6 @@ function setupEventListeners() {
   el.addAllowance.addEventListener('click', () => {
     const empty = el.allowanceList.querySelector('.allowance-empty');
     if (empty) empty.remove();
-
     const row = createAllowanceRow({ id: generateId(), name: '', amount: 0 });
     el.allowanceList.appendChild(row);
     const nameInput = row.querySelector('.allowance-name');
