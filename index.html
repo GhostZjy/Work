@@ -139,15 +139,12 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 .progress-bar{height:6px; background:var(--surface-3); border-radius:4px; overflow:hidden; margin-top:5px;}
 .progress{height:100%; background:linear-gradient(90deg,var(--primary),#5dade2); border-radius:4px; transition:width .4s ease;}
 
-/* 补贴明细 */
 .allowance-detail{font-size:.72rem; color:var(--text-3); margin-top:4px; line-height:1.7;}
 .allowance-detail span{
   display:inline-block; margin-right:6px; margin-bottom:2px;
   padding:1px 7px; background:var(--surface-2); border-radius:5px;
   border:1px solid var(--border);
 }
-
-/* 加班时薪明细 */
 .ot-rate-detail{font-size:.7rem; color:var(--text-3); margin-top:4px; line-height:1.7;}
 .ot-rate-detail span{
   display:inline-block; margin-right:6px; margin-bottom:2px;
@@ -170,7 +167,6 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 .btn-ghost:hover{background:var(--surface-3); color:var(--primary); border-color:var(--primary);}
 .btn-block{width:100%;}
 
-/* 设置 */
 .settings-group{margin-bottom:12px;}
 .settings-group label{display:block; margin-bottom:5px; font-weight:600; font-size:.82rem; color:var(--text-2);}
 .settings-group label i{color:var(--primary); margin-right:4px; width:14px;}
@@ -183,16 +179,11 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
   outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(52,152,219,.13);
 }
 .settings-subtitle{font-size:.78rem; font-weight:700; color:var(--text-3); margin:16px 0 8px; text-transform:uppercase; letter-spacing:.5px;}
-.settings-row3{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px;}
-.settings-row3 label{font-size:.72rem; color:var(--text-3); display:block; margin-bottom:3px;}
-.settings-row3 input{width:100%; padding:7px; border:1px solid var(--border-strong); border-radius:8px; background:var(--surface); color:var(--text); font-size:.85rem; text-align:center; font-family:inherit;}
-.settings-row3 input:focus{outline:none; border-color:var(--primary);}
 .hint{display:block; font-size:.68rem; color:var(--text-3); margin-top:3px;}
 .checkbox-group{display:flex; align-items:center; gap:9px; margin-bottom:12px;}
 .checkbox-group input[type=checkbox]{width:18px; height:18px; accent-color:var(--primary); cursor:pointer; flex-shrink:0;}
 .checkbox-group label{cursor:pointer; font-size:.86rem; color:var(--text-2);}
 
-/* 补贴设置项 */
 .allowance-item{
   display:grid; grid-template-columns:1fr 92px 30px;
   gap:6px; align-items:center; margin-bottom:6px;
@@ -221,7 +212,6 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 }
 .add-allowance-btn:hover{background:var(--primary-soft); border-color:var(--primary); color:var(--primary);}
 
-/* 分段控件 */
 .seg{display:flex; gap:6px; margin-bottom:14px;}
 .seg-sm{margin-bottom:10px;}
 .seg-btn{
@@ -233,7 +223,6 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 .seg-sm .seg-btn{font-size:.72rem; padding:7px 4px;}
 .seg-btn.active{background:var(--primary); color:#fff; border-color:var(--primary); box-shadow:0 2px 8px rgba(52,152,219,.25);}
 
-/* 模态框 */
 .modal{
   display:none; position:fixed; inset:0; background:rgba(15,22,30,.5);
   z-index:200; justify-content:center; align-items:center; padding:10px;
@@ -298,7 +287,6 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 .add-record-btn:hover{background:var(--primary-soft); border-color:var(--primary); color:var(--primary);}
 .hint-text{font-size:.68rem; color:var(--text-3); text-align:center; margin-top:10px;}
 
-/* Toast */
 .toast-host{
   position:fixed; top:16px; left:50%; transform:translateX(-50%);
   z-index:1000; display:flex; flex-direction:column; gap:8px; align-items:center;
@@ -321,7 +309,6 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 @keyframes toastIn{from{opacity:0; transform:translateY(-14px) scale(.96);} to{opacity:1; transform:translateY(0) scale(1);}}
 @keyframes toastOut{to{opacity:0; transform:translateY(-10px) scale(.97);}}
 
-/* 右键菜单 */
 .ctx-menu{
   position:fixed; z-index:500; background:var(--surface); border-radius:11px;
   box-shadow:var(--shadow-lg); border:1px solid var(--border); padding:5px;
@@ -339,7 +326,6 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 .ctx-item:hover i{color:inherit;}
 .ctx-sep{height:1px; background:var(--border); margin:4px 6px;}
 
-/* 桌面布局 */
 @media (min-width:768px){
   .container{max-width:760px; display:grid; grid-template-columns:1fr 320px; gap:14px; align-items:start;}
   header{grid-column:1/-1;}
@@ -399,12 +385,11 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 
         <div class="stats-grid">
           <div class="stat-cell"><span>总工时</span><b id="month-hours">0</b></div>
-          <div class="stat-cell"><span>加班工时</span><b id="ot-hours">0</b></div>
+          <div class="stat-cell"><span>法定加班</span><b id="ot-hours">0</b></div>
           <div class="stat-cell"><span>驻站次数</span><b id="station-count">0</b></div>
           <div class="stat-cell"><span>外勤工资</span><b id="field-salary">0</b></div>
         </div>
 
-        <!-- 工资组成明细 -->
         <div class="stats-item">
           <div class="stats-label"><span>基础工资</span><span class="stats-value" id="base-pay" style="font-size:.95rem;">0.00 元</span></div>
         </div>
@@ -412,7 +397,7 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
           <div class="stats-label"><span>超时加班</span><span class="stats-value" id="regular-ot-pay" style="font-size:.95rem;">0.00 元</span></div>
         </div>
         <div class="stats-item" id="ot-pay-item" hidden>
-          <div class="stats-label"><span>分类加班</span><span class="stats-value" id="ot-pay" style="font-size:.95rem;">0.00 元</span></div>
+          <div class="stats-label"><span>法定加班</span><span class="stats-value" id="ot-pay" style="font-size:.95rem;">0.00 元</span></div>
           <div class="ot-rate-detail" id="ot-rate-detail"></div>
         </div>
         <div class="stats-item" id="station-item" hidden>
@@ -422,7 +407,6 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
           <div class="stats-label"><span>外勤工资</span><span class="stats-value" id="field-pay" style="font-size:.95rem;">0.00 元</span></div>
         </div>
 
-        <!-- 额外补贴 -->
         <div class="stats-item" id="allowance-item" hidden>
           <div class="stats-label"><span>额外补贴</span><span class="stats-value success" id="allowance-total" style="font-size:.95rem;">0.00 元</span></div>
           <div class="allowance-detail" id="allowance-detail"></div>
@@ -466,13 +450,12 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
           <input type="number" id="station-salary-input" min="0" step="0.01">
         </div>
 
-        <div class="settings-subtitle">分类加班时薪（元/小时）</div>
-        <div class="settings-row3">
-          <div><label>工作日</label><input type="number" id="ot-workday-input" min="0" step="0.01"></div>
-          <div><label>周末</label><input type="number" id="ot-weekend-input" min="0" step="0.01"></div>
-          <div><label>法定</label><input type="number" id="ot-holiday-input" min="0" step="0.01"></div>
+        <div class="settings-subtitle">法定节假日加班</div>
+        <div class="settings-group">
+          <label for="ot-holiday-input"><i class="fas fa-umbrella-beach"></i> 法定节假日加班时薪（元/小时）</label>
+          <input type="number" id="ot-holiday-input" min="0" step="0.01">
+          <span class="hint">在“记录工时”弹窗中将工时类型选为“法定加班”后，按此单价计算。</span>
         </div>
-        <span class="hint">在“记录工时”弹窗中选择对应的加班类型后，按此单价值计算。</span>
 
         <div class="settings-subtitle">额外补贴（每周期固定发放）</div>
         <div id="allowance-list"></div>
@@ -544,8 +527,6 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
         <label><i class="fas fa-tags"></i> 工时类型</label>
         <div class="seg seg-sm" id="ot-seg">
           <button class="seg-btn active" data-ot="none">正常</button>
-          <button class="seg-btn" data-ot="workday">工作日加班</button>
-          <button class="seg-btn" data-ot="weekend">周末加班</button>
           <button class="seg-btn" data-ot="holiday">法定加班</button>
         </div>
         <span class="hint" id="ot-rate-hint"></span>
@@ -605,7 +586,7 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 /* ============================================================
  * 常量与工具
  * ============================================================ */
-const SCHEMA_VERSION = 3;
+const SCHEMA_VERSION = 4;
 const LS_DATA = 'workData';
 const LS_SETTINGS = 'settings';
 const LS_VERSION = 'schemaVersion';
@@ -617,9 +598,7 @@ const DEFAULT_SETTINGS = Object.freeze({
   basicSalary: 320000,        // 分
   overtimeRate: 2155,         // 超时加班时薪（分/小时）
   stationSalary: 2000,        // 分
-  otRateWorkday: 3233,        // 工作日加班时薪（分/小时）≈ 21.55 × 1.5
-  otRateWeekend: 4310,        // 周末加班时薪（分/小时）≈ 21.55 × 2
-  otRateHoliday: 6465,        // 法定加班时薪（分/小时）≈ 21.55 × 3
+  otRateHoliday: 6465,        // 法定节假日加班时薪（分/小时）≈ 21.55 × 3
   deductSocialSecurity: false,
   socialSecurityAmount: 74000,// 分
   cycleStartDay: 1,
@@ -742,8 +721,6 @@ const el = {
   basicSalaryInput: $('basic-salary-input'),
   overtimeRateInput: $('overtime-rate-input'),
   stationSalaryInput: $('station-salary-input'),
-  otWorkdayInput: $('ot-workday-input'),
-  otWeekendInput: $('ot-weekend-input'),
   otHolidayInput: $('ot-holiday-input'),
   cycleStartInput: $('cycle-start-input'),
   deductSocialSecurity: $('deduct-social-security'),
@@ -850,25 +827,23 @@ function normalizeSettings(raw) {
     }
   }
 
-  // 旧版倍率迁移：如果 raw 里有 otMult*，转换成具体时薪
+  // 旧版倍率迁移：如果 raw 里有 otMultHoliday 且没有 otRateHoliday，转换成具体时薪
   if (raw && typeof raw === 'object' &&
-      (raw.otMultWorkday !== undefined || raw.otMultWeekend !== undefined || raw.otMultHoliday !== undefined) &&
-      raw.otRateWorkday === undefined) {
+      raw.otRateHoliday === undefined) {
     const baseRate = Math.max(0, Math.round(Number(raw.overtimeRate) || out.overtimeRate));
-    const mw = Number(raw.otMultWorkday);
-    const we = Number(raw.otMultWeekend);
-    const ho = Number(raw.otMultHoliday);
-    out.otRateWorkday = Math.round(baseRate * (isFinite(mw) && mw > 0 ? mw : 1.5));
-    out.otRateWeekend = Math.round(baseRate * (isFinite(we) && we > 0 ? we : 2));
-    out.otRateHoliday = Math.round(baseRate * (isFinite(ho) && ho > 0 ? ho : 3));
+    if (raw.otMultHoliday !== undefined) {
+      const ho = Number(raw.otMultHoliday);
+      out.otRateHoliday = Math.round(baseRate * (isFinite(ho) && ho > 0 ? ho : 3));
+    } else if (raw.otRateWeekend !== undefined) {
+      // v3 数据迁移：优先用 weekend 值（数值上接近）
+      out.otRateHoliday = Math.max(0, Math.round(Number(raw.otRateWeekend) || out.otRateHoliday));
+    }
   }
 
   out.basicHours = Math.max(1, Number(out.basicHours) || 174);
   out.basicSalary = Math.max(0, Math.round(Number(out.basicSalary) || 0));
   out.overtimeRate = Math.max(0, Math.round(Number(out.overtimeRate) || 0));
   out.stationSalary = Math.max(0, Math.round(Number(out.stationSalary) || 0));
-  out.otRateWorkday = Math.max(0, Math.round(Number(out.otRateWorkday) || 0));
-  out.otRateWeekend = Math.max(0, Math.round(Number(out.otRateWeekend) || 0));
   out.otRateHoliday = Math.max(0, Math.round(Number(out.otRateHoliday) || 0));
   out.socialSecurityAmount = Math.max(0, Math.round(Number(out.socialSecurityAmount) || 0));
   out.deductSocialSecurity = !!out.deductSocialSecurity;
@@ -885,6 +860,13 @@ function normalizeSettings(raw) {
     : [];
 
   return out;
+}
+
+function sanitizeRecordOt(rec) {
+  if (rec && rec.type === 'normal') {
+    if (rec.ot !== 'holiday') rec.ot = 'none';
+  }
+  return rec;
 }
 
 function migrateRecordV1toV2(r) {
@@ -932,11 +914,12 @@ function loadState() {
     }
   } catch (e) { settings = normalizeSettings({}); }
 
-  if (version < 2) {
-    for (const dk in workData) {
-      if (!Array.isArray(workData[dk])) { delete workData[dk]; continue; }
-      workData[dk] = workData[dk].map(migrateRecordV1toV2);
-    }
+  // 记录迁移 + ot 字段净化
+  for (const dk in workData) {
+    if (!Array.isArray(workData[dk])) { delete workData[dk]; continue; }
+    workData[dk] = workData[dk]
+      .map(r => version < 2 ? migrateRecordV1toV2(r) : r)
+      .map(sanitizeRecordOt);
   }
 
   state.workData = workData;
@@ -1059,14 +1042,14 @@ function createDayElement(day, isOtherMonth, year, month) {
 }
 
 /* ============================================================
- * 统计（加班按具体时薪）
+ * 统计（仅法定节假日加班）
  * ============================================================ */
 function computeStats() {
   const s = state.settings;
   const range = getCycleRange(state.currentDate, s.cycleStartDay);
 
   let normalHours = 0;
-  let otWorkday = 0, otWeekend = 0, otHoliday = 0;
+  let otHoliday = 0;
   let stationPay = 0, stationCount = 0, fieldPay = 0;
   const daily = [];
 
@@ -1078,9 +1061,7 @@ function computeStats() {
         if (r.type === 'normal') {
           const h = r.hours || 0;
           dayH += h;
-          if (r.ot === 'workday') otWorkday += h;
-          else if (r.ot === 'weekend') otWeekend += h;
-          else if (r.ot === 'holiday') otHoliday += h;
+          if (r.ot === 'holiday') otHoliday += h;
           else normalHours += h;
           if (r.isStation) { stationPay += r.stationSalary || 0; stationCount++; }
         } else {
@@ -1092,8 +1073,7 @@ function computeStats() {
     daily.push({ key, hours: dayH });
   });
 
-  const otTotal = otWorkday + otWeekend + otHoliday;
-  const totalHours = normalHours + otTotal;
+  const totalHours = normalHours + otHoliday;
 
   const basicHours = s.basicHours;
   const basicSalary = s.basicSalary;
@@ -1107,11 +1087,9 @@ function computeStats() {
     regularOTPay = Math.round((normalHours - basicHours) * baseOtRate);
   }
 
-  // 分类加班：直接按具体时薪计算
-  const otWorkdayPay = Math.round(otWorkday * s.otRateWorkday);
-  const otWeekendPay = Math.round(otWeekend * s.otRateWeekend);
+  // 法定节假日加班：直接按具体时薪计算
   const otHolidayPay = Math.round(otHoliday * s.otRateHoliday);
-  const otPay = otWorkdayPay + otWeekendPay + otHolidayPay;
+  const otPay = otHolidayPay;
 
   const allowances = (s.extraAllowances || []).filter(a => a.name || a.amount > 0);
   const allowanceTotal = allowances.reduce((sum, a) => sum + (a.amount || 0), 0);
@@ -1122,10 +1100,10 @@ function computeStats() {
 
   return {
     range, daily,
-    normalHours, otWorkday, otWeekend, otHoliday, otTotal, totalHours,
+    normalHours, otHoliday, otTotal: otHoliday, totalHours,
     stationPay, stationCount, fieldPay,
     basePay, regularOTPay,
-    otWorkdayPay, otWeekendPay, otHolidayPay, otPay,
+    otHolidayPay, otPay,
     social, allowanceTotal, allowances,
     gross, net
   };
@@ -1142,11 +1120,10 @@ function updateStats() {
   el.basicHoursPercent.textContent = `${pct}%`;
   el.basicHoursProgress.style.width = `${pct}%`;
   el.monthHours.textContent = fmtH(s.totalHours);
-  el.otHours.textContent = fmtH(s.otTotal);
+  el.otHours.textContent = fmtH(s.otHoliday);
   el.stationCount.textContent = String(s.stationCount);
   el.fieldSalary.textContent = `${fmtMoney(s.fieldPay)}`;
 
-  // 工资明细
   el.basePay.textContent = `${fmtMoney(s.basePay)} 元`;
 
   if (s.regularOTPay > 0) {
@@ -1159,11 +1136,8 @@ function updateStats() {
   if (s.otPay > 0) {
     el.otPayItem.hidden = false;
     el.otPay.textContent = `${fmtMoney(s.otPay)} 元`;
-    const parts = [];
-    if (s.otWorkday > 0) parts.push(`工作日 ${fmtH(s.otWorkday)}H × ${fmtMoney(state.settings.otRateWorkday)} = ${fmtMoney(s.otWorkdayPay)}元`);
-    if (s.otWeekend > 0) parts.push(`周末 ${fmtH(s.otWeekend)}H × ${fmtMoney(state.settings.otRateWeekend)} = ${fmtMoney(s.otWeekendPay)}元`);
-    if (s.otHoliday > 0) parts.push(`法定 ${fmtH(s.otHoliday)}H × ${fmtMoney(state.settings.otRateHoliday)} = ${fmtMoney(s.otHolidayPay)}元`);
-    el.otRateDetail.innerHTML = parts.map(p => `<span>${p}</span>`).join('');
+    el.otRateDetail.innerHTML =
+      `<span>法定 ${fmtH(s.otHoliday)}H × ${fmtMoney(state.settings.otRateHoliday)} = ${fmtMoney(s.otHolidayPay)}元</span>`;
   } else {
     el.otPayItem.hidden = true;
     el.otRateDetail.innerHTML = '';
@@ -1183,7 +1157,6 @@ function updateStats() {
     el.fieldItem.hidden = true;
   }
 
-  // 额外补贴
   if (s.allowanceTotal > 0 || s.allowances.length > 0) {
     el.allowanceItem.hidden = false;
     el.allowanceTotal.textContent = `${fmtMoney(s.allowanceTotal)} 元`;
@@ -1323,16 +1296,11 @@ function calculateFieldTotal() {
   el.fieldTotal.value = total.toFixed(2);
 }
 
-// 更新加班时薪提示（弹窗内）
 function updateOtRateHint() {
   const ot = getSegActive(el.otSeg, 'ot') || 'none';
   const s = state.settings;
-  if (ot === 'workday') {
-    el.otRateHint.textContent = `工作日加班时薪：${fmtMoney(s.otRateWorkday)} 元/小时`;
-  } else if (ot === 'weekend') {
-    el.otRateHint.textContent = `周末加班时薪：${fmtMoney(s.otRateWeekend)} 元/小时`;
-  } else if (ot === 'holiday') {
-    el.otRateHint.textContent = `法定加班时薪：${fmtMoney(s.otRateHoliday)} 元/小时`;
+  if (ot === 'holiday') {
+    el.otRateHint.textContent = `法定节假日加班时薪：${fmtMoney(s.otRateHoliday)} 元/小时`;
   } else {
     el.otRateHint.textContent = `正常工时按基础工资计算，超出部分按 ${fmtMoney(s.overtimeRate)} 元/小时`;
   }
@@ -1415,7 +1383,7 @@ function renderRecordsList(dateKey) {
     detailNode.className = 'record-details';
 
     if (record.type === 'normal') {
-      const otLabel = { none: '', workday: ' · 工作日加班', weekend: ' · 周末加班', holiday: ' · 法定加班' }[record.ot || 'none'] || '';
+      const otLabel = record.ot === 'holiday' ? ' · 法定加班' : '';
       let text = `正常工时 · ${record.description || '无描述'}${otLabel}`;
       if (record.isStation) text += ' · 驻站';
       typeNode.textContent = text;
@@ -1485,7 +1453,7 @@ function saveWorkRecord() {
       description: (el.workDescription.value || '').trim(),
       isStation: isStation,
       stationSalary: isStation ? state.settings.stationSalary : 0,
-      ot: ot,
+      ot: ot === 'holiday' ? 'holiday' : 'none',
       createdAt: editing ? (editing.createdAt || Date.now()) : Date.now()
     };
   } else {
@@ -1573,7 +1541,7 @@ function editRecord(dateKey, record) {
     el.workHours.value = record.hours;
     el.workDescription.value = record.description || '';
     el.isStation.checked = !!record.isStation;
-    setSegActive(el.otSeg, 'ot', record.ot || 'none');
+    setSegActive(el.otSeg, 'ot', record.ot === 'holiday' ? 'holiday' : 'none');
     updateOtRateHint();
   } else {
     setSegActive(el.workTypeSeg, 'type', 'field');
@@ -1748,7 +1716,7 @@ function exportToCSV() {
   sorted.forEach(date => {
     state.workData[date].forEach(r => {
       const otLabel = r.type === 'normal'
-        ? ({ none:'正常', workday:'工作日加班', weekend:'周末加班', holiday:'法定加班' }[r.ot || 'none'] || '正常')
+        ? (r.ot === 'holiday' ? '法定加班' : '正常')
         : '';
       rows.push([
         date,
@@ -1768,14 +1736,11 @@ function exportToCSV() {
     });
   });
 
-  // 附加当前设置中的加班时薪和补贴汇总
   const s = state.settings;
   rows.push('');
   rows.push(['【当前工资设置】'].map(csvEscape).join(','));
   rows.push(['超时加班时薪', fmtMoney(s.overtimeRate) + ' 元/小时'].map(csvEscape).join(','));
-  rows.push(['工作日加班时薪', fmtMoney(s.otRateWorkday) + ' 元/小时'].map(csvEscape).join(','));
-  rows.push(['周末加班时薪', fmtMoney(s.otRateWeekend) + ' 元/小时'].map(csvEscape).join(','));
-  rows.push(['法定加班时薪', fmtMoney(s.otRateHoliday) + ' 元/小时'].map(csvEscape).join(','));
+  rows.push(['法定节假日加班时薪', fmtMoney(s.otRateHoliday) + ' 元/小时'].map(csvEscape).join(','));
 
   const allowances = (s.extraAllowances || []).filter(a => a.name || a.amount > 0);
   if (allowances.length > 0) {
@@ -1900,7 +1865,7 @@ function normalizeImportPayload(raw) {
         rec.hours = Math.max(0, Number(rec.hours) || 0);
         rec.stationSalary = Math.max(0, Math.round(Number(rec.stationSalary) || 0));
         rec.isStation = !!rec.isStation;
-        if (!['none','workday','weekend','holiday'].includes(rec.ot)) rec.ot = 'none';
+        rec.ot = rec.ot === 'holiday' ? 'holiday' : 'none';
       } else {
         rec.hours = Math.max(0, Number(rec.hours) || 0);
         if (rec.paymentType !== 'hourly' && rec.paymentType !== 'fixed') rec.paymentType = 'fixed';
@@ -1908,7 +1873,7 @@ function normalizeImportPayload(raw) {
         rec.fixed = Math.max(0, Math.round(Number(rec.fixed) || 0));
         rec.total = Math.max(0, Math.round(Number(rec.total) || 0));
       }
-      return rec;
+      return sanitizeRecordOt(rec);
     });
   }
 
@@ -2007,8 +1972,6 @@ function fillSettingsForm() {
   el.basicSalaryInput.value = cent2yuan(s.basicSalary).toFixed(2);
   el.overtimeRateInput.value = cent2yuan(s.overtimeRate).toFixed(2);
   el.stationSalaryInput.value = cent2yuan(s.stationSalary).toFixed(2);
-  el.otWorkdayInput.value = cent2yuan(s.otRateWorkday).toFixed(2);
-  el.otWeekendInput.value = cent2yuan(s.otRateWeekend).toFixed(2);
   el.otHolidayInput.value = cent2yuan(s.otRateHoliday).toFixed(2);
   el.cycleStartInput.value = s.cycleStartDay;
   el.deductSocialSecurity.checked = s.deductSocialSecurity;
@@ -2027,8 +1990,6 @@ function saveSettings() {
   s.basicSalary = yuan2cent(el.basicSalaryInput.value);
   s.overtimeRate = yuan2cent(el.overtimeRateInput.value);
   s.stationSalary = yuan2cent(el.stationSalaryInput.value);
-  s.otRateWorkday = yuan2cent(el.otWorkdayInput.value);
-  s.otRateWeekend = yuan2cent(el.otWeekendInput.value);
   s.otRateHoliday = yuan2cent(el.otHolidayInput.value);
   s.cycleStartDay = clamp(parseInt(el.cycleStartInput.value, 10) || 1, 1, 28);
   s.deductSocialSecurity = el.deductSocialSecurity.checked;
@@ -2112,7 +2073,6 @@ function setupEventListeners() {
   el.nextMonth.addEventListener('click', () => changeMonth(1));
   el.todayBtn.addEventListener('click', goToToday);
 
-  // 日历事件委托
   el.calendarGrid.addEventListener('click', e => {
     const cell = e.target.closest('.calendar-day');
     if (!cell || cell.classList.contains('other-month')) return;
@@ -2133,7 +2093,6 @@ function setupEventListeners() {
     openWorkModal(d.getFullYear(), d.getMonth(), d.getDate());
   });
 
-  // 长按
   let lpTimer = null, lpStartX = 0, lpStartY = 0, lpCell = null;
   el.calendarGrid.addEventListener('touchstart', e => {
     const cell = e.target.closest('.calendar-day');
@@ -2174,7 +2133,6 @@ function setupEventListeners() {
   document.addEventListener('scroll', closeCtxMenu, true);
   window.addEventListener('resize', closeCtxMenu);
 
-  // 滑动切换月份
   let swX = 0, swY = 0, swActive = false;
   el.calendarSection.addEventListener('touchstart', e => {
     if (e.touches.length !== 1) return;
@@ -2192,7 +2150,6 @@ function setupEventListeners() {
     }
   }, { passive: true });
 
-  // 模态框
   el.closeModal.addEventListener('click', closeWorkModal);
   el.workModal.addEventListener('click', e => {
     if (e.target === el.workModal) closeWorkModal();
@@ -2229,7 +2186,6 @@ function setupEventListeners() {
 
   el.workDate.addEventListener('change', () => renderRecordsList(el.workDate.value));
 
-  // 工作类型 / 计薪方式
   el.workTypeSeg.addEventListener('click', e => {
     const btn = e.target.closest('.seg-btn');
     if (!btn) return;
@@ -2255,7 +2211,6 @@ function setupEventListeners() {
   el.fieldRate.addEventListener('input', calculateFieldTotal);
   el.fieldFixed.addEventListener('input', calculateFieldTotal);
 
-  // 记录列表事件委托
   el.recordsList.addEventListener('click', e => {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
@@ -2279,7 +2234,6 @@ function setupEventListeners() {
     el.workHours.focus();
   });
 
-  // 标签页
   el.tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const id = tab.dataset.tab;
@@ -2293,14 +2247,12 @@ function setupEventListeners() {
     });
   });
 
-  // 设置
   el.deductSocialSecurity.addEventListener('change', function () {
     el.socialSecurityAmountGroup.style.display = this.checked ? 'block' : 'none';
   });
   el.saveSettings.addEventListener('click', saveSettings);
   el.clearData.addEventListener('click', clearAllData);
 
-  // 补贴项
   el.addAllowance.addEventListener('click', () => {
     const empty = el.allowanceList.querySelector('.allowance-empty');
     if (empty) empty.remove();
@@ -2316,7 +2268,6 @@ function setupEventListeners() {
     applyTheme();
   });
 
-  // 导出 / 导入
   el.exportData.addEventListener('click', exportToCSV);
   el.exportJson.addEventListener('click', exportToJSON);
   el.importJson.addEventListener('click', () => el.importFile.click());
