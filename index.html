@@ -6,337 +6,158 @@
 <title>个人工时记录系统</title>
 <meta name="theme-color" content="#3498db">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" id="manifest-link">
 <link rel="apple-touch-icon" id="apple-icon">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root{
-  --bg:#f5f7fa; --surface:#fff; --surface-2:#fafbfc; --surface-3:#f0f2f5;
-  --border:#e9ecf0; --border-strong:#d6dbe2;
-  --text:#2c3e50; --text-2:#5b6b7c; --text-3:#9aa5b1;
-  --primary:#3498db; --primary-soft:#e8f4fd;
-  --secondary:#2ecc71; --danger:#e74c3c; --warning:#f39c12; --purple:#9b59b6;
-  --shadow:0 1px 3px rgba(20,30,45,.08), 0 1px 2px rgba(20,30,45,.04);
-  --shadow-lg:0 12px 32px rgba(20,30,45,.18);
-  --tag-normal-bg:#e8f8ef; --tag-normal-fg:#1e9b5b;
-  --tag-station-bg:#fff8e8; --tag-station-fg:#b8790a;
-  --tag-fh-bg:#e8f4fd; --tag-fh-fg:#2b7fbd;
-  --tag-ff-bg:#fdeceb; --tag-ff-fg:#c0392b;
-  color-scheme:light;
-}
-:root[data-theme="dark"]{
-  --bg:#0e1319; --surface:#181f27; --surface-2:#1e2630; --surface-3:#252e39;
-  --border:#2b3540; --border-strong:#3a4653;
-  --text:#e6ebf1; --text-2:#a3aebc; --text-3:#6d7a89;
-  --primary:#4aa8e8; --primary-soft:#12293b;
-  --secondary:#3ecf7f; --danger:#f0736a; --warning:#f5b041; --purple:#b07cd6;
-  --shadow:0 1px 3px rgba(0,0,0,.5);
-  --shadow-lg:0 12px 32px rgba(0,0,0,.6);
-  --tag-normal-bg:rgba(62,207,127,.16); --tag-normal-fg:#5ee89a;
-  --tag-station-bg:rgba(245,176,65,.16); --tag-station-fg:#f5c469;
-  --tag-fh-bg:rgba(74,168,232,.16); --tag-fh-fg:#7cc4f5;
-  --tag-ff-bg:rgba(240,115,106,.16); --tag-ff-fg:#f5938c;
-  color-scheme:dark;
-}
+:root{--bg:#f5f7fa;--surface:#fff;--surface-2:#fafbfc;--surface-3:#f0f2f5;--border:#e9ecf0;--border-strong:#d6dbe2;--text:#2c3e50;--text-2:#5b6b7c;--text-3:#9aa5b1;--primary:#3498db;--primary-soft:#e8f4fd;--secondary:#2ecc71;--danger:#e74c3c;--warning:#f39c12;--purple:#9b59b6;--shadow:0 1px 3px rgba(20,30,45,.08),0 1px 2px rgba(20,30,45,.04);--shadow-lg:0 12px 32px rgba(20,30,45,.18);--tag-normal-bg:#e8f8ef;--tag-normal-fg:#1e9b5b;--tag-station-bg:#fff8e8;--tag-station-fg:#b8790a;--tag-fh-bg:#e8f4fd;--tag-fh-fg:#2b7fbd;--tag-ff-bg:#fdeceb;--tag-ff-fg:#c0392b;color-scheme:light;}
+:root[data-theme="dark"]{--bg:#0e1319;--surface:#181f27;--surface-2:#1e2630;--surface-3:#252e39;--border:#2b3540;--border-strong:#3a4653;--text:#e6ebf1;--text-2:#a3aebc;--text-3:#6d7a89;--primary:#4aa8e8;--primary-soft:#12293b;--secondary:#3ecf7f;--danger:#f0736a;--warning:#f5b041;--purple:#b07cd6;--shadow:0 1px 3px rgba(0,0,0,.5);--shadow-lg:0 12px 32px rgba(0,0,0,.6);--tag-normal-bg:rgba(62,207,127,.16);--tag-normal-fg:#5ee89a;--tag-station-bg:rgba(245,176,65,.16);--tag-station-fg:#f5c469;--tag-fh-bg:rgba(74,168,232,.16);--tag-fh-fg:#7cc4f5;--tag-ff-bg:rgba(240,115,106,.16);--tag-ff-fg:#f5938c;color-scheme:dark;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 [hidden]{display:none !important;}
 html,body{height:100%;}
-body{
-  background:var(--bg); color:var(--text); line-height:1.5;
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue','PingFang SC','Microsoft YaHei',sans-serif;
-  padding:10px; padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));
-  -webkit-font-smoothing:antialiased;
-  transition:background .2s, color .2s;
-}
-.container{max-width:100%; margin:0 auto;}
-header{
-  text-align:center; margin-bottom:14px; padding:16px 14px;
-  background:var(--surface); border-radius:14px; box-shadow:var(--shadow);
-}
-h1{color:var(--text); font-size:1.35rem; font-weight:700; letter-spacing:.5px;}
-h1 i{color:var(--primary); margin-right:6px;}
-header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
-
-.calendar-section{
-  background:var(--surface); border-radius:14px; padding:14px;
-  box-shadow:var(--shadow); margin-bottom:14px;
-}
-.calendar-header{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;}
-.month-title-wrap{flex:1; display:flex; flex-direction:column; align-items:center; gap:1px;}
-.month-title-wrap h2{font-size:1.05rem; font-weight:700; white-space:nowrap;}
-.today-btn{
-  background:none; border:none; color:var(--primary); font-size:.72rem;
-  cursor:pointer; padding:1px 8px; border-radius:20px; display:inline-flex;
-  align-items:center; gap:4px; transition:background .15s;
-}
+body{background:var(--bg);color:var(--text);line-height:1.5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue','PingFang SC','Microsoft YaHei',sans-serif;padding:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));-webkit-font-smoothing:antialiased;transition:background .2s,color .2s;}
+.container{max-width:100%;margin:0 auto;}
+header{text-align:center;margin-bottom:14px;padding:16px 14px;background:var(--surface);border-radius:14px;box-shadow:var(--shadow);}
+h1{color:var(--text);font-size:1.35rem;font-weight:700;letter-spacing:.5px;}
+h1 i{color:var(--primary);margin-right:6px;}
+header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
+.calendar-section{background:var(--surface);border-radius:14px;padding:14px;box-shadow:var(--shadow);margin-bottom:14px;}
+.calendar-header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;}
+.month-title-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;}
+.month-title-wrap h2{font-size:1.05rem;font-weight:700;white-space:nowrap;}
+.today-btn{background:none;border:none;color:var(--primary);font-size:.72rem;cursor:pointer;padding:1px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;transition:background .15s;}
 .today-btn:hover{background:var(--primary-soft);}
-.cycle-badge{
-  font-size:.7rem; color:var(--text-3); text-align:center; margin-bottom:10px;
-  padding:3px 10px; background:var(--surface-2); border-radius:20px;
-  display:inline-block; width:100%;
-}
-.calendar-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:5px; touch-action:pan-y;}
-.weekday-header{text-align:center; font-weight:600; padding:5px 0; font-size:.78rem; color:var(--text-3);}
-.calendar-day{
-  aspect-ratio:1/1.32; border-radius:9px; padding:4px 3px; cursor:pointer;
-  transition:background .15s, transform .1s, box-shadow .15s;
-  display:flex; flex-direction:column; overflow:hidden;
-  background:var(--surface); border:1px solid var(--border);
-  position:relative; user-select:none; -webkit-user-select:none;
-}
+.cycle-badge{font-size:.7rem;color:var(--text-3);text-align:center;margin-bottom:10px;padding:3px 10px;background:var(--surface-2);border-radius:20px;display:inline-block;width:100%;}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;touch-action:pan-y;}
+.weekday-header{text-align:center;font-weight:600;padding:5px 0;font-size:.78rem;color:var(--text-3);}
+.calendar-day{aspect-ratio:1/1.32;border-radius:9px;padding:4px 3px;cursor:pointer;transition:background .15s,transform .1s,box-shadow .15s;display:flex;flex-direction:column;overflow:hidden;background:var(--surface);border:1px solid var(--border);position:relative;user-select:none;-webkit-user-select:none;}
 .calendar-day:active{transform:scale(.96);}
-.calendar-day.has-records{border-color:var(--primary-soft); background:linear-gradient(180deg,var(--surface) 0%,var(--surface-2) 100%);}
-.calendar-day.other-month{opacity:.35; pointer-events:none;}
-.calendar-day.today{border:2px solid var(--primary); background:var(--primary-soft);}
-.calendar-day:focus-visible{outline:2px solid var(--primary); outline-offset:1px;}
-.day-number{font-weight:700; font-size:.78rem; text-align:center; line-height:1.3; color:var(--text);}
+.calendar-day.has-records{border-color:var(--primary-soft);background:linear-gradient(180deg,var(--surface) 0%,var(--surface-2) 100%);}
+.calendar-day.other-month{opacity:.35;pointer-events:none;}
+.calendar-day.today{border:2px solid var(--primary);background:var(--primary-soft);}
+.calendar-day:focus-visible{outline:2px solid var(--primary);outline-offset:1px;}
+.day-number{font-weight:700;font-size:.78rem;text-align:center;line-height:1.3;color:var(--text);}
 .calendar-day.today .day-number{color:var(--primary);}
-.work-info{font-size:.58rem; flex-grow:1; display:flex; flex-direction:column; gap:2px; margin-top:2px; overflow:hidden;}
-.work-info p{
-  margin:0; padding:1px 3px; border-radius:3px; white-space:nowrap;
-  overflow:hidden; text-overflow:ellipsis; text-align:center; font-weight:600; line-height:1.35;
-}
-.normal-work{background:var(--tag-normal-bg); color:var(--tag-normal-fg);}
-.normal-work-station{background:var(--tag-station-bg); color:var(--tag-station-fg);}
-.field-hourly{background:var(--tag-fh-bg); color:var(--tag-fh-fg);}
-.field-fixed{background:var(--tag-ff-bg); color:var(--tag-ff-fg);}
-.more-indicator{color:var(--text-3); font-size:.55rem; text-align:center;}
-
-.chart-wrap{margin-top:12px; padding-top:10px; border-top:1px dashed var(--border);}
-.chart-wrap canvas{width:100%; height:96px; display:block;}
-.chart-label{font-size:.68rem; color:var(--text-3); margin-bottom:4px; display:flex; justify-content:space-between;}
-
-.sidebar{display:flex; flex-direction:column; gap:14px;}
-.tabs{display:flex; background:var(--surface); border-radius:12px; padding:4px; box-shadow:var(--shadow);}
-.tab{
-  flex:1; padding:9px; text-align:center; cursor:pointer; border:none;
-  background:none; font-weight:600; color:var(--text-3); border-radius:9px;
-  font-size:.88rem; transition:all .15s; font-family:inherit;
-}
-.tab.active{background:var(--primary); color:#fff; box-shadow:0 2px 8px rgba(52,152,219,.3);}
+.work-info{font-size:.58rem;flex-grow:1;display:flex;flex-direction:column;gap:2px;margin-top:2px;overflow:hidden;}
+.work-info p{margin:0;padding:1px 3px;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;font-weight:600;line-height:1.35;}
+.normal-work{background:var(--tag-normal-bg);color:var(--tag-normal-fg);}
+.normal-work-station{background:var(--tag-station-bg);color:var(--tag-station-fg);}
+.field-hourly{background:var(--tag-fh-bg);color:var(--tag-fh-fg);}
+.field-fixed{background:var(--tag-ff-bg);color:var(--tag-ff-fg);}
+.more-indicator{color:var(--text-3);font-size:.55rem;text-align:center;}
+.chart-wrap{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);}
+.chart-wrap canvas{width:100%;height:96px;display:block;}
+.chart-label{font-size:.68rem;color:var(--text-3);margin-bottom:4px;display:flex;justify-content:space-between;}
+.sidebar{display:flex;flex-direction:column;gap:14px;}
+.tabs{display:flex;background:var(--surface);border-radius:12px;padding:4px;box-shadow:var(--shadow);}
+.tab{flex:1;padding:9px;text-align:center;cursor:pointer;border:none;background:none;font-weight:600;color:var(--text-3);border-radius:9px;font-size:.88rem;transition:all .15s;font-family:inherit;}
+.tab.active{background:var(--primary);color:#fff;box-shadow:0 2px 8px rgba(52,152,219,.3);}
 .tab-content{display:none;}
-.tab-content.active{display:block; animation:fadeIn .18s ease;}
-@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
-
-.stats-panel,.settings-panel{background:var(--surface); border-radius:14px; padding:15px; box-shadow:var(--shadow);}
-.cycle-line{font-size:.72rem; color:var(--text-3); margin-bottom:12px; text-align:center; padding:4px; background:var(--surface-2); border-radius:8px;}
-.stats-item{margin-bottom:11px; padding-bottom:9px; border-bottom:1px solid var(--border);}
+.tab-content.active{display:block;animation:fadeIn .18s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.stats-panel,.settings-panel{background:var(--surface);border-radius:14px;padding:15px;box-shadow:var(--shadow);}
+.cycle-line{font-size:.72rem;color:var(--text-3);margin-bottom:12px;text-align:center;padding:4px;background:var(--surface-2);border-radius:8px;}
+.stats-item{margin-bottom:11px;padding-bottom:9px;border-bottom:1px solid var(--border);}
 .stats-item:last-of-type{border-bottom:none;}
-.stats-item > div:first-child{font-size:.82rem; color:var(--text-2); margin-bottom:2px;}
-.stats-label{display:flex; justify-content:space-between; font-size:.84rem; color:var(--text-2); margin-bottom:3px;}
-.stats-value{font-size:1.12rem; font-weight:700; color:var(--primary); font-variant-numeric:tabular-nums;}
+.stats-item > div:first-child{font-size:.82rem;color:var(--text-2);margin-bottom:2px;}
+.stats-label{display:flex;justify-content:space-between;font-size:.84rem;color:var(--text-2);margin-bottom:3px;}
+.stats-value{font-size:1.12rem;font-weight:700;color:var(--primary);font-variant-numeric:tabular-nums;}
 .stats-value.success{color:var(--secondary);}
 .stats-value.danger{color:var(--danger);}
 .stats-value.warning{color:var(--warning);}
-.stats-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;}
-.stat-cell{background:var(--surface-2); border-radius:9px; padding:8px 10px; display:flex; flex-direction:column; gap:1px;}
-.stat-cell span{font-size:.68rem; color:var(--text-3);}
-.stat-cell b{font-size:.95rem; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums;}
-.progress-bar{height:6px; background:var(--surface-3); border-radius:4px; overflow:hidden; margin-top:5px;}
-.progress{height:100%; background:linear-gradient(90deg,var(--primary),#5dade2); border-radius:4px; transition:width .4s ease;}
-
-.allowance-detail{font-size:.72rem; color:var(--text-3); margin-top:4px; line-height:1.7;}
-.allowance-detail span{
-  display:inline-block; margin-right:6px; margin-bottom:2px;
-  padding:1px 7px; background:var(--surface-2); border-radius:5px;
-  border:1px solid var(--border);
-}
-.ot-rate-detail{font-size:.7rem; color:var(--text-3); margin-top:4px; line-height:1.7;}
-.ot-rate-detail span{
-  display:inline-block; margin-right:6px; margin-bottom:2px;
-  padding:1px 7px; background:var(--surface-2); border-radius:5px;
-  border:1px solid var(--border);
-}
-.base-pay-hint{font-size:.68rem; color:var(--text-3); margin-top:3px;}
-
-.btn-row{display:flex; gap:6px; margin-top:10px;}
-.btn{
-  background:var(--primary); color:#fff; border:none; padding:9px 14px;
-  border-radius:9px; cursor:pointer; font-weight:600; font-size:.85rem;
-  display:inline-flex; align-items:center; justify-content:center; gap:5px;
-  transition:filter .15s, transform .1s; font-family:inherit;
-}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.stat-cell{background:var(--surface-2);border-radius:9px;padding:8px 10px;display:flex;flex-direction:column;gap:1px;}
+.stat-cell span{font-size:.68rem;color:var(--text-3);}
+.stat-cell b{font-size:.95rem;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;}
+.progress-bar{height:6px;background:var(--surface-3);border-radius:4px;overflow:hidden;margin-top:5px;}
+.progress{height:100%;background:linear-gradient(90deg,var(--primary),#5dade2);border-radius:4px;transition:width .4s ease;}
+.allowance-detail,.ot-rate-detail{font-size:.7rem;color:var(--text-3);margin-top:4px;line-height:1.7;}
+.allowance-detail span,.ot-rate-detail span{display:inline-block;margin-right:6px;margin-bottom:2px;padding:1px 7px;background:var(--surface-2);border-radius:5px;border:1px solid var(--border);}
+.base-pay-hint{font-size:.68rem;color:var(--text-3);margin-top:3px;}
+.btn-row{display:flex;gap:6px;margin-top:10px;}
+.btn{background:var(--primary);color:#fff;border:none;padding:9px 14px;border-radius:9px;cursor:pointer;font-weight:600;font-size:.85rem;display:inline-flex;align-items:center;justify-content:center;gap:5px;transition:filter .15s,transform .1s;font-family:inherit;}
 .btn:hover{filter:brightness(1.07);}
 .btn:active{transform:scale(.97);}
 .btn-success{background:var(--secondary);}
 .btn-danger{background:var(--danger);}
-.btn-ghost{background:var(--surface-2); color:var(--text-2); border:1px solid var(--border); flex:1; font-size:.76rem; padding:8px 4px;}
-.btn-ghost:hover{background:var(--surface-3); color:var(--primary); border-color:var(--primary);}
+.btn-ghost{background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);flex:1;font-size:.76rem;padding:8px 4px;}
+.btn-ghost:hover{background:var(--surface-3);color:var(--primary);border-color:var(--primary);}
 .btn-block{width:100%;}
-
 .settings-group{margin-bottom:12px;}
-.settings-group label{display:block; margin-bottom:5px; font-weight:600; font-size:.82rem; color:var(--text-2);}
-.settings-group label i{color:var(--primary); margin-right:4px; width:14px;}
-.settings-group input,.settings-group select{
-  width:100%; padding:9px 10px; border:1px solid var(--border-strong); border-radius:9px;
-  font-size:.88rem; background:var(--surface); color:var(--text);
-  transition:border-color .15s, box-shadow .15s; font-family:inherit;
-}
-.settings-group input:focus,.settings-group select:focus{
-  outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(52,152,219,.13);
-}
-.settings-subtitle{font-size:.78rem; font-weight:700; color:var(--text-3); margin:16px 0 8px; text-transform:uppercase; letter-spacing:.5px;}
-.hint{display:block; font-size:.68rem; color:var(--text-3); margin-top:3px;}
-.checkbox-group{display:flex; align-items:center; gap:9px; margin-bottom:12px;}
-.checkbox-group input[type=checkbox]{width:18px; height:18px; accent-color:var(--primary); cursor:pointer; flex-shrink:0;}
-.checkbox-group label{cursor:pointer; font-size:.86rem; color:var(--text-2);}
-
-.allowance-item{
-  display:grid; grid-template-columns:1fr 92px 30px;
-  gap:6px; align-items:center; margin-bottom:6px;
-}
-.allowance-item input{
-  padding:7px 9px; border:1px solid var(--border-strong); border-radius:8px;
-  font-size:.85rem; background:var(--surface); color:var(--text);
-  font-family:inherit; min-width:0; width:100%;
-}
-.allowance-item input:focus{outline:none; border-color:var(--primary);}
-.allowance-del{
-  background:none; border:none; color:var(--text-3); cursor:pointer;
-  padding:6px; border-radius:6px; font-size:.85rem; transition:all .15s;
-}
-.allowance-del:hover{color:var(--danger); background:rgba(231,76,60,.1);}
-.allowance-empty{
-  font-size:.78rem; color:var(--text-3); text-align:center;
-  padding:8px; border:1px dashed var(--border-strong); border-radius:8px;
-  margin-bottom:8px;
-}
-.add-allowance-btn{
-  width:100%; background:var(--surface-2); border:1px dashed var(--border-strong);
-  padding:7px; border-radius:8px; cursor:pointer; font-size:.78rem;
-  color:var(--text-2); display:flex; align-items:center; justify-content:center;
-  gap:5px; font-family:inherit; transition:all .15s;
-}
-.add-allowance-btn:hover{background:var(--primary-soft); border-color:var(--primary); color:var(--primary);}
-
-.seg{display:flex; gap:6px; margin-bottom:14px;}
+.settings-group label{display:block;margin-bottom:5px;font-weight:600;font-size:.82rem;color:var(--text-2);}
+.settings-group label i{color:var(--primary);margin-right:4px;width:14px;}
+.settings-group input,.settings-group select{width:100%;padding:9px 10px;border:1px solid var(--border-strong);border-radius:9px;font-size:.88rem;background:var(--surface);color:var(--text);transition:border-color .15s,box-shadow .15s;font-family:inherit;}
+.settings-group input:focus,.settings-group select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(52,152,219,.13);}
+.settings-subtitle{font-size:.78rem;font-weight:700;color:var(--text-3);margin:16px 0 8px;text-transform:uppercase;letter-spacing:.5px;}
+.hint{display:block;font-size:.68rem;color:var(--text-3);margin-top:3px;}
+.checkbox-group{display:flex;align-items:center;gap:9px;margin-bottom:12px;}
+.checkbox-group input[type=checkbox]{width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0;}
+.checkbox-group label{cursor:pointer;font-size:.86rem;color:var(--text-2);}
+.allowance-item{display:grid;grid-template-columns:1fr 92px 30px;gap:6px;align-items:center;margin-bottom:6px;}
+.allowance-item input{padding:7px 9px;border:1px solid var(--border-strong);border-radius:8px;font-size:.85rem;background:var(--surface);color:var(--text);font-family:inherit;min-width:0;width:100%;}
+.allowance-item input:focus{outline:none;border-color:var(--primary);}
+.allowance-del{background:none;border:none;color:var(--text-3);cursor:pointer;padding:6px;border-radius:6px;font-size:.85rem;transition:all .15s;}
+.allowance-del:hover{color:var(--danger);background:rgba(231,76,60,.1);}
+.allowance-empty{font-size:.78rem;color:var(--text-3);text-align:center;padding:8px;border:1px dashed var(--border-strong);border-radius:8px;margin-bottom:8px;}
+.add-allowance-btn{width:100%;background:var(--surface-2);border:1px dashed var(--border-strong);padding:7px;border-radius:8px;cursor:pointer;font-size:.78rem;color:var(--text-2);display:flex;align-items:center;justify-content:center;gap:5px;font-family:inherit;transition:all .15s;}
+.add-allowance-btn:hover{background:var(--primary-soft);border-color:var(--primary);color:var(--primary);}
+.seg{display:flex;gap:6px;margin-bottom:14px;}
 .seg-sm{margin-bottom:10px;}
-.seg-btn{
-  flex:1; padding:9px 6px; border:1px solid var(--border-strong); border-radius:9px;
-  background:var(--surface); color:var(--text-2); cursor:pointer; font-weight:600;
-  font-size:.8rem; transition:all .15s; font-family:inherit; white-space:nowrap;
-  display:inline-flex; align-items:center; justify-content:center; gap:4px;
-}
-.seg-sm .seg-btn{font-size:.72rem; padding:7px 4px;}
-.seg-btn.active{background:var(--primary); color:#fff; border-color:var(--primary); box-shadow:0 2px 8px rgba(52,152,219,.25);}
-
-.modal{
-  display:none; position:fixed; inset:0; background:rgba(15,22,30,.5);
-  z-index:200; justify-content:center; align-items:center; padding:10px;
-  animation:fadeIn .15s ease; backdrop-filter:blur(2px);
-}
+.seg-btn{flex:1;padding:9px 6px;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface);color:var(--text-2);cursor:pointer;font-weight:600;font-size:.8rem;transition:all .15s;font-family:inherit;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:4px;}
+.seg-sm .seg-btn{font-size:.72rem;padding:7px 4px;}
+.seg-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 2px 8px rgba(52,152,219,.25);}
+.modal{display:none;position:fixed;inset:0;background:rgba(15,22,30,.5);z-index:200;justify-content:center;align-items:center;padding:10px;animation:fadeIn .15s ease;backdrop-filter:blur(2px);}
 .modal.open{display:flex;}
-.modal-content{
-  background:var(--surface); padding:18px; border-radius:16px; width:100%;
-  max-width:500px; box-shadow:var(--shadow-lg); max-height:92vh; overflow-y:auto;
-  animation:slideUp .2s cubic-bezier(.2,.9,.3,1);
-}
-@keyframes slideUp{from{transform:translateY(18px); opacity:0;} to{transform:translateY(0); opacity:1;}}
-.modal-header{
-  display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;
-  padding-bottom:10px; border-bottom:1px solid var(--border);
-}
-.modal-header h3{font-size:1.05rem; font-weight:700; color:var(--text);}
-.modal-header h3 i{color:var(--primary); margin-right:4px;}
-.close-btn{
-  background:none; border:none; font-size:1.6rem; cursor:pointer; color:var(--text-3);
-  line-height:1; padding:0 6px; border-radius:8px; transition:color .15s, background .15s;
-}
-.close-btn:hover{color:var(--danger); background:var(--surface-3);}
+.modal-content{background:var(--surface);padding:18px;border-radius:16px;width:100%;max-width:500px;box-shadow:var(--shadow-lg);max-height:92vh;overflow-y:auto;animation:slideUp .2s cubic-bezier(.2,.9,.3,1);}
+@keyframes slideUp{from{transform:translateY(18px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.modal-header h3{font-size:1.05rem;font-weight:700;color:var(--text);}
+.modal-header h3 i{color:var(--primary);margin-right:4px;}
+.close-btn{background:none;border:none;font-size:1.6rem;cursor:pointer;color:var(--text-3);line-height:1;padding:0 6px;border-radius:8px;transition:color .15s,background .15s;}
+.close-btn:hover{color:var(--danger);background:var(--surface-3);}
 .form-group{margin-bottom:12px;}
-.form-group label{display:block; margin-bottom:5px; font-weight:600; font-size:.82rem; color:var(--text-2);}
-.form-group label i{color:var(--primary); margin-right:4px; width:14px;}
-.form-group input{
-  width:100%; padding:9px 10px; border:1px solid var(--border-strong); border-radius:9px;
-  font-size:.9rem; background:var(--surface); color:var(--text);
-  transition:border-color .15s, box-shadow .15s; font-family:inherit;
-}
-.form-group input:focus{outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(52,152,219,.13);}
-.form-group input:read-only{background:var(--surface-3); color:var(--text-3);}
-.form-actions{display:flex; gap:8px; margin-top:16px;}
-.form-actions .btn{flex:1; padding:11px; font-size:.9rem;}
-.records-list{
-  margin-top:14px; max-height:220px; overflow-y:auto;
-  border:1px solid var(--border); border-radius:10px; padding:6px; background:var(--surface-2);
-}
+.form-group label{display:block;margin-bottom:5px;font-weight:600;font-size:.82rem;color:var(--text-2);}
+.form-group label i{color:var(--primary);margin-right:4px;width:14px;}
+.form-group input{width:100%;padding:9px 10px;border:1px solid var(--border-strong);border-radius:9px;font-size:.9rem;background:var(--surface);color:var(--text);transition:border-color .15s,box-shadow .15s;font-family:inherit;}
+.form-group input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(52,152,219,.13);}
+.form-group input:read-only{background:var(--surface-3);color:var(--text-3);}
+.form-actions{display:flex;gap:8px;margin-top:16px;}
+.form-actions .btn{flex:1;padding:11px;font-size:.9rem;}
+.records-list{margin-top:14px;max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:6px;background:var(--surface-2);}
 .records-list:empty{display:none;}
-.record-item{
-  display:flex; justify-content:space-between; align-items:center; gap:8px;
-  padding:8px 9px; border-radius:8px; transition:background .15s;
-}
+.record-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 9px;border-radius:8px;transition:background .15s;}
 .record-item:hover{background:var(--surface);}
-.record-info{display:flex; flex-direction:column; min-width:0; flex:1;}
-.record-type{font-weight:700; font-size:.82rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.record-details{font-size:.72rem; color:var(--text-3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.record-actions{display:flex; gap:2px; flex-shrink:0;}
-.record-action-btn{
-  background:none; border:none; cursor:pointer; color:var(--text-3); font-size:.85rem;
-  padding:6px 8px; border-radius:8px; transition:all .15s;
-}
-.record-action-btn:hover{color:var(--primary); background:var(--primary-soft);}
-.record-action-btn[data-action="delete"]:hover{color:var(--danger); background:rgba(231,76,60,.12);}
-.add-record-btn{
-  width:100%; margin-top:10px; background:var(--surface-2); border:1px dashed var(--border-strong);
-  padding:9px; border-radius:10px; cursor:pointer; display:flex; align-items:center;
-  justify-content:center; gap:6px; font-size:.82rem; color:var(--text-2);
-  transition:all .15s; font-family:inherit;
-}
-.add-record-btn:hover{background:var(--primary-soft); border-color:var(--primary); color:var(--primary);}
-.hint-text{font-size:.68rem; color:var(--text-3); text-align:center; margin-top:10px;}
-
-.toast-host{
-  position:fixed; top:16px; left:50%; transform:translateX(-50%);
-  z-index:1000; display:flex; flex-direction:column; gap:8px; align-items:center;
-  pointer-events:none; width:calc(100% - 24px); max-width:420px;
-}
-.toast{
-  background:var(--secondary); color:#fff; padding:10px 14px; border-radius:10px;
-  box-shadow:var(--shadow-lg); font-size:.85rem; display:flex; align-items:center; gap:10px;
-  animation:toastIn .22s cubic-bezier(.2,.9,.3,1); pointer-events:auto; max-width:100%;
-}
+.record-info{display:flex;flex-direction:column;min-width:0;flex:1;}
+.record-type{font-weight:700;font-size:.82rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.record-details{font-size:.72rem;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.record-actions{display:flex;gap:2px;flex-shrink:0;}
+.record-action-btn{background:none;border:none;cursor:pointer;color:var(--text-3);font-size:.85rem;padding:6px 8px;border-radius:8px;transition:all .15s;}
+.record-action-btn:hover{color:var(--primary);background:var(--primary-soft);}
+.record-action-btn[data-action="delete"]:hover{color:var(--danger);background:rgba(231,76,60,.12);}
+.add-record-btn{width:100%;margin-top:10px;background:var(--surface-2);border:1px dashed var(--border-strong);padding:9px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-size:.82rem;color:var(--text-2);transition:all .15s;font-family:inherit;}
+.add-record-btn:hover{background:var(--primary-soft);border-color:var(--primary);color:var(--primary);}
+.hint-text{font-size:.68rem;color:var(--text-3);text-align:center;margin-top:10px;}
+.toast-host{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:calc(100% - 24px);max-width:420px;}
+.toast{background:var(--secondary);color:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow-lg);font-size:.85rem;display:flex;align-items:center;gap:10px;animation:toastIn .22s cubic-bezier(.2,.9,.3,1);pointer-events:auto;max-width:100%;}
 .toast.error{background:var(--danger);}
 .toast.out{animation:toastOut .2s forwards;}
-.toast span{flex:1; min-width:0;}
-.toast-action{
-  background:rgba(255,255,255,.22); border:none; color:#fff; padding:5px 11px;
-  border-radius:7px; cursor:pointer; font-weight:700; font-size:.78rem;
-  font-family:inherit; transition:background .15s; white-space:nowrap;
-}
+.toast span{flex:1;min-width:0;}
+.toast-action{background:rgba(255,255,255,.22);border:none;color:#fff;padding:5px 11px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.78rem;font-family:inherit;transition:background .15s;white-space:nowrap;}
 .toast-action:hover{background:rgba(255,255,255,.36);}
-@keyframes toastIn{from{opacity:0; transform:translateY(-14px) scale(.96);} to{opacity:1; transform:translateY(0) scale(1);}}
-@keyframes toastOut{to{opacity:0; transform:translateY(-10px) scale(.97);}}
-
-.ctx-menu{
-  position:fixed; z-index:500; background:var(--surface); border-radius:11px;
-  box-shadow:var(--shadow-lg); border:1px solid var(--border); padding:5px;
-  min-width:170px; display:none; animation:fadeIn .12s ease;
-}
+@keyframes toastIn{from{opacity:0;transform:translateY(-14px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-10px) scale(.97);}}
+.ctx-menu{position:fixed;z-index:500;background:var(--surface);border-radius:11px;box-shadow:var(--shadow-lg);border:1px solid var(--border);padding:5px;min-width:170px;display:none;animation:fadeIn .12s ease;}
 .ctx-menu.open{display:block;}
-.ctx-item{
-  display:flex; align-items:center; gap:9px; width:100%; padding:9px 11px;
-  background:none; border:none; border-radius:8px; cursor:pointer; text-align:left;
-  font-size:.83rem; color:var(--text-2); font-family:inherit; transition:background .12s;
-}
-.ctx-item:hover{background:var(--surface-3); color:var(--text);}
-.ctx-item.danger:hover{background:rgba(231,76,60,.12); color:var(--danger);}
-.ctx-item i{width:14px; text-align:center; color:var(--text-3);}
+.ctx-item{display:flex;align-items:center;gap:9px;width:100%;padding:9px 11px;background:none;border:none;border-radius:8px;cursor:pointer;text-align:left;font-size:.83rem;color:var(--text-2);font-family:inherit;transition:background .12s;}
+.ctx-item:hover{background:var(--surface-3);color:var(--text);}
+.ctx-item.danger:hover{background:rgba(231,76,60,.12);color:var(--danger);}
+.ctx-item i{width:14px;text-align:center;color:var(--text-3);}
 .ctx-item:hover i{color:inherit;}
-.ctx-sep{height:1px; background:var(--border); margin:4px 6px;}
-
-@media (min-width:768px){
-  .container{max-width:760px; display:grid; grid-template-columns:1fr 320px; gap:14px; align-items:start;}
-  header{grid-column:1/-1;}
-  .calendar-section{margin-bottom:0;}
-  .sidebar{max-height:calc(100vh - 130px); overflow-y:auto; padding-right:2px;}
-}
-@media (max-width:480px){
-  .modal{padding:0;}
-  .modal-content{border-radius:0; max-height:100vh; height:100%; max-width:100%;}
-  .btn-ghost{font-size:.7rem;}
-}
-::-webkit-scrollbar{width:6px; height:6px;}
-::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:3px;}
+.ctx-sep{height:1px;background:var(--border);margin:4px 6px;}
+@media (min-width:768px){.container{max-width:760px;display:grid;grid-template-columns:1fr 320px;gap:14px;align-items:start;}header{grid-column:1/-1;}.calendar-section{margin-bottom:0;}.sidebar{max-height:calc(100vh - 130px);overflow-y:auto;padding-right:2px;}}
+@media (max-width:480px){.modal{padding:0;}.modal-content{border-radius:0;max-height:100vh;height:100%;max-width:100%;}.btn-ghost{font-size:.7rem;}}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px;}
 ::-webkit-scrollbar-track{background:transparent;}
 </style>
 </head>
@@ -436,7 +257,7 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
         <div class="settings-group">
           <label for="basic-hours-input"><i class="fas fa-clock"></i> 基础工时（小时/周期）</label>
           <input type="number" id="basic-hours-input" min="1" step="1">
-          <span class="hint">正常工时 + 法定加班工时 达到此数即发全额基础工资</span>
+          <span class="hint">正常 + 法定 达到此数 → 基础工资全额；未达到时按「正常工时 / 基础工时」比例发放。</span>
         </div>
         <div class="settings-group">
           <label for="basic-salary-input"><i class="fas fa-money-bill-wave"></i> 基础工资（元/周期）</label>
@@ -456,7 +277,7 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
         <div class="settings-group">
           <label for="ot-holiday-input"><i class="fas fa-umbrella-beach"></i> 法定节假日加班时薪（元/小时）</label>
           <input type="number" id="ot-holiday-input" min="0" step="0.01">
-          <span class="hint">法定节假日工时计入基础工时进度，加班费单独按此时薪计算。</span>
+          <span class="hint">法定工时计入基础工时达标判断，加班费按此时薪单独计算。</span>
         </div>
 
         <div class="settings-subtitle">额外补贴（每周期固定发放）</div>
@@ -584,1804 +405,506 @@ header p{font-size:.8rem; color:var(--text-3); margin-top:2px;}
 
 <script>
 'use strict';
-/* ============================================================
- * 常量与工具
- * ============================================================ */
-const SCHEMA_VERSION = 5;
-const LS_DATA = 'workData';
-const LS_SETTINGS = 'settings';
-const LS_VERSION = 'schemaVersion';
-const LS_THEME = 'theme';
-const APP_ID = 'worktime-tracker';
-
-const DEFAULT_SETTINGS = Object.freeze({
-  basicHours: 174,
-  basicSalary: 320000,
-  overtimeRate: 2155,
-  stationSalary: 2000,
-  otRateHoliday: 6465,
-  deductSocialSecurity: false,
-  socialSecurityAmount: 74000,
-  cycleStartDay: 1,
-  extraAllowances: []
-});
-
+const SCHEMA_VERSION = 6;
+const LS_DATA='workData', LS_SETTINGS='settings', LS_VERSION='schemaVersion', LS_THEME='theme', APP_ID='worktime-tracker';
+const DEFAULT_SETTINGS = Object.freeze({basicHours:174,basicSalary:320000,overtimeRate:2155,stationSalary:2000,otRateHoliday:6465,deductSocialSecurity:false,socialSecurityAmount:74000,cycleStartDay:1,extraAllowances:[]});
 const $ = id => document.getElementById(id);
-const pad2 = n => String(n).padStart(2, '0');
-const yuan2cent = v => Math.round((parseFloat(v) || 0) * 100);
-const cent2yuan = c => (c || 0) / 100;
-const fmtMoney = c => (Math.round(c || 0) / 100).toFixed(2);
-const fmtH = n => (Math.round((n || 0) * 100) / 100).toString();
-const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const pad2 = n => String(n).padStart(2,'0');
+const yuan2cent = v => Math.round((parseFloat(v)||0)*100);
+const cent2yuan = c => (c||0)/100;
+const fmtMoney = c => (Math.round(c||0)/100).toFixed(2);
+const fmtH = n => (Math.round((n||0)*100)/100).toString();
+const clamp = (v,a,b) => Math.min(b,Math.max(a,v));
+function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function formatDateKey(y,m,d){return `${y}-${pad2(m+1)}-${pad2(d)}`;}
+function parseDateKey(k){const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d);}
+function fmtDateShort(d){return `${d.getMonth()+1}月${d.getDate()}日`;}
+function eachDate(start,end,fn){const cur=new Date(start.getFullYear(),start.getMonth(),start.getDate());const stop=new Date(end.getFullYear(),end.getMonth(),end.getDate());let g=0;while(cur<=stop&&g++<400){fn(formatDateKey(cur.getFullYear(),cur.getMonth(),cur.getDate()),new Date(cur));cur.setDate(cur.getDate()+1);}}
+function getCycleRange(ref,startDay){const y=ref.getFullYear(),m=ref.getMonth(),d=ref.getDate();const sd=clamp(parseInt(startDay,10)||1,1,28);if(sd===1)return{start:new Date(y,m,1),end:new Date(y,m+1,0)};if(d>=sd)return{start:new Date(y,m,sd),end:new Date(y,m+1,sd-1)};return{start:new Date(y,m-1,sd),end:new Date(y,m,sd-1)};}
+function generateId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function roundRect(ctx,x,y,w,h,r){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 
-function escapeHtml(s) {
-  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[c]));
-}
+const state = {currentDate:new Date(),workData:{},settings:{...DEFAULT_SETTINGS,extraAllowances:[]},editing:{record:null,originalDateKey:null},pendingUndo:null,lastModalFocus:null,_lastDaily:[]};
 
-function formatDateKey(y, m, d) { return `${y}-${pad2(m + 1)}-${pad2(d)}`; }
-function parseDateKey(k) {
-  const [y, m, d] = k.split('-').map(Number);
-  return new Date(y, m - 1, d);
-}
-function fmtDateShort(d) { return `${d.getMonth() + 1}月${d.getDate()}日`; }
-
-function eachDate(start, end, fn) {
-  const cur = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-  const stop = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-  let guard = 0;
-  while (cur <= stop && guard++ < 400) {
-    fn(formatDateKey(cur.getFullYear(), cur.getMonth(), cur.getDate()), new Date(cur));
-    cur.setDate(cur.getDate() + 1);
-  }
-}
-
-function getCycleRange(ref, startDay) {
-  const y = ref.getFullYear(), m = ref.getMonth(), d = ref.getDate();
-  const sd = clamp(parseInt(startDay, 10) || 1, 1, 28);
-  if (sd === 1) return { start: new Date(y, m, 1), end: new Date(y, m + 1, 0) };
-  if (d >= sd) return { start: new Date(y, m, sd), end: new Date(y, m + 1, sd - 1) };
-  return { start: new Date(y, m - 1, sd), end: new Date(y, m, sd - 1) };
-}
-
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
-
-function roundRect(ctx, x, y, w, h, r) {
-  r = Math.min(r, w / 2, h / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
-
-/* ============================================================
- * 状态
- * ============================================================ */
-const state = {
-  currentDate: new Date(),
-  workData: {},
-  settings: { ...DEFAULT_SETTINGS, extraAllowances: [] },
-  editing: { record: null, originalDateKey: null },
-  pendingUndo: null,
-  lastModalFocus: null,
-  _lastDaily: []
-};
-
-/* ============================================================
- * DOM 引用
- * ============================================================ */
 const el = {
-  calendarSection: $('calendar-section'),
-  calendarGrid: $('calendar-grid'),
-  currentMonth: $('current-month'),
-  cycleBadge: $('cycle-badge'),
-  prevMonth: $('prev-month'),
-  nextMonth: $('next-month'),
-  todayBtn: $('today-btn'),
-  chart: $('chart'),
-  chartMax: $('chart-max'),
-
-  workModal: $('work-modal'),
-  closeModal: $('close-modal'),
-  saveWork: $('save-work'),
-  modalTitle: $('modal-title'),
-  workTypeSeg: $('work-type-seg'),
-  otSeg: $('ot-seg'),
-  otRateHint: $('ot-rate-hint'),
-  paymentSeg: $('payment-seg'),
-  normalBlock: $('normal-block'),
-  fieldBlock: $('field-block'),
-  workDate: $('work-date'),
-  workHours: $('work-hours'),
-  workDescription: $('work-description'),
-  isStation: $('is-station'),
-  stationHint: $('station-hint'),
-  fieldDescription: $('field-description'),
-  fieldHours: $('field-hours'),
-  fieldHoursGroup: $('field-hours-group'),
-  fieldRate: $('field-rate'),
-  fieldRateGroup: $('field-rate-group'),
-  fieldFixed: $('field-fixed'),
-  fieldFixedGroup: $('field-fixed-group'),
-  fieldTotal: $('field-total'),
-  recordsList: $('records-list'),
-  addRecord: $('add-record'),
-
-  basicHoursInput: $('basic-hours-input'),
-  basicSalaryInput: $('basic-salary-input'),
-  overtimeRateInput: $('overtime-rate-input'),
-  stationSalaryInput: $('station-salary-input'),
-  otHolidayInput: $('ot-holiday-input'),
-  cycleStartInput: $('cycle-start-input'),
-  deductSocialSecurity: $('deduct-social-security'),
-  socialSecurityInput: $('social-security-input'),
-  socialSecurityAmountGroup: $('social-security-amount-group'),
-  themeSelect: $('theme-select'),
-  saveSettings: $('save-settings'),
-  clearData: $('clear-data'),
-
-  allowanceList: $('allowance-list'),
-  addAllowance: $('add-allowance'),
-  allowanceItem: $('allowance-item'),
-  allowanceTotal: $('allowance-total'),
-  allowanceDetail: $('allowance-detail'),
-
-  basePay: $('base-pay'),
-  basePayHint: $('base-pay-hint'),
-  basePayFormula: $('base-pay-formula'),
-  regularOtItem: $('regular-ot-item'),
-  regularOtPay: $('regular-ot-pay'),
-  regularOtDetail: $('regular-ot-detail'),
-  otPayItem: $('ot-pay-item'),
-  otPay: $('ot-pay'),
-  otRateDetail: $('ot-rate-detail'),
-  stationItem: $('station-item'),
-  stationDetail: $('station-detail'),
-  fieldItem: $('field-item'),
-  fieldPay: $('field-pay'),
-  fieldDetail: $('field-detail'),
-
-  basicHours: $('basic-hours'),
-  basicHoursPercent: $('basic-hours-percent'),
-  basicHoursProgress: $('basic-hours-progress'),
-  normalHours: $('normal-hours'),
-  otHours: $('ot-hours'),
-  otOverHours: $('ot-over-hours'),
-  fieldHours: $('field-hours'),
-  stationCount: $('station-count'),
-  fieldSalary: $('field-salary'),
-  stationSalary: $('station-salary'),
-  socialSecurityItem: $('social-security-item'),
-  socialSecurityDeduction: $('social-security-deduction'),
-  totalSalary: $('total-salary'),
-  cycleLine: $('cycle-line'),
-
-  tabs: document.querySelectorAll('.tab'),
-  tabContents: document.querySelectorAll('.tab-content'),
-  exportData: $('export-data'),
-  exportJson: $('export-json'),
-  importJson: $('import-json'),
-  importFile: $('import-file'),
-  toastHost: $('toast-host'),
-  ctxMenu: $('ctx-menu')
+  calendarSection:$('calendar-section'),calendarGrid:$('calendar-grid'),currentMonth:$('current-month'),cycleBadge:$('cycle-badge'),prevMonth:$('prev-month'),nextMonth:$('next-month'),todayBtn:$('today-btn'),chart:$('chart'),chartMax:$('chart-max'),
+  workModal:$('work-modal'),closeModal:$('close-modal'),saveWork:$('save-work'),modalTitle:$('modal-title'),workTypeSeg:$('work-type-seg'),otSeg:$('ot-seg'),otRateHint:$('ot-rate-hint'),paymentSeg:$('payment-seg'),normalBlock:$('normal-block'),fieldBlock:$('field-block'),workDate:$('work-date'),workHours:$('work-hours'),workDescription:$('work-description'),isStation:$('is-station'),stationHint:$('station-hint'),fieldDescription:$('field-description'),fieldHours:$('field-hours'),fieldHoursGroup:$('field-hours-group'),fieldRate:$('field-rate'),fieldRateGroup:$('field-rate-group'),fieldFixed:$('field-fixed'),fieldFixedGroup:$('field-fixed-group'),fieldTotal:$('field-total'),recordsList:$('records-list'),addRecord:$('add-record'),
+  basicHoursInput:$('basic-hours-input'),basicSalaryInput:$('basic-salary-input'),overtimeRateInput:$('overtime-rate-input'),stationSalaryInput:$('station-salary-input'),otHolidayInput:$('ot-holiday-input'),cycleStartInput:$('cycle-start-input'),deductSocialSecurity:$('deduct-social-security'),socialSecurityInput:$('social-security-input'),socialSecurityAmountGroup:$('social-security-amount-group'),themeSelect:$('theme-select'),saveSettings:$('save-settings'),clearData:$('clear-data'),
+  allowanceList:$('allowance-list'),addAllowance:$('add-allowance'),allowanceItem:$('allowance-item'),allowanceTotal:$('allowance-total'),allowanceDetail:$('allowance-detail'),
+  basePay:$('base-pay'),basePayHint:$('base-pay-hint'),basePayFormula:$('base-pay-formula'),regularOtItem:$('regular-ot-item'),regularOtPay:$('regular-ot-pay'),regularOtDetail:$('regular-ot-detail'),otPayItem:$('ot-pay-item'),otPay:$('ot-pay'),otRateDetail:$('ot-rate-detail'),stationItem:$('station-item'),stationDetail:$('station-detail'),fieldItem:$('field-item'),fieldPay:$('field-pay'),fieldDetail:$('field-detail'),
+  basicHours:$('basic-hours'),basicHoursPercent:$('basic-hours-percent'),basicHoursProgress:$('basic-hours-progress'),normalHours:$('normal-hours'),otHours:$('ot-hours'),otOverHours:$('ot-over-hours'),fieldHours:$('field-hours'),stationCount:$('station-count'),fieldSalary:$('field-salary'),stationSalary:$('station-salary'),socialSecurityItem:$('social-security-item'),socialSecurityDeduction:$('social-security-deduction'),totalSalary:$('total-salary'),cycleLine:$('cycle-line'),
+  tabs:document.querySelectorAll('.tab'),tabContents:document.querySelectorAll('.tab-content'),exportData:$('export-data'),exportJson:$('export-json'),importJson:$('import-json'),importFile:$('import-file'),toastHost:$('toast-host'),ctxMenu:$('ctx-menu')
 };
 
-/* ============================================================
- * Toast
- * ============================================================ */
-function showToast(msg, opts = {}) {
-  const { type = 'success', action = null, duration = 2400 } = opts;
-  const node = document.createElement('div');
-  node.className = 'toast' + (type === 'error' ? ' error' : '');
-  const span = document.createElement('span');
-  span.textContent = msg;
-  node.appendChild(span);
+function showToast(msg,opts={}){const{type='success',action=null,duration=2400}=opts;const node=document.createElement('div');node.className='toast'+(type==='error'?' error':'');const span=document.createElement('span');span.textContent=msg;node.appendChild(span);let timer=null;function remove(){if(timer)clearTimeout(timer);if(!node.parentNode)return;node.classList.add('out');setTimeout(()=>node.remove(),200);}if(action){const btn=document.createElement('button');btn.className='toast-action';btn.textContent=action.label;btn.addEventListener('click',()=>{remove();action.onClick();});node.appendChild(btn);}el.toastHost.appendChild(node);timer=setTimeout(remove,duration);return{remove};}
+function applyTheme(){const saved=localStorage.getItem(LS_THEME)||'auto';let actual=saved;if(saved==='auto'){actual=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.dataset.theme=actual;if(el.themeSelect)el.themeSelect.value=saved;requestAnimationFrame(()=>drawChart(state._lastDaily||[]));}
 
-  let timer = null;
-  function remove() {
-    if (timer) clearTimeout(timer);
-    if (!node.parentNode) return;
-    node.classList.add('out');
-    setTimeout(() => node.remove(), 200);
-  }
+function normalizeSettings(raw){const out={...DEFAULT_SETTINGS,extraAllowances:[]};if(raw&&typeof raw==='object'){for(const k in out){if(Object.prototype.hasOwnProperty.call(raw,k)&&raw[k]!==undefined&&raw[k]!==null){out[k]=raw[k];}}}if(raw&&typeof raw==='object'&&raw.otRateHoliday===undefined){const baseRate=Math.max(0,Math.round(Number(raw.overtimeRate)||out.overtimeRate));if(raw.otMultHoliday!==undefined){const ho=Number(raw.otMultHoliday);out.otRateHoliday=Math.round(baseRate*(isFinite(ho)&&ho>0?ho:3));}else if(raw.otRateWeekend!==undefined){out.otRateHoliday=Math.max(0,Math.round(Number(raw.otRateWeekend)||out.otRateHoliday));}}out.basicHours=Math.max(1,Number(out.basicHours)||174);out.basicSalary=Math.max(0,Math.round(Number(out.basicSalary)||0));out.overtimeRate=Math.max(0,Math.round(Number(out.overtimeRate)||0));out.stationSalary=Math.max(0,Math.round(Number(out.stationSalary)||0));out.otRateHoliday=Math.max(0,Math.round(Number(out.otRateHoliday)||0));out.socialSecurityAmount=Math.max(0,Math.round(Number(out.socialSecurityAmount)||0));out.deductSocialSecurity=!!out.deductSocialSecurity;out.cycleStartDay=clamp(parseInt(out.cycleStartDay,10)||1,1,28);out.extraAllowances=Array.isArray(out.extraAllowances)?out.extraAllowances.filter(a=>a&&typeof a==='object').map(a=>({id:String(a.id||generateId()),name:String(a.name||'').slice(0,20),amount:Math.max(0,Math.round(Number(a.amount)||0))})):[];return out;}
+function sanitizeRecordOt(rec){if(rec&&rec.type==='normal'){if(rec.ot!=='holiday')rec.ot='none';}return rec;}
+function migrateRecordV1toV2(r){const rec={...r};if(rec.type==='normal'){if(typeof rec.stationSalary==='number')rec.stationSalary=Math.round(rec.stationSalary*100);else rec.stationSalary=0;if(!rec.ot)rec.ot='none';}else{if(typeof rec.rate==='number')rec.rate=Math.round(rec.rate*100);if(typeof rec.fixed==='number')rec.fixed=Math.round(rec.fixed*100);if(typeof rec.total==='number')rec.total=Math.round(rec.total*100);}if(!rec.id)rec.id=generateId();return rec;}
+function migrateSettingsV1toV2(s){const out={...s};['basicSalary','overtimeRate','stationSalary','socialSecurityAmount'].forEach(k=>{if(typeof out[k]==='number')out[k]=Math.round(out[k]*100);});return out;}
 
-  if (action) {
-    const btn = document.createElement('button');
-    btn.className = 'toast-action';
-    btn.textContent = action.label;
-    btn.addEventListener('click', () => { remove(); action.onClick(); });
-    node.appendChild(btn);
-  }
-  el.toastHost.appendChild(node);
-  timer = setTimeout(remove, duration);
-  return { remove };
-}
+function loadState(){let version=1;try{version=parseInt(localStorage.getItem(LS_VERSION)||'1',10)||1;}catch(e){}let workData={};let settings={...DEFAULT_SETTINGS,extraAllowances:[]};try{const rawWD=localStorage.getItem(LS_DATA);if(rawWD)workData=JSON.parse(rawWD)||{};if(!workData||typeof workData!=='object')workData={};}catch(e){workData={};}try{const rawS=localStorage.getItem(LS_SETTINGS);if(rawS){let parsed=JSON.parse(rawS)||{};if(version<2)parsed=migrateSettingsV1toV2(parsed);settings=normalizeSettings(parsed);}}catch(e){settings=normalizeSettings({});}for(const dk in workData){if(!Array.isArray(workData[dk])){delete workData[dk];continue;}workData[dk]=workData[dk].map(r=>version<2?migrateRecordV1toV2(r):r).map(sanitizeRecordOt);}state.workData=workData;state.settings=settings;saveState();}
+function saveState(){try{localStorage.setItem(LS_DATA,JSON.stringify(state.workData));localStorage.setItem(LS_SETTINGS,JSON.stringify(state.settings));localStorage.setItem(LS_VERSION,String(SCHEMA_VERSION));}catch(e){showToast('保存失败，请检查存储权限',{type:'error'});}}
 
-/* ============================================================
- * 主题
- * ============================================================ */
-function applyTheme() {
-  const saved = localStorage.getItem(LS_THEME) || 'auto';
-  let actual = saved;
-  if (saved === 'auto') {
-    actual = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-  document.documentElement.dataset.theme = actual;
-  if (el.themeSelect) el.themeSelect.value = saved;
-  requestAnimationFrame(() => drawChart(state._lastDaily || []));
-}
-
-/* ============================================================
- * 数据加载 / 保存 / 迁移
- * ============================================================ */
-function normalizeSettings(raw) {
-  const out = { ...DEFAULT_SETTINGS, extraAllowances: [] };
-  if (raw && typeof raw === 'object') {
-    for (const k in out) {
-      if (Object.prototype.hasOwnProperty.call(raw, k) && raw[k] !== undefined && raw[k] !== null) {
-        out[k] = raw[k];
-      }
-    }
-  }
-  if (raw && typeof raw === 'object' && raw.otRateHoliday === undefined) {
-    const baseRate = Math.max(0, Math.round(Number(raw.overtimeRate) || out.overtimeRate));
-    if (raw.otMultHoliday !== undefined) {
-      const ho = Number(raw.otMultHoliday);
-      out.otRateHoliday = Math.round(baseRate * (isFinite(ho) && ho > 0 ? ho : 3));
-    } else if (raw.otRateWeekend !== undefined) {
-      out.otRateHoliday = Math.max(0, Math.round(Number(raw.otRateWeekend) || out.otRateHoliday));
-    }
-  }
-  out.basicHours = Math.max(1, Number(out.basicHours) || 174);
-  out.basicSalary = Math.max(0, Math.round(Number(out.basicSalary) || 0));
-  out.overtimeRate = Math.max(0, Math.round(Number(out.overtimeRate) || 0));
-  out.stationSalary = Math.max(0, Math.round(Number(out.stationSalary) || 0));
-  out.otRateHoliday = Math.max(0, Math.round(Number(out.otRateHoliday) || 0));
-  out.socialSecurityAmount = Math.max(0, Math.round(Number(out.socialSecurityAmount) || 0));
-  out.deductSocialSecurity = !!out.deductSocialSecurity;
-  out.cycleStartDay = clamp(parseInt(out.cycleStartDay, 10) || 1, 1, 28);
-  out.extraAllowances = Array.isArray(out.extraAllowances)
-    ? out.extraAllowances.filter(a => a && typeof a === 'object').map(a => ({
-        id: String(a.id || generateId()),
-        name: String(a.name || '').slice(0, 20),
-        amount: Math.max(0, Math.round(Number(a.amount) || 0))
-      }))
-    : [];
-  return out;
-}
-
-function sanitizeRecordOt(rec) {
-  if (rec && rec.type === 'normal') {
-    if (rec.ot !== 'holiday') rec.ot = 'none';
-  }
-  return rec;
-}
-
-function migrateRecordV1toV2(r) {
-  const rec = { ...r };
-  if (rec.type === 'normal') {
-    if (typeof rec.stationSalary === 'number') rec.stationSalary = Math.round(rec.stationSalary * 100);
-    else rec.stationSalary = 0;
-    if (!rec.ot) rec.ot = 'none';
-  } else {
-    if (typeof rec.rate === 'number') rec.rate = Math.round(rec.rate * 100);
-    if (typeof rec.fixed === 'number') rec.fixed = Math.round(rec.fixed * 100);
-    if (typeof rec.total === 'number') rec.total = Math.round(rec.total * 100);
-  }
-  if (!rec.id) rec.id = generateId();
-  return rec;
-}
-
-function migrateSettingsV1toV2(s) {
-  const out = { ...s };
-  ['basicSalary', 'overtimeRate', 'stationSalary', 'socialSecurityAmount'].forEach(k => {
-    if (typeof out[k] === 'number') out[k] = Math.round(out[k] * 100);
-  });
-  return out;
-}
-
-function loadState() {
-  let version = 1;
-  try { version = parseInt(localStorage.getItem(LS_VERSION) || '1', 10) || 1; } catch (e) {}
-  let workData = {};
-  let settings = { ...DEFAULT_SETTINGS, extraAllowances: [] };
-  try {
-    const rawWD = localStorage.getItem(LS_DATA);
-    if (rawWD) workData = JSON.parse(rawWD) || {};
-    if (!workData || typeof workData !== 'object') workData = {};
-  } catch (e) { workData = {}; }
-  try {
-    const rawS = localStorage.getItem(LS_SETTINGS);
-    if (rawS) {
-      let parsed = JSON.parse(rawS) || {};
-      if (version < 2) parsed = migrateSettingsV1toV2(parsed);
-      settings = normalizeSettings(parsed);
-    }
-  } catch (e) { settings = normalizeSettings({}); }
-  for (const dk in workData) {
-    if (!Array.isArray(workData[dk])) { delete workData[dk]; continue; }
-    workData[dk] = workData[dk]
-      .map(r => version < 2 ? migrateRecordV1toV2(r) : r)
-      .map(sanitizeRecordOt);
-  }
-  state.workData = workData;
-  state.settings = settings;
-  saveState();
-}
-
-function saveState() {
-  try {
-    localStorage.setItem(LS_DATA, JSON.stringify(state.workData));
-    localStorage.setItem(LS_SETTINGS, JSON.stringify(state.settings));
-    localStorage.setItem(LS_VERSION, String(SCHEMA_VERSION));
-  } catch (e) {
-    showToast('保存失败，请检查存储权限', { type: 'error' });
-  }
-}
-
-/* ============================================================
- * 日历渲染
- * ============================================================ */
-function renderCalendar() {
-  el.calendarGrid.innerHTML = '';
-  const monthNames = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
-  const year = state.currentDate.getFullYear();
-  const month = state.currentDate.getMonth();
-  el.currentMonth.textContent = `${year}年 ${monthNames[month]}`;
-  const range = getCycleRange(state.currentDate, state.settings.cycleStartDay);
-  el.cycleBadge.textContent = `统计周期：${fmtDateShort(range.start)} — ${fmtDateShort(range.end)}`;
-  ['日','一','二','三','四','五','六'].forEach(d => {
-    const n = document.createElement('div');
-    n.className = 'weekday-header';
-    n.setAttribute('role', 'columnheader');
-    n.textContent = d;
-    el.calendarGrid.appendChild(n);
-  });
-  const firstDay = new Date(year, month, 1);
-  const lastDate = new Date(year, month + 1, 0);
-  const firstDayOfWeek = firstDay.getDay();
-  const prevLast = new Date(year, month, 0).getDate();
-  for (let i = firstDayOfWeek - 1; i >= 0; i--) {
-    el.calendarGrid.appendChild(createDayElement(prevLast - i, true, year, month));
-  }
-  for (let i = 1; i <= lastDate.getDate(); i++) {
-    el.calendarGrid.appendChild(createDayElement(i, false, year, month));
-  }
-  const totalCells = 42;
-  const remaining = totalCells - (firstDayOfWeek + lastDate.getDate());
-  for (let i = 1; i <= remaining; i++) {
-    el.calendarGrid.appendChild(createDayElement(i, true, year, month));
-  }
-}
-
-function createDayElement(day, isOtherMonth, year, month) {
-  const node = document.createElement('div');
-  node.className = 'calendar-day';
-  if (isOtherMonth) node.classList.add('other-month');
-  const today = new Date();
-  const isToday = !isOtherMonth && day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-  if (isToday) node.classList.add('today');
-  const dayNumber = document.createElement('div');
-  dayNumber.className = 'day-number';
-  dayNumber.textContent = day;
-  node.appendChild(dayNumber);
-  const workInfo = document.createElement('div');
-  workInfo.className = 'work-info';
-  if (!isOtherMonth) {
-    const dateKey = formatDateKey(year, month, day);
-    const records = state.workData[dateKey];
-    if (records && records.length > 0) {
-      node.classList.add('has-records');
-      const normalH = records.filter(r => r.type === 'normal').reduce((s, r) => s + (r.hours || 0), 0);
-      const hasStation = records.some(r => r.type === 'normal' && r.isStation);
-      const items = [];
-      if (normalH > 0) items.push({ cls: 'normal-work', text: `${fmtH(normalH)}H` });
-      if (hasStation) items.push({ cls: 'normal-work-station', text: '驻站' });
-      records.filter(r => r.type === 'field').forEach(r => {
-        if (r.paymentType === 'hourly') items.push({ cls: 'field-hourly', text: `${fmtH(r.hours)}H` });
-        else items.push({ cls: 'field-fixed', text: `${fmtMoney(r.total)}元` });
-      });
-      items.slice(0, 2).forEach(it => {
-        const p = document.createElement('p');
-        p.className = it.cls;
-        p.textContent = it.text;
-        workInfo.appendChild(p);
-      });
-      if (items.length > 2) {
-        const m = document.createElement('p');
-        m.className = 'more-indicator';
-        m.textContent = `+${items.length - 2}`;
-        workInfo.appendChild(m);
-      }
-      node.setAttribute('aria-label', `${month + 1}月${day}日，${records.length}条记录，工时${fmtH(normalH)}小时`);
-    } else {
-      node.setAttribute('aria-label', `${month + 1}月${day}日，无记录`);
-    }
-    node.dataset.datekey = dateKey;
-    node.setAttribute('role', 'gridcell');
-    node.setAttribute('tabindex', '0');
-  }
-  node.appendChild(workInfo);
-  return node;
-}
+function renderCalendar(){el.calendarGrid.innerHTML='';const monthNames=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];const year=state.currentDate.getFullYear();const month=state.currentDate.getMonth();el.currentMonth.textContent=`${year}年 ${monthNames[month]}`;const range=getCycleRange(state.currentDate,state.settings.cycleStartDay);el.cycleBadge.textContent=`统计周期：${fmtDateShort(range.start)} — ${fmtDateShort(range.end)}`;['日','一','二','三','四','五','六'].forEach(d=>{const n=document.createElement('div');n.className='weekday-header';n.setAttribute('role','columnheader');n.textContent=d;el.calendarGrid.appendChild(n);});const firstDay=new Date(year,month,1);const lastDate=new Date(year,month+1,0);const firstDayOfWeek=firstDay.getDay();const prevLast=new Date(year,month,0).getDate();for(let i=firstDayOfWeek-1;i>=0;i--){el.calendarGrid.appendChild(createDayElement(prevLast-i,true,year,month));}for(let i=1;i<=lastDate.getDate();i++){el.calendarGrid.appendChild(createDayElement(i,false,year,month));}const totalCells=42;const remaining=totalCells-(firstDayOfWeek+lastDate.getDate());for(let i=1;i<=remaining;i++){el.calendarGrid.appendChild(createDayElement(i,true,year,month));}}
+function createDayElement(day,isOtherMonth,year,month){const node=document.createElement('div');node.className='calendar-day';if(isOtherMonth)node.classList.add('other-month');const today=new Date();const isToday=!isOtherMonth&&day===today.getDate()&&month===today.getMonth()&&year===today.getFullYear();if(isToday)node.classList.add('today');const dayNumber=document.createElement('div');dayNumber.className='day-number';dayNumber.textContent=day;node.appendChild(dayNumber);const workInfo=document.createElement('div');workInfo.className='work-info';if(!isOtherMonth){const dateKey=formatDateKey(year,month,day);const records=state.workData[dateKey];if(records&&records.length>0){node.classList.add('has-records');const normalH=records.filter(r=>r.type==='normal').reduce((s,r)=>s+(r.hours||0),0);const hasStation=records.some(r=>r.type==='normal'&&r.isStation);const items=[];if(normalH>0)items.push({cls:'normal-work',text:`${fmtH(normalH)}H`});if(hasStation)items.push({cls:'normal-work-station',text:'驻站'});records.filter(r=>r.type==='field').forEach(r=>{if(r.paymentType==='hourly')items.push({cls:'field-hourly',text:`${fmtH(r.hours)}H`});else items.push({cls:'field-fixed',text:`${fmtMoney(r.total)}元`});});items.slice(0,2).forEach(it=>{const p=document.createElement('p');p.className=it.cls;p.textContent=it.text;workInfo.appendChild(p);});if(items.length>2){const m=document.createElement('p');m.className='more-indicator';m.textContent=`+${items.length-2}`;workInfo.appendChild(m);}node.setAttribute('aria-label',`${month+1}月${day}日，${records.length}条记录，工时${fmtH(normalH)}小时`);}else{node.setAttribute('aria-label',`${month+1}月${day}日，无记录`);}node.dataset.datekey=dateKey;node.setAttribute('role','gridcell');node.setAttribute('tabindex','0');}node.appendChild(workInfo);return node;}
 
 /* ============================================================
  * 统计与工资计算（核心逻辑）
  * ============================================================
- * 用户确认的口径：
- * 1. 基础工时判断 = 正常工时 + 法定加班工时，达到基础工时 → 全额基础工资；
- *    未达到 → 基础工资 × (合计 ÷ 基础工时)
- * 2. 超时加班 = max(0, 正常工时 − 基础工时) × 超时加班时薪
- *    （只算正常工时超出部分，法定加班工时不计入）
- * 3. 法定加班 = 法定加班工时 × 法定节假日加班时薪（单独计算，不参与超时）
- * 4. 外勤独立：工时不计入基础工时，工资直接累加
- * 5. 驻站独立累加；额外补贴独立累加
+ * 1. 基础工资达标判断：正常 + 法定 ≥ 基础工时 → 全额
+ * 2. 基础工资未达标：基础工资 × (正常工时 / 基础工时)  ← 只用正常工时
+ * 3. 超时加班 = max(0, 正常工时 − 基础工时) × 超时薪
+ * 4. 法定加班 = 法定工时 × 法定薪（独立累加）
+ * 5. 外勤 / 驻站 / 补贴独立累加
  * 6. 实发 = 应发 − 社保
  * ============================================================ */
-function computeStats() {
-  const s = state.settings;
-  const range = getCycleRange(state.currentDate, s.cycleStartDay);
-
-  let normalHours = 0;    // 正常工时（不含法定加班）
-  let otHoliday = 0;      // 法定加班工时
-  let stationCount = 0;   // 驻站次数
-  let stationPay = 0;     // 驻站补贴累计
-  let fieldPay = 0;       // 外勤工资累计
-  let fieldHoursTotal = 0;// 外勤工时合计（仅统计按时薪的记录）
-  const daily = [];
-
-  eachDate(range.start, range.end, (key) => {
-    const recs = state.workData[key];
-    let dayH = 0;
-    if (recs) {
-      recs.forEach(r => {
-        if (r.type === 'normal') {
-          const h = r.hours || 0;
-          dayH += h;
-          if (r.ot === 'holiday') otHoliday += h;
-          else normalHours += h;
-          if (r.isStation) { stationPay += r.stationSalary || 0; stationCount++; }
-        } else {
-          fieldPay += r.total || 0;
-          if (r.paymentType === 'hourly') {
-            fieldHoursTotal += r.hours || 0;
-            dayH += r.hours || 0;
-          }
-        }
-      });
-    }
-    daily.push({ key, hours: dayH });
+function computeStats(){
+  const s=state.settings;
+  const range=getCycleRange(state.currentDate,s.cycleStartDay);
+  let normalHours=0,otHoliday=0,stationCount=0,stationPay=0,fieldPay=0,fieldHoursTotal=0;
+  const daily=[];
+  eachDate(range.start,range.end,key=>{
+    const recs=state.workData[key];let dayH=0;
+    if(recs){recs.forEach(r=>{
+      if(r.type==='normal'){const h=r.hours||0;dayH+=h;if(r.ot==='holiday')otHoliday+=h;else normalHours+=h;if(r.isStation){stationPay+=r.stationSalary||0;stationCount++;}}
+      else{fieldPay+=r.total||0;if(r.paymentType==='hourly'){fieldHoursTotal+=r.hours||0;dayH+=r.hours||0;}}
+    });}
+    daily.push({key,hours:dayH});
   });
-
-  const basicHours = s.basicHours;
-  const basicSalary = s.basicSalary;
-
-  // ============ 1. 基础工时判断：正常 + 法定 ============
-  const hoursForBase = normalHours + otHoliday; // 计入基础工时判断的总时长
-  let basePay = 0;
-  let basePayRatio = 0;
-  if (basicHours > 0) {
-    basePayRatio = Math.min(1, hoursForBase / basicHours);
-    basePay = Math.round(basicSalary * basePayRatio);
+  const basicHours=s.basicHours;
+  const basicSalary=s.basicSalary;
+  const hoursForBase=normalHours+otHoliday;
+  const basePayFull=hoursForBase>=basicHours;
+  let basePay=0,basePayRatio=0;
+  if(basicHours>0){
+    if(basePayFull){basePayRatio=1;basePay=basicSalary;}
+    else{basePayRatio=normalHours/basicHours;basePay=Math.round(basicSalary*basePayRatio);}
   }
-  const basePayFull = hoursForBase >= basicHours;
-
-  // ============ 2. 超时加班：只算正常工时超出基础工时的部分 ============
-  const overtimeHours = Math.max(0, normalHours - basicHours);
-  const regularOTPay = Math.round(overtimeHours * s.overtimeRate);
-
-  // ============ 3. 法定加班：单独计算 ============
-  const otHolidayPay = Math.round(otHoliday * s.otRateHoliday);
-
-  // ============ 4. 额外补贴：每周期固定累加 ============
-  const allowances = (s.extraAllowances || []).filter(a => a.name || a.amount > 0);
-  const allowanceTotal = allowances.reduce((sum, a) => sum + (a.amount || 0), 0);
-
-  // ============ 5. 社保扣除 ============
-  const social = s.deductSocialSecurity ? s.socialSecurityAmount : 0;
-
-  // ============ 6. 应发与实发 ============
-  const gross = basePay + regularOTPay + otHolidayPay + stationPay + fieldPay + allowanceTotal;
-  const net = Math.max(0, gross - social);
-
-  // 总工时（用于显示，含法定加班）
-  const totalHours = normalHours + otHoliday;
-
-  return {
-    range, daily,
-    normalHours, otHoliday, totalHours,
-    overtimeHours,           // 超时工时（正常工时超出部分）
-    fieldHoursTotal,         // 外勤工时合计
-    stationPay, stationCount, fieldPay,
-    basePay, basePayRatio, basePayFull, hoursForBase,
-    regularOTPay, otHolidayPay,
-    social, allowanceTotal, allowances,
-    gross, net
-  };
+  const overtimeHours=Math.max(0,normalHours-basicHours);
+  const regularOTPay=Math.round(overtimeHours*s.overtimeRate);
+  const otHolidayPay=Math.round(otHoliday*s.otRateHoliday);
+  const allowances=(s.extraAllowances||[]).filter(a=>a.name||a.amount>0);
+  const allowanceTotal=allowances.reduce((sum,a)=>sum+(a.amount||0),0);
+  const social=s.deductSocialSecurity?s.socialSecurityAmount:0;
+  const gross=basePay+regularOTPay+otHolidayPay+stationPay+fieldPay+allowanceTotal;
+  const net=Math.max(0,gross-social);
+  const totalHours=normalHours+otHoliday;
+  return{range,daily,normalHours,otHoliday,totalHours,hoursForBase,overtimeHours,fieldHoursTotal,stationPay,stationCount,fieldPay,basePay,basePayRatio,basePayFull,regularOTPay,otHolidayPay,social,allowanceTotal,allowances,gross,net};
 }
 
-function updateStats() {
-  const s = computeStats();
-  state._lastDaily = s.daily;
-
-  const basicHours = state.settings.basicHours;
-  const pct = basicHours > 0 ? Math.min(100, Math.round((s.hoursForBase / basicHours) * 100)) : 0;
-
-  // 基础工时进度（正常 + 法定）
-  el.basicHours.textContent = `${fmtH(s.hoursForBase)} / ${basicHours} 小时`;
-  el.basicHoursPercent.textContent = `${pct}%`;
-  el.basicHoursProgress.style.width = `${pct}%`;
-  el.basePayHint.textContent = s.basePayFull
-    ? '✅ 已达基础工时，基础工资全额发放'
-    : `⚠️ 未达基础工时，按 ${(s.basePayRatio * 100).toFixed(1)}% 比例发放`;
-
-  // 统计格子
-  el.normalHours.textContent = fmtH(s.normalHours);
-  el.otHours.textContent = fmtH(s.otHoliday);
-  el.otOverHours.textContent = fmtH(s.overtimeHours);
-  el.fieldHours.textContent = fmtH(s.fieldHoursTotal);
-
-  // 基础工资明细
-  el.basePay.textContent = `${fmtMoney(s.basePay)} 元`;
-  if (s.basePayFull) {
-    el.basePayFormula.textContent = `基础工资全额（合计 ${fmtH(s.hoursForBase)} ≥ ${basicHours} 小时）`;
-  } else {
-    el.basePayFormula.textContent = `基础工资 × ${fmtH(s.hoursForBase)} / ${basicHours} = ${fmtMoney(s.basePay)} 元`;
+function updateStats(){
+  const s=computeStats();
+  state._lastDaily=s.daily;
+  const basicHours=state.settings.basicHours;
+  const pct=basicHours>0?Math.min(100,Math.round((s.hoursForBase/basicHours)*100)):0;
+  el.basicHours.textContent=`${fmtH(s.hoursForBase)} / ${basicHours} 小时`;
+  el.basicHoursPercent.textContent=`${pct}%`;
+  el.basicHoursProgress.style.width=`${pct}%`;
+  el.basePayHint.textContent=s.basePayFull
+    ?'✅ 合计已达基础工时，基础工资全额发放'
+    :`⚠️ 未达基础工时，基础工资按正常工时 ${fmtH(s.normalHours)} / ${basicHours} 比例发放`;
+  el.normalHours.textContent=fmtH(s.normalHours);
+  el.otHours.textContent=fmtH(s.otHoliday);
+  el.otOverHours.textContent=fmtH(s.overtimeHours);
+  el.fieldHours.textContent=fmtH(s.fieldHoursTotal);
+  el.basePay.textContent=`${fmtMoney(s.basePay)} 元`;
+  if(s.basePayFull){
+    el.basePayFormula.textContent=`基础工资全额（正常 ${fmtH(s.normalHours)} + 法定 ${fmtH(s.otHoliday)} = ${fmtH(s.hoursForBase)} ≥ ${basicHours}）`;
+  }else{
+    el.basePayFormula.textContent=`基础工资 × ${fmtH(s.normalHours)} / ${basicHours} = ${fmtMoney(s.basePay)} 元`;
   }
-
-  // 超时加班
-  if (s.regularOTPay > 0) {
-    el.regularOtItem.hidden = false;
-    el.regularOtPay.textContent = `${fmtMoney(s.regularOTPay)} 元`;
-    el.regularOtDetail.innerHTML =
-      `<span>${fmtH(s.overtimeHours)}H × ${fmtMoney(state.settings.overtimeRate)} = ${fmtMoney(s.regularOTPay)}元</span>` +
-      `<span>（正常工时 ${fmtH(s.normalHours)} − 基础工时 ${basicHours}）</span>`;
-  } else {
-    el.regularOtItem.hidden = true;
-    el.regularOtDetail.innerHTML = '';
-  }
-
-  // 法定加班
-  if (s.otHolidayPay > 0) {
-    el.otPayItem.hidden = false;
-    el.otPay.textContent = `${fmtMoney(s.otHolidayPay)} 元`;
-    el.otRateDetail.innerHTML =
-      `<span>${fmtH(s.otHoliday)}H × ${fmtMoney(state.settings.otRateHoliday)} = ${fmtMoney(s.otHolidayPay)}元</span>`;
-  } else {
-    el.otPayItem.hidden = true;
-    el.otRateDetail.innerHTML = '';
-  }
-
-  // 驻站补贴
-  if (s.stationPay > 0) {
-    el.stationItem.hidden = false;
-    el.stationSalary.textContent = `${fmtMoney(s.stationPay)} 元`;
-    el.stationDetail.innerHTML = `<span>${s.stationCount} 次 × ${fmtMoney(state.settings.stationSalary)} 元/次</span>`;
-  } else {
-    el.stationItem.hidden = true;
-    el.stationDetail.innerHTML = '';
-  }
-
-  // 外勤工资
-  if (s.fieldPay > 0) {
-    el.fieldItem.hidden = false;
-    el.fieldPay.textContent = `${fmtMoney(s.fieldPay)} 元`;
-    el.fieldDetail.innerHTML = `<span>外勤 ${fmtH(s.fieldHoursTotal)} 小时，工资独立计算</span>`;
-  } else {
-    el.fieldItem.hidden = true;
-    el.fieldDetail.innerHTML = '';
-  }
-
-  // 额外补贴
-  if (s.allowanceTotal > 0 || s.allowances.length > 0) {
-    el.allowanceItem.hidden = false;
-    el.allowanceTotal.textContent = `${fmtMoney(s.allowanceTotal)} 元`;
-    el.allowanceDetail.innerHTML = s.allowances
-      .map(a => `<span>${escapeHtml(a.name || '补贴')}：${fmtMoney(a.amount)}元</span>`)
-      .join('');
-  } else {
-    el.allowanceItem.hidden = true;
-    el.allowanceDetail.innerHTML = '';
-  }
-
-  // 社保扣除
-  if (state.settings.deductSocialSecurity) {
-    el.socialSecurityItem.hidden = false;
-    el.socialSecurityDeduction.textContent = `${fmtMoney(s.social)} 元`;
-  } else {
-    el.socialSecurityItem.hidden = true;
-  }
-
-  // 预计实发
-  el.totalSalary.textContent = `${fmtMoney(s.net)} 元`;
-  el.cycleLine.textContent = `${fmtDateShort(s.range.start)} — ${fmtDateShort(s.range.end)} · 共 ${s.daily.length} 天`;
-
+  if(s.regularOTPay>0){
+    el.regularOtItem.hidden=false;
+    el.regularOtPay.textContent=`${fmtMoney(s.regularOTPay)} 元`;
+    el.regularOtDetail.innerHTML=`<span>${fmtH(s.overtimeHours)}H × ${fmtMoney(state.settings.overtimeRate)} = ${fmtMoney(s.regularOTPay)}元</span><span>（正常工时 ${fmtH(s.normalHours)} − 基础工时 ${basicHours}）</span>`;
+  }else{el.regularOtItem.hidden=true;el.regularOtDetail.innerHTML='';}
+  if(s.otHolidayPay>0){
+    el.otPayItem.hidden=false;
+    el.otPay.textContent=`${fmtMoney(s.otHolidayPay)} 元`;
+    el.otRateDetail.innerHTML=`<span>${fmtH(s.otHoliday)}H × ${fmtMoney(state.settings.otRateHoliday)} = ${fmtMoney(s.otHolidayPay)}元</span>`;
+  }else{el.otPayItem.hidden=true;el.otRateDetail.innerHTML='';}
+  if(s.stationPay>0){
+    el.stationItem.hidden=false;
+    el.stationSalary.textContent=`${fmtMoney(s.stationPay)} 元`;
+    el.stationDetail.innerHTML=`<span>${s.stationCount} 次 × ${fmtMoney(state.settings.stationSalary)} 元/次</span>`;
+  }else{el.stationItem.hidden=true;el.stationDetail.innerHTML='';}
+  if(s.fieldPay>0){
+    el.fieldItem.hidden=false;
+    el.fieldPay.textContent=`${fmtMoney(s.fieldPay)} 元`;
+    el.fieldDetail.innerHTML=`<span>外勤 ${fmtH(s.fieldHoursTotal)} 小时，工资独立计算</span>`;
+  }else{el.fieldItem.hidden=true;el.fieldDetail.innerHTML='';}
+  if(s.allowanceTotal>0||s.allowances.length>0){
+    el.allowanceItem.hidden=false;
+    el.allowanceTotal.textContent=`${fmtMoney(s.allowanceTotal)} 元`;
+    el.allowanceDetail.innerHTML=s.allowances.map(a=>`<span>${escapeHtml(a.name||'补贴')}：${fmtMoney(a.amount)}元</span>`).join('');
+  }else{el.allowanceItem.hidden=true;el.allowanceDetail.innerHTML='';}
+  if(state.settings.deductSocialSecurity){el.socialSecurityItem.hidden=false;el.socialSecurityDeduction.textContent=`${fmtMoney(s.social)} 元`;}
+  else{el.socialSecurityItem.hidden=true;}
+  el.totalSalary.textContent=`${fmtMoney(s.net)} 元`;
+  el.cycleLine.textContent=`${fmtDateShort(s.range.start)} — ${fmtDateShort(s.range.end)} · 共 ${s.daily.length} 天`;
   drawChart(s.daily);
 }
 
-/* ============================================================
- * 图表
- * ============================================================ */
-let chartRaf = null;
-function drawChart(daily) {
-  if (chartRaf) cancelAnimationFrame(chartRaf);
-  chartRaf = requestAnimationFrame(() => {
-    chartRaf = null;
-    const canvas = el.chart;
-    if (!canvas || !daily) return;
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.round(rect.width), H = Math.round(rect.height);
-    if (W <= 0 || H <= 0) return;
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    const ctx = canvas.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, W, H);
-    const style = getComputedStyle(document.documentElement);
-    const primary = (style.getPropertyValue('--primary') || '#3498db').trim();
-    const border = (style.getPropertyValue('--border') || '#e9ecf0').trim();
-    const text3 = (style.getPropertyValue('--text-3') || '#9aa5b1').trim();
-    const padL = 4, padR = 4, padT = 6, padB = 12;
-    const cw = W - padL - padR;
-    const ch = H - padT - padB;
-    const n = daily.length;
-    if (n === 0) return;
-    const maxV = Math.max(4, ...daily.map(d => d.hours));
-    const gap = n > 22 ? 1 : 2;
-    const bw = Math.max(1.5, (cw - gap * (n - 1)) / n);
-    ctx.fillStyle = border;
-    ctx.fillRect(padL, padT + ch, cw, 1);
-    ctx.globalAlpha = 0.5;
-    ctx.fillRect(padL, padT + ch / 2, cw, 1);
-    ctx.globalAlpha = 1;
-    daily.forEach((d, i) => {
-      const x = padL + i * (bw + gap);
-      const h = maxV > 0 ? (d.hours / maxV) * ch : 0;
-      if (h > 0.4) {
-        ctx.fillStyle = primary;
-        const y = padT + ch - h;
-        roundRect(ctx, x, y, bw, h, Math.min(2, bw / 2));
-        ctx.fill();
-      }
-    });
-    ctx.fillStyle = text3;
-    ctx.font = '10px -apple-system, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('0', padL, H - 2);
-    el.chartMax.textContent = `峰值 ${fmtH(maxV)}H`;
+let chartRaf=null;
+function drawChart(daily){
+  if(chartRaf)cancelAnimationFrame(chartRaf);
+  chartRaf=requestAnimationFrame(()=>{
+    chartRaf=null;
+    const canvas=el.chart;if(!canvas||!daily)return;
+    const rect=canvas.getBoundingClientRect();const W=Math.round(rect.width),H=Math.round(rect.height);if(W<=0||H<=0)return;
+    const dpr=window.devicePixelRatio||1;canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);
+    const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+    const style=getComputedStyle(document.documentElement);
+    const primary=(style.getPropertyValue('--primary')||'#3498db').trim();
+    const border=(style.getPropertyValue('--border')||'#e9ecf0').trim();
+    const text3=(style.getPropertyValue('--text-3')||'#9aa5b1').trim();
+    const padL=4,padR=4,padT=6,padB=12;const cw=W-padL-padR;const ch=H-padT-padB;const n=daily.length;if(n===0)return;
+    const maxV=Math.max(4,...daily.map(d=>d.hours));
+    const gap=n>22?1:2;const bw=Math.max(1.5,(cw-gap*(n-1))/n);
+    ctx.fillStyle=border;ctx.fillRect(padL,padT+ch,cw,1);
+    ctx.globalAlpha=.5;ctx.fillRect(padL,padT+ch/2,cw,1);ctx.globalAlpha=1;
+    daily.forEach((d,i)=>{const x=padL+i*(bw+gap);const h=maxV>0?(d.hours/maxV)*ch:0;if(h>.4){ctx.fillStyle=primary;const y=padT+ch-h;roundRect(ctx,x,y,bw,h,Math.min(2,bw/2));ctx.fill();}});
+    ctx.fillStyle=text3;ctx.font='10px -apple-system, sans-serif';ctx.textAlign='left';ctx.fillText('0',padL,H-2);
+    el.chartMax.textContent=`峰值 ${fmtH(maxV)}H`;
   });
 }
 
-/* ============================================================
- * 分段控件 / 类型切换
- * ============================================================ */
-function setSegActive(container, attr, value) {
-  container.querySelectorAll('.seg-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset[attr] === value);
-  });
-}
-function getSegActive(container, attr) {
-  const active = container.querySelector('.seg-btn.active');
-  return active ? active.dataset[attr] : null;
-}
+function setSegActive(c,attr,value){c.querySelectorAll('.seg-btn').forEach(b=>{b.classList.toggle('active',b.dataset[attr]===value);});}
+function getSegActive(c,attr){const a=c.querySelector('.seg-btn.active');return a?a.dataset[attr]:null;}
+function toggleWorkType(type){if(type==='normal'){el.normalBlock.hidden=false;el.fieldBlock.hidden=true;}else{el.normalBlock.hidden=true;el.fieldBlock.hidden=false;togglePaymentType(getSegActive(el.paymentSeg,'pay')||'hourly');}}
+function togglePaymentType(type){if(type==='hourly'){el.fieldHoursGroup.hidden=false;el.fieldRateGroup.hidden=false;el.fieldFixedGroup.hidden=true;el.fieldFixed.value='';}else{el.fieldHoursGroup.hidden=true;el.fieldRateGroup.hidden=true;el.fieldFixedGroup.hidden=false;el.fieldHours.value='';}calculateFieldTotal();}
+function calculateFieldTotal(){const type=getSegActive(el.paymentSeg,'pay')||'hourly';let total=0;if(type==='hourly'){const h=parseFloat(el.fieldHours.value)||0;const r=parseFloat(el.fieldRate.value)||0;total=h*r;}else{total=parseFloat(el.fieldFixed.value)||0;}el.fieldTotal.value=total.toFixed(2);}
+function updateOtRateHint(){const ot=getSegActive(el.otSeg,'ot')||'none';const s=state.settings;if(ot==='holiday'){el.otRateHint.textContent=`法定时薪：${fmtMoney(s.otRateHoliday)} 元/小时（工时计入达标判断，加班费单独算）`;}else{el.otRateHint.textContent=`正常工时，超出 ${s.basicHours} 小时后按 ${fmtMoney(s.overtimeRate)} 元/小时计超时加班`;}}
 
-function toggleWorkType(type) {
-  if (type === 'normal') {
-    el.normalBlock.hidden = false;
-    el.fieldBlock.hidden = true;
-  } else {
-    el.normalBlock.hidden = true;
-    el.fieldBlock.hidden = false;
-    togglePaymentType(getSegActive(el.paymentSeg, 'pay') || 'hourly');
-  }
-}
+function openWorkModal(year,month,day){const dateKey=formatDateKey(year,month,day);el.workDate.value=dateKey;el.workDate.disabled=false;state.editing.record=null;state.editing.originalDateKey=null;el.modalTitle.innerHTML='<i class="fas fa-edit"></i> 记录工时';resetWorkForm();renderRecordsList(dateKey);state.lastModalFocus=document.activeElement;el.workModal.classList.add('open');setTimeout(()=>el.workHours&&el.workHours.focus(),60);}
+function closeWorkModal(){el.workModal.classList.remove('open');state.editing.record=null;state.editing.originalDateKey=null;el.workDate.disabled=false;if(state.lastModalFocus&&typeof state.lastModalFocus.focus==='function'){try{state.lastModalFocus.focus();}catch(e){}}state.lastModalFocus=null;}
+function resetWorkForm(){el.workHours.value='';el.workDescription.value='';el.isStation.checked=false;el.fieldDescription.value='';el.fieldHours.value='';el.fieldRate.value='';el.fieldFixed.value='';el.fieldTotal.value='';setSegActive(el.workTypeSeg,'type','normal');setSegActive(el.otSeg,'ot','none');setSegActive(el.paymentSeg,'pay','hourly');el.stationHint.textContent=fmtMoney(state.settings.stationSalary);toggleWorkType('normal');updateOtRateHint();}
 
-function togglePaymentType(type) {
-  if (type === 'hourly') {
-    el.fieldHoursGroup.hidden = false;
-    el.fieldRateGroup.hidden = false;
-    el.fieldFixedGroup.hidden = true;
-    el.fieldFixed.value = '';
-  } else {
-    el.fieldHoursGroup.hidden = true;
-    el.fieldRateGroup.hidden = true;
-    el.fieldFixedGroup.hidden = false;
-    el.fieldHours.value = '';
-  }
-  calculateFieldTotal();
-}
-
-function calculateFieldTotal() {
-  const type = getSegActive(el.paymentSeg, 'pay') || 'hourly';
-  let total = 0;
-  if (type === 'hourly') {
-    const h = parseFloat(el.fieldHours.value) || 0;
-    const r = parseFloat(el.fieldRate.value) || 0;
-    total = h * r;
-  } else {
-    total = parseFloat(el.fieldFixed.value) || 0;
-  }
-  el.fieldTotal.value = total.toFixed(2);
-}
-
-function updateOtRateHint() {
-  const ot = getSegActive(el.otSeg, 'ot') || 'none';
-  const s = state.settings;
-  if (ot === 'holiday') {
-    el.otRateHint.textContent = `法定时薪：${fmtMoney(s.otRateHoliday)} 元/小时（工时计入基础工时，加班费单独算）`;
-  } else {
-    el.otRateHint.textContent = `正常工时，超出 ${s.basicHours} 小时后按 ${fmtMoney(s.overtimeRate)} 元/小时计超时加班`;
-  }
-}
-
-/* ============================================================
- * 弹窗逻辑
- * ============================================================ */
-function openWorkModal(year, month, day) {
-  const dateKey = formatDateKey(year, month, day);
-  el.workDate.value = dateKey;
-  el.workDate.disabled = false;
-  state.editing.record = null;
-  state.editing.originalDateKey = null;
-  el.modalTitle.innerHTML = '<i class="fas fa-edit"></i> 记录工时';
-  resetWorkForm();
-  renderRecordsList(dateKey);
-  state.lastModalFocus = document.activeElement;
-  el.workModal.classList.add('open');
-  setTimeout(() => el.workHours && el.workHours.focus(), 60);
-}
-
-function closeWorkModal() {
-  el.workModal.classList.remove('open');
-  state.editing.record = null;
-  state.editing.originalDateKey = null;
-  el.workDate.disabled = false;
-  if (state.lastModalFocus && typeof state.lastModalFocus.focus === 'function') {
-    try { state.lastModalFocus.focus(); } catch (e) {}
-  }
-  state.lastModalFocus = null;
-}
-
-function resetWorkForm() {
-  el.workHours.value = '';
-  el.workDescription.value = '';
-  el.isStation.checked = false;
-  el.fieldDescription.value = '';
-  el.fieldHours.value = '';
-  el.fieldRate.value = '';
-  el.fieldFixed.value = '';
-  el.fieldTotal.value = '';
-  setSegActive(el.workTypeSeg, 'type', 'normal');
-  setSegActive(el.otSeg, 'ot', 'none');
-  setSegActive(el.paymentSeg, 'pay', 'hourly');
-  el.stationHint.textContent = fmtMoney(state.settings.stationSalary);
-  toggleWorkType('normal');
-  updateOtRateHint();
-}
-
-function renderRecordsList(dateKey) {
-  el.recordsList.innerHTML = '';
-  const records = state.workData[dateKey];
-  if (!records || records.length === 0) {
-    const empty = document.createElement('div');
-    empty.className = 'record-item';
-    empty.style.cssText = 'justify-content:center;color:var(--text-3);font-size:.78rem;';
-    empty.textContent = '暂无记录';
-    el.recordsList.appendChild(empty);
-    return;
-  }
-  const frag = document.createDocumentFragment();
-  records.forEach(record => {
-    const item = document.createElement('div');
-    item.className = 'record-item';
-    const info = document.createElement('div');
-    info.className = 'record-info';
-    const typeNode = document.createElement('div');
-    typeNode.className = 'record-type';
-    const detailNode = document.createElement('div');
-    detailNode.className = 'record-details';
-    if (record.type === 'normal') {
-      const otLabel = record.ot === 'holiday' ? ' · 法定加班' : '';
-      let text = `正常工时 · ${record.description || '无描述'}${otLabel}`;
-      if (record.isStation) text += ' · 驻站';
-      typeNode.textContent = text;
-      detailNode.textContent = `${fmtH(record.hours)} 小时`;
-    } else {
-      typeNode.textContent = `外勤 · ${record.description || '无描述'}`;
-      if (record.paymentType === 'hourly') {
-        detailNode.textContent = `${fmtH(record.hours)} 小时 × ${fmtMoney(record.rate)} 元/小时 = ${fmtMoney(record.total)} 元`;
-      } else {
-        detailNode.textContent = `固定工资：${fmtMoney(record.total)} 元`;
-      }
-    }
-    info.appendChild(typeNode);
-    info.appendChild(detailNode);
-    const actions = document.createElement('div');
-    actions.className = 'record-actions';
-    const editBtn = document.createElement('button');
-    editBtn.className = 'record-action-btn';
-    editBtn.dataset.action = 'edit';
-    editBtn.dataset.id = record.id;
-    editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-    editBtn.setAttribute('aria-label', '编辑记录');
-    const delBtn = document.createElement('button');
-    delBtn.className = 'record-action-btn';
-    delBtn.dataset.action = 'delete';
-    delBtn.dataset.id = record.id;
-    delBtn.innerHTML = '<i class="fas fa-trash"></i>';
-    delBtn.setAttribute('aria-label', '删除记录');
-    actions.appendChild(editBtn);
-    actions.appendChild(delBtn);
-    item.appendChild(info);
-    item.appendChild(actions);
-    frag.appendChild(item);
+function renderRecordsList(dateKey){
+  el.recordsList.innerHTML='';
+  const records=state.workData[dateKey];
+  if(!records||records.length===0){const empty=document.createElement('div');empty.className='record-item';empty.style.cssText='justify-content:center;color:var(--text-3);font-size:.78rem;';empty.textContent='暂无记录';el.recordsList.appendChild(empty);return;}
+  const frag=document.createDocumentFragment();
+  records.forEach(record=>{
+    const item=document.createElement('div');item.className='record-item';
+    const info=document.createElement('div');info.className='record-info';
+    const typeNode=document.createElement('div');typeNode.className='record-type';
+    const detailNode=document.createElement('div');detailNode.className='record-details';
+    if(record.type==='normal'){const otLabel=record.ot==='holiday'?' · 法定加班':'';let text=`正常工时 · ${record.description||'无描述'}${otLabel}`;if(record.isStation)text+=' · 驻站';typeNode.textContent=text;detailNode.textContent=`${fmtH(record.hours)} 小时`;}
+    else{typeNode.textContent=`外勤 · ${record.description||'无描述'}`;if(record.paymentType==='hourly'){detailNode.textContent=`${fmtH(record.hours)} 小时 × ${fmtMoney(record.rate)} 元/小时 = ${fmtMoney(record.total)} 元`;}else{detailNode.textContent=`固定工资：${fmtMoney(record.total)} 元`;}}
+    info.appendChild(typeNode);info.appendChild(detailNode);
+    const actions=document.createElement('div');actions.className='record-actions';
+    const editBtn=document.createElement('button');editBtn.className='record-action-btn';editBtn.dataset.action='edit';editBtn.dataset.id=record.id;editBtn.innerHTML='<i class="fas fa-edit"></i>';editBtn.setAttribute('aria-label','编辑记录');
+    const delBtn=document.createElement('button');delBtn.className='record-action-btn';delBtn.dataset.action='delete';delBtn.dataset.id=record.id;delBtn.innerHTML='<i class="fas fa-trash"></i>';delBtn.setAttribute('aria-label','删除记录');
+    actions.appendChild(editBtn);actions.appendChild(delBtn);
+    item.appendChild(info);item.appendChild(actions);frag.appendChild(item);
   });
   el.recordsList.appendChild(frag);
 }
 
-/* ============================================================
- * 保存记录
- * ============================================================ */
-function saveWorkRecord() {
-  const dateKey = el.workDate.value;
-  if (!dateKey) { showToast('请选择日期', { type: 'error' }); return; }
-  const workType = getSegActive(el.workTypeSeg, 'type') || 'normal';
-  const editing = state.editing.record;
-  let record = null;
-  if (workType === 'normal') {
-    const hours = parseFloat(el.workHours.value);
-    if (isNaN(hours) || hours <= 0) { showToast('请填写有效的工作时长', { type: 'error' }); return; }
-    const isStation = el.isStation.checked;
-    const ot = getSegActive(el.otSeg, 'ot') || 'none';
-    record = {
-      id: editing ? editing.id : generateId(),
-      type: 'normal',
-      hours: hours,
-      description: (el.workDescription.value || '').trim(),
-      isStation: isStation,
-      stationSalary: isStation ? state.settings.stationSalary : 0,
-      ot: ot === 'holiday' ? 'holiday' : 'none',
-      createdAt: editing ? (editing.createdAt || Date.now()) : Date.now()
-    };
-  } else {
-    const description = (el.fieldDescription.value || '').trim();
-    if (!description) { showToast('请填写外勤活动描述', { type: 'error' }); return; }
-    const payType = getSegActive(el.paymentSeg, 'pay') || 'hourly';
-    if (payType === 'hourly') {
-      const h = parseFloat(el.fieldHours.value);
-      const rate = parseFloat(el.fieldRate.value);
-      if (isNaN(h) || h <= 0) { showToast('请填写有效的工作时长', { type: 'error' }); return; }
-      if (isNaN(rate) || rate <= 0) { showToast('请填写有效的时薪', { type: 'error' }); return; }
-      const hoursC = Math.round(h * 100);
-      const rateC = yuan2cent(rate);
-      record = {
-        id: editing ? editing.id : generateId(),
-        type: 'field',
-        paymentType: 'hourly',
-        hours: h,
-        description: description,
-        rate: rateC,
-        total: Math.round(hoursC * rateC / 100),
-        createdAt: editing ? (editing.createdAt || Date.now()) : Date.now()
-      };
-    } else {
-      const fixed = parseFloat(el.fieldFixed.value);
-      if (isNaN(fixed) || fixed <= 0) { showToast('请填写有效的单次工资', { type: 'error' }); return; }
-      const fixedC = yuan2cent(fixed);
-      record = {
-        id: editing ? editing.id : generateId(),
-        type: 'field',
-        paymentType: 'fixed',
-        hours: 0,
-        description: description,
-        fixed: fixedC,
-        total: fixedC,
-        createdAt: editing ? (editing.createdAt || Date.now()) : Date.now()
-      };
+function saveWorkRecord(){
+  const dateKey=el.workDate.value;if(!dateKey){showToast('请选择日期',{type:'error'});return;}
+  const workType=getSegActive(el.workTypeSeg,'type')||'normal';const editing=state.editing.record;let record=null;
+  if(workType==='normal'){
+    const hours=parseFloat(el.workHours.value);if(isNaN(hours)||hours<=0){showToast('请填写有效的工作时长',{type:'error'});return;}
+    const isStation=el.isStation.checked;const ot=getSegActive(el.otSeg,'ot')||'none';
+    record={id:editing?editing.id:generateId(),type:'normal',hours:hours,description:(el.workDescription.value||'').trim(),isStation:isStation,stationSalary:isStation?state.settings.stationSalary:0,ot:ot==='holiday'?'holiday':'none',createdAt:editing?(editing.createdAt||Date.now()):Date.now()};
+  }else{
+    const description=(el.fieldDescription.value||'').trim();if(!description){showToast('请填写外勤活动描述',{type:'error'});return;}
+    const payType=getSegActive(el.paymentSeg,'pay')||'hourly';
+    if(payType==='hourly'){
+      const h=parseFloat(el.fieldHours.value);const rate=parseFloat(el.fieldRate.value);
+      if(isNaN(h)||h<=0){showToast('请填写有效的工作时长',{type:'error'});return;}
+      if(isNaN(rate)||rate<=0){showToast('请填写有效的时薪',{type:'error'});return;}
+      const hoursC=Math.round(h*100),rateC=yuan2cent(rate);
+      record={id:editing?editing.id:generateId(),type:'field',paymentType:'hourly',hours:h,description:description,rate:rateC,total:Math.round(hoursC*rateC/100),createdAt:editing?(editing.createdAt||Date.now()):Date.now()};
+    }else{
+      const fixed=parseFloat(el.fieldFixed.value);if(isNaN(fixed)||fixed<=0){showToast('请填写有效的单次工资',{type:'error'});return;}
+      const fixedC=yuan2cent(fixed);
+      record={id:editing?editing.id:generateId(),type:'field',paymentType:'fixed',hours:0,description:description,fixed:fixedC,total:fixedC,createdAt:editing?(editing.createdAt||Date.now()):Date.now()};
     }
   }
-  if (editing) {
-    const oldKey = state.editing.originalDateKey;
-    if (oldKey && state.workData[oldKey]) {
-      state.workData[oldKey] = state.workData[oldKey].filter(r => r.id !== record.id);
-      if (state.workData[oldKey].length === 0) delete state.workData[oldKey];
-    }
-    if (!state.workData[dateKey]) state.workData[dateKey] = [];
+  if(editing){
+    const oldKey=state.editing.originalDateKey;
+    if(oldKey&&state.workData[oldKey]){state.workData[oldKey]=state.workData[oldKey].filter(r=>r.id!==record.id);if(state.workData[oldKey].length===0)delete state.workData[oldKey];}
+    if(!state.workData[dateKey])state.workData[dateKey]=[];
     state.workData[dateKey].push(record);
-    state.editing.record = null;
-    state.editing.originalDateKey = null;
-    el.workDate.disabled = false;
-    el.modalTitle.innerHTML = '<i class="fas fa-edit"></i> 记录工时';
+    state.editing.record=null;state.editing.originalDateKey=null;el.workDate.disabled=false;el.modalTitle.innerHTML='<i class="fas fa-edit"></i> 记录工时';
     showToast('记录已更新');
-  } else {
-    if (!state.workData[dateKey]) state.workData[dateKey] = [];
+  }else{
+    if(!state.workData[dateKey])state.workData[dateKey]=[];
     state.workData[dateKey].push(record);
     showToast('记录已保存');
   }
-  saveState();
-  refreshAll();
-  renderRecordsList(dateKey);
-  resetWorkForm();
-  el.workHours.focus();
+  saveState();refreshAll();renderRecordsList(dateKey);resetWorkForm();el.workHours.focus();
 }
 
-/* ============================================================
- * 编辑 / 删除 / 撤销
- * ============================================================ */
-function editRecord(dateKey, record) {
-  state.editing.record = record;
-  state.editing.originalDateKey = dateKey;
-  el.workDate.value = dateKey;
-  el.workDate.disabled = true;
-  el.modalTitle.innerHTML = '<i class="fas fa-pen"></i> 编辑记录';
-  if (record.type === 'normal') {
-    setSegActive(el.workTypeSeg, 'type', 'normal');
-    toggleWorkType('normal');
-    el.workHours.value = record.hours;
-    el.workDescription.value = record.description || '';
-    el.isStation.checked = !!record.isStation;
-    setSegActive(el.otSeg, 'ot', record.ot === 'holiday' ? 'holiday' : 'none');
-    updateOtRateHint();
-  } else {
-    setSegActive(el.workTypeSeg, 'type', 'field');
-    toggleWorkType('field');
-    el.fieldDescription.value = record.description || '';
-    if (record.paymentType === 'hourly') {
-      setSegActive(el.paymentSeg, 'pay', 'hourly');
-      togglePaymentType('hourly');
-      el.fieldHours.value = record.hours || '';
-      el.fieldRate.value = cent2yuan(record.rate).toFixed(2);
-    } else {
-      setSegActive(el.paymentSeg, 'pay', 'fixed');
-      togglePaymentType('fixed');
-      el.fieldFixed.value = cent2yuan(record.fixed).toFixed(2);
-    }
-    calculateFieldTotal();
-  }
-  const content = el.workModal.querySelector('.modal-content');
-  if (content) content.scrollTop = 0;
+function editRecord(dateKey,record){
+  state.editing.record=record;state.editing.originalDateKey=dateKey;
+  el.workDate.value=dateKey;el.workDate.disabled=true;el.modalTitle.innerHTML='<i class="fas fa-pen"></i> 编辑记录';
+  if(record.type==='normal'){setSegActive(el.workTypeSeg,'type','normal');toggleWorkType('normal');el.workHours.value=record.hours;el.workDescription.value=record.description||'';el.isStation.checked=!!record.isStation;setSegActive(el.otSeg,'ot',record.ot==='holiday'?'holiday':'none');updateOtRateHint();}
+  else{setSegActive(el.workTypeSeg,'type','field');toggleWorkType('field');el.fieldDescription.value=record.description||'';if(record.paymentType==='hourly'){setSegActive(el.paymentSeg,'pay','hourly');togglePaymentType('hourly');el.fieldHours.value=record.hours||'';el.fieldRate.value=cent2yuan(record.rate).toFixed(2);}else{setSegActive(el.paymentSeg,'pay','fixed');togglePaymentType('fixed');el.fieldFixed.value=cent2yuan(record.fixed).toFixed(2);}calculateFieldTotal();}
+  const content=el.workModal.querySelector('.modal-content');if(content)content.scrollTop=0;
 }
 
-function deleteRecord(dateKey, id) {
-  const arr = state.workData[dateKey];
-  if (!arr) return;
-  const idx = arr.findIndex(r => r.id === id);
-  if (idx < 0) return;
-  const [removed] = arr.splice(idx, 1);
-  if (arr.length === 0) delete state.workData[dateKey];
-  saveState();
-  refreshAll();
-  renderRecordsList(dateKey);
-  if (state.editing.record && state.editing.record.id === id) {
-    state.editing.record = null;
-    state.editing.originalDateKey = null;
-    el.workDate.disabled = false;
-    el.modalTitle.innerHTML = '<i class="fas fa-edit"></i> 记录工时';
-    resetWorkForm();
-  }
-  if (state.pendingUndo && state.pendingUndo.toast) {
-    state.pendingUndo.toast.remove();
-  }
-  const toastRef = showToast('已删除 1 条记录', {
-    duration: 5000,
-    action: {
-      label: '撤销',
-      onClick: () => {
-        if (!state.workData[dateKey]) state.workData[dateKey] = [];
-        const pos = Math.min(idx, state.workData[dateKey].length);
-        state.workData[dateKey].splice(pos, 0, removed);
-        saveState();
-        refreshAll();
-        renderRecordsList(dateKey);
-        showToast('已恢复');
-        state.pendingUndo = null;
-      }
-    }
-  });
-  state.pendingUndo = { dateKey, record: removed, index: idx, toast: toastRef };
+function deleteRecord(dateKey,id){
+  const arr=state.workData[dateKey];if(!arr)return;
+  const idx=arr.findIndex(r=>r.id===id);if(idx<0)return;
+  const [removed]=arr.splice(idx,1);
+  if(arr.length===0)delete state.workData[dateKey];
+  saveState();refreshAll();renderRecordsList(dateKey);
+  if(state.editing.record&&state.editing.record.id===id){state.editing.record=null;state.editing.originalDateKey=null;el.workDate.disabled=false;el.modalTitle.innerHTML='<i class="fas fa-edit"></i> 记录工时';resetWorkForm();}
+  if(state.pendingUndo&&state.pendingUndo.toast){state.pendingUndo.toast.remove();}
+  const toastRef=showToast('已删除 1 条记录',{duration:5000,action:{label:'撤销',onClick:()=>{if(!state.workData[dateKey])state.workData[dateKey]=[];const pos=Math.min(idx,state.workData[dateKey].length);state.workData[dateKey].splice(pos,0,removed);saveState();refreshAll();renderRecordsList(dateKey);showToast('已恢复');state.pendingUndo=null;}}});
+  state.pendingUndo={dateKey,record:removed,index:idx,toast:toastRef};
 }
 
-/* ============================================================
- * 右键 / 长按菜单
- * ============================================================ */
-function openCtxMenu(dateKey, x, y) {
-  const records = state.workData[dateKey] || [];
-  const prevDate = new Date(parseDateKey(dateKey));
-  prevDate.setDate(prevDate.getDate() - 1);
-  const prevKey = formatDateKey(prevDate.getFullYear(), prevDate.getMonth(), prevDate.getDate());
-  const prevRecords = state.workData[prevKey] || [];
-  el.ctxMenu.innerHTML = '';
-  el.ctxMenu.dataset.datekey = dateKey;
-  function addItem(icon, label, fn, danger) {
-    const b = document.createElement('button');
-    b.className = 'ctx-item' + (danger ? ' danger' : '');
-    b.setAttribute('role', 'menuitem');
-    b.innerHTML = `<i class="fas ${icon}"></i><span>${label}</span>`;
-    b.addEventListener('click', () => { closeCtxMenu(); fn(); });
-    el.ctxMenu.appendChild(b);
-  }
-  function addSep() {
-    const d = document.createElement('div');
-    d.className = 'ctx-sep';
-    el.ctxMenu.appendChild(d);
-  }
-  addItem('fa-pen', '打开编辑', () => {
-    const d = parseDateKey(dateKey);
-    openWorkModal(d.getFullYear(), d.getMonth(), d.getDate());
-  });
-  if (prevRecords.length > 0) {
-    addItem('fa-copy', '复制前一天的记录', () => copyDayRecords(prevKey, dateKey));
-  }
-  if (records.length > 0) {
-    addSep();
-    addItem('fa-eraser', `清空当天（${records.length} 条）`, () => clearDayRecords(dateKey), true);
-  }
+function openCtxMenu(dateKey,x,y){
+  const records=state.workData[dateKey]||[];
+  const prevDate=new Date(parseDateKey(dateKey));prevDate.setDate(prevDate.getDate()-1);
+  const prevKey=formatDateKey(prevDate.getFullYear(),prevDate.getMonth(),prevDate.getDate());
+  const prevRecords=state.workData[prevKey]||[];
+  el.ctxMenu.innerHTML='';el.ctxMenu.dataset.datekey=dateKey;
+  function addItem(icon,label,fn,danger){const b=document.createElement('button');b.className='ctx-item'+(danger?' danger':'');b.setAttribute('role','menuitem');b.innerHTML=`<i class="fas ${icon}"></i><span>${label}</span>`;b.addEventListener('click',()=>{closeCtxMenu();fn();});el.ctxMenu.appendChild(b);}
+  function addSep(){const d=document.createElement('div');d.className='ctx-sep';el.ctxMenu.appendChild(d);}
+  addItem('fa-pen','打开编辑',()=>{const d=parseDateKey(dateKey);openWorkModal(d.getFullYear(),d.getMonth(),d.getDate());});
+  if(prevRecords.length>0)addItem('fa-copy','复制前一天的记录',()=>copyDayRecords(prevKey,dateKey));
+  if(records.length>0){addSep();addItem('fa-eraser',`清空当天（${records.length} 条）`,()=>clearDayRecords(dateKey),true);}
   el.ctxMenu.classList.add('open');
-  const rect = el.ctxMenu.getBoundingClientRect();
-  const vw = window.innerWidth, vh = window.innerHeight;
-  let left = x, top = y;
-  if (left + rect.width > vw - 8) left = vw - rect.width - 8;
-  if (top + rect.height > vh - 8) top = vh - rect.height - 8;
-  el.ctxMenu.style.left = Math.max(8, left) + 'px';
-  el.ctxMenu.style.top = Math.max(8, top) + 'px';
+  const rect=el.ctxMenu.getBoundingClientRect();const vw=window.innerWidth,vh=window.innerHeight;
+  let left=x,top=y;
+  if(left+rect.width>vw-8)left=vw-rect.width-8;
+  if(top+rect.height>vh-8)top=vh-rect.height-8;
+  el.ctxMenu.style.left=Math.max(8,left)+'px';el.ctxMenu.style.top=Math.max(8,top)+'px';
 }
+function closeCtxMenu(){el.ctxMenu.classList.remove('open');}
+function copyDayRecords(fromKey,toKey){const src=state.workData[fromKey];if(!src||src.length===0)return;if(!state.workData[toKey])state.workData[toKey]=[];src.forEach(r=>{const clone={...r,id:generateId(),createdAt:Date.now()};state.workData[toKey].push(clone);});saveState();refreshAll();showToast(`已复制 ${src.length} 条记录`);}
+function clearDayRecords(dateKey){const records=state.workData[dateKey];if(!records||records.length===0)return;if(!confirm(`确定清空 ${dateKey} 的 ${records.length} 条记录吗？`))return;delete state.workData[dateKey];saveState();refreshAll();showToast('已清空当天记录');}
 
-function closeCtxMenu() {
-  el.ctxMenu.classList.remove('open');
-}
+function refreshAll(){renderCalendar();updateStats();}
 
-function copyDayRecords(fromKey, toKey) {
-  const src = state.workData[fromKey];
-  if (!src || src.length === 0) return;
-  if (!state.workData[toKey]) state.workData[toKey] = [];
-  src.forEach(r => {
-    const clone = { ...r, id: generateId(), createdAt: Date.now() };
-    state.workData[toKey].push(clone);
-  });
-  saveState();
-  refreshAll();
-  showToast(`已复制 ${src.length} 条记录`);
-}
+function exportMonthToXLS(){
+  const year=state.currentDate.getFullYear();const month=state.currentDate.getMonth();
+  const monthNames=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  const weekdays=['日','一','二','三','四','五','六'];
+  const lastDay=new Date(year,month+1,0).getDate();
+  const rows=[];
+  for(let d=1;d<=lastDay;d++){const key=formatDateKey(year,month,d);const list=state.workData[key];if(!list||list.length===0)continue;list.forEach(r=>rows.push({dateKey:key,day:d,...r}));}
+  if(rows.length===0){showToast(`${year}年${month+1}月 没有数据可导出`,{type:'error'});return;}
+  rows.sort((a,b)=>a.dateKey.localeCompare(b.dateKey));
+  const normalRows=rows.filter(r=>r.type==='normal');
+  const fieldRows=rows.filter(r=>r.type==='field');
+  let normalHours=0,otHoliday=0,stationCount=0,stationPay=0,fieldPay=0,fieldHoursSum=0;
+  normalRows.forEach(r=>{if(r.ot==='holiday')otHoliday+=r.hours||0;else normalHours+=r.hours||0;if(r.isStation){stationCount++;stationPay+=r.stationSalary||0;}});
+  fieldRows.forEach(r=>{fieldPay+=r.total||0;if(r.paymentType==='hourly')fieldHoursSum+=r.hours||0;});
+  const s=state.settings;const basicHours=s.basicHours;const hoursForBase=normalHours+otHoliday;
+  let basePay=0,basePayFull=false;
+  if(basicHours>0){basePayFull=hoursForBase>=basicHours;if(basePayFull)basePay=s.basicSalary;else basePay=Math.round(s.basicSalary*(normalHours/basicHours));}
+  const overtimeHours=Math.max(0,normalHours-basicHours);
+  const regularOTPay=Math.round(overtimeHours*s.overtimeRate);
+  const otHolidayPay=Math.round(otHoliday*s.otRateHoliday);
+  const allowances=(s.extraAllowances||[]).filter(a=>a.name||a.amount>0);
+  const allowanceTotal=allowances.reduce((sum,a)=>sum+(a.amount||0),0);
+  const social=s.deductSocialSecurity?s.socialSecurityAmount:0;
+  const gross=basePay+regularOTPay+otHolidayPay+stationPay+fieldPay+allowanceTotal;
+  const net=Math.max(0,gross-social);
 
-function clearDayRecords(dateKey) {
-  const records = state.workData[dateKey];
-  if (!records || records.length === 0) return;
-  if (!confirm(`确定清空 ${dateKey} 的 ${records.length} 条记录吗？`)) return;
-  delete state.workData[dateKey];
-  saveState();
-  refreshAll();
-  showToast('已清空当天记录');
-}
+  let h='';
+  h+='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">';
+  h+='<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>'+year+'年'+(month+1)+'月</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->';
+  h+='<style>body{font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;}table{border-collapse:collapse;}td{border:1px solid #c8d0d8;padding:7px 10px;font-size:11pt;vertical-align:middle;}.title{font-size:18pt;font-weight:bold;text-align:center;background:#3498db;color:#ffffff;padding:14px;letter-spacing:2px;}.subtitle{text-align:center;background:#eaf4fd;color:#2c3e50;font-size:10pt;padding:6px;}.section{font-size:12pt;font-weight:bold;background:#ecf0f1;color:#2c3e50;padding:9px 12px;}.th{background:#3498db;color:#ffffff;font-weight:bold;text-align:center;font-size:10.5pt;padding:8px;}.center{text-align:center;}.alt{background:#f8f9fa;}.weekend{color:#e74c3c;}.money{color:#c0392b;font-weight:bold;}.sum-label{background:#f8f9fa;font-weight:bold;color:#2c3e50;font-size:10.5pt;padding:8px 12px;}.sum-val{background:#ffffff;text-align:right;color:#2c3e50;font-size:10.5pt;padding:8px 12px;}.sum-sub{background:#fdfdfd;color:#5b6b7c;font-size:10pt;}.total-row{background:#f39c12;color:#ffffff;font-weight:bold;font-size:13pt;padding:12px;}.footer{text-align:center;color:#95a5a6;font-size:9pt;background:#fafbfc;padding:8px;}</style></head><body>';
+  h+='<table><colgroup><col style="width:85px"><col style="width:50px"><col style="width:95px"><col style="width:80px"><col style="width:210px"><col style="width:60px"><col style="width:100px"></colgroup>';
+  h+='<tr><td colspan="7" class="title">工时记录 · '+year+'年'+monthNames[month]+'</td></tr>';
+  h+='<tr><td colspan="7" class="subtitle">导出时间：'+new Date().toLocaleString('zh-CN')+'</td></tr>';
 
-/* ============================================================
- * 刷新
- * ============================================================ */
-function refreshAll() {
-  renderCalendar();
-  updateStats();
-}
-
-/* ============================================================
- * 导出当月 Excel 表格（带样式）
- * ============================================================ */
-function exportMonthToXLS() {
-  const year = state.currentDate.getFullYear();
-  const month = state.currentDate.getMonth();
-  const monthNames = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
-  const weekdays = ['日','一','二','三','四','五','六'];
-
-  const lastDay = new Date(year, month + 1, 0).getDate();
-  const rows = [];
-  for (let d = 1; d <= lastDay; d++) {
-    const key = formatDateKey(year, month, d);
-    const list = state.workData[key];
-    if (!list || list.length === 0) continue;
-    list.forEach(r => rows.push({ dateKey: key, day: d, ...r }));
-  }
-
-  if (rows.length === 0) {
-    showToast(`${year}年${month + 1}月 没有数据可导出`, { type: 'error' });
-    return;
-  }
-
-  rows.sort((a, b) => a.dateKey.localeCompare(b.dateKey));
-  const normalRows = rows.filter(r => r.type === 'normal');
-  const fieldRows = rows.filter(r => r.type === 'field');
-
-  let normalHours = 0, otHoliday = 0, stationCount = 0, stationPay = 0, fieldPay = 0, fieldHoursSum = 0;
-  normalRows.forEach(r => {
-    if (r.ot === 'holiday') otHoliday += r.hours || 0;
-    else normalHours += r.hours || 0;
-    if (r.isStation) { stationCount++; stationPay += r.stationSalary || 0; }
-  });
-  fieldRows.forEach(r => {
-    fieldPay += r.total || 0;
-    if (r.paymentType === 'hourly') fieldHoursSum += r.hours || 0;
-  });
-
-  const s = state.settings;
-  const basicHours = s.basicHours;
-  const hoursForBase = normalHours + otHoliday;
-  let basePay = 0, basePayFull = false;
-  if (basicHours > 0) {
-    const ratio = Math.min(1, hoursForBase / basicHours);
-    basePay = Math.round(s.basicSalary * ratio);
-    basePayFull = hoursForBase >= basicHours;
-  }
-  const overtimeHours = Math.max(0, normalHours - basicHours);
-  const regularOTPay = Math.round(overtimeHours * s.overtimeRate);
-  const otHolidayPay = Math.round(otHoliday * s.otRateHoliday);
-  const allowances = (s.extraAllowances || []).filter(a => a.name || a.amount > 0);
-  const allowanceTotal = allowances.reduce((sum, a) => sum + (a.amount || 0), 0);
-  const social = s.deductSocialSecurity ? s.socialSecurityAmount : 0;
-  const gross = basePay + regularOTPay + otHolidayPay + stationPay + fieldPay + allowanceTotal;
-  const net = Math.max(0, gross - social);
-
-  let h = '';
-  h += '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">';
-  h += '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>' + year + '年' + (month + 1) + '月</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->';
-  h += '<style>';
-  h += 'body{font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;}';
-  h += 'table{border-collapse:collapse;}';
-  h += 'td{border:1px solid #c8d0d8;padding:7px 10px;font-size:11pt;vertical-align:middle;}';
-  h += '.title{font-size:18pt;font-weight:bold;text-align:center;background:#3498db;color:#ffffff;padding:14px;letter-spacing:2px;}';
-  h += '.subtitle{text-align:center;background:#eaf4fd;color:#2c3e50;font-size:10pt;padding:6px;}';
-  h += '.section{font-size:12pt;font-weight:bold;background:#ecf0f1;color:#2c3e50;padding:9px 12px;}';
-  h += '.th{background:#3498db;color:#ffffff;font-weight:bold;text-align:center;font-size:10.5pt;padding:8px;}';
-  h += '.center{text-align:center;}';
-  h += '.right{text-align:right;}';
-  h += '.alt{background:#f8f9fa;}';
-  h += '.weekend{color:#e74c3c;}';
-  h += '.money{color:#c0392b;font-weight:bold;}';
-  h += '.sum-label{background:#f8f9fa;font-weight:bold;color:#2c3e50;font-size:10.5pt;padding:8px 12px;}';
-  h += '.sum-val{background:#ffffff;text-align:right;color:#2c3e50;font-size:10.5pt;padding:8px 12px;}';
-  h += '.sum-sub{background:#fdfdfd;color:#5b6b7c;font-size:10pt;}';
-  h += '.total-row{background:#f39c12;color:#ffffff;font-weight:bold;font-size:13pt;padding:12px;}';
-  h += '.footer{text-align:center;color:#95a5a6;font-size:9pt;background:#fafbfc;padding:8px;}';
-  h += '</style></head><body>';
-  h += '<table><colgroup><col style="width:85px"><col style="width:50px"><col style="width:95px"><col style="width:80px"><col style="width:210px"><col style="width:60px"><col style="width:100px"></colgroup>';
-
-  h += '<tr><td colspan="7" class="title">工时记录 · ' + year + '年' + monthNames[month] + '</td></tr>';
-  h += '<tr><td colspan="7" class="subtitle">导出时间：' + new Date().toLocaleString('zh-CN') + '</td></tr>';
-
-  if (normalRows.length > 0) {
-    h += '<tr><td colspan="7" class="section">📋 正常工时明细（' + normalRows.length + ' 条）</td></tr>';
-    h += '<tr><td class="th">日期</td><td class="th">星期</td><td class="th">工时类型</td><td class="th">时长(小时)</td><td class="th">描述</td><td class="th">驻站</td><td class="th">驻站补贴(元)</td></tr>';
-    normalRows.forEach((r, i) => {
-      const dt = parseDateKey(r.dateKey);
-      const wd = weekdays[dt.getDay()];
-      const isWeekend = dt.getDay() === 0 || dt.getDay() === 6;
-      const otLabel = r.ot === 'holiday' ? '法定加班' : '正常';
-      h += '<tr class="' + (i % 2 === 1 ? 'alt' : '') + '">';
-      h += '<td class="center' + (isWeekend ? ' weekend' : '') + '">' + (month + 1) + '月' + r.day + '日</td>';
-      h += '<td class="center' + (isWeekend ? ' weekend' : '') + '">' + wd + '</td>';
-      h += '<td class="center">' + otLabel + '</td>';
-      h += '<td class="center">' + fmtH(r.hours) + '</td>';
-      h += '<td>' + escapeHtml(r.description || '') + '</td>';
-      h += '<td class="center">' + (r.isStation ? '是' : '') + '</td>';
-      h += '<td class="center money">' + (r.isStation ? fmtMoney(r.stationSalary) : '') + '</td>';
-      h += '</tr>';
+  if(normalRows.length>0){
+    h+='<tr><td colspan="7" class="section">📋 正常工时明细（'+normalRows.length+' 条）</td></tr>';
+    h+='<tr><td class="th">日期</td><td class="th">星期</td><td class="th">工时类型</td><td class="th">时长(小时)</td><td class="th">描述</td><td class="th">驻站</td><td class="th">驻站补贴(元)</td></tr>';
+    normalRows.forEach((r,i)=>{
+      const dt=parseDateKey(r.dateKey);const wd=weekdays[dt.getDay()];const isWeekend=dt.getDay()===0||dt.getDay()===6;
+      const otLabel=r.ot==='holiday'?'法定加班':'正常';
+      h+='<tr class="'+(i%2===1?'alt':'')+'">';
+      h+='<td class="center'+(isWeekend?' weekend':'')+'">'+(month+1)+'月'+r.day+'日</td>';
+      h+='<td class="center'+(isWeekend?' weekend':'')+'">'+wd+'</td>';
+      h+='<td class="center">'+otLabel+'</td>';
+      h+='<td class="center">'+fmtH(r.hours)+'</td>';
+      h+='<td>'+escapeHtml(r.description||'')+'</td>';
+      h+='<td class="center">'+(r.isStation?'是':'')+'</td>';
+      h+='<td class="center money">'+(r.isStation?fmtMoney(r.stationSalary):'')+'</td>';
+      h+='</tr>';
     });
   }
-
-  if (fieldRows.length > 0) {
-    h += '<tr><td colspan="7"></td></tr>';
-    h += '<tr><td colspan="7" class="section">🚗 外勤工作明细（' + fieldRows.length + ' 条）</td></tr>';
-    h += '<tr><td class="th">日期</td><td class="th">星期</td><td class="th">描述</td><td class="th">计薪方式</td><td class="th">时长(小时)</td><td class="th">单价(元)</td><td class="th">金额(元)</td></tr>';
-    fieldRows.forEach((r, i) => {
-      const dt = parseDateKey(r.dateKey);
-      const wd = weekdays[dt.getDay()];
-      const isWeekend = dt.getDay() === 0 || dt.getDay() === 6;
-      const payLabel = r.paymentType === 'hourly' ? '按时薪' : '按次数';
-      const hoursText = r.paymentType === 'hourly' ? fmtH(r.hours) : '—';
-      const rateText = r.paymentType === 'hourly' ? fmtMoney(r.rate) : fmtMoney(r.fixed);
-      h += '<tr class="' + (i % 2 === 1 ? 'alt' : '') + '">';
-      h += '<td class="center' + (isWeekend ? ' weekend' : '') + '">' + (month + 1) + '月' + r.day + '日</td>';
-      h += '<td class="center' + (isWeekend ? ' weekend' : '') + '">' + wd + '</td>';
-      h += '<td>' + escapeHtml(r.description || '') + '</td>';
-      h += '<td class="center">' + payLabel + '</td>';
-      h += '<td class="center">' + hoursText + '</td>';
-      h += '<td class="center">' + rateText + '</td>';
-      h += '<td class="center money">' + fmtMoney(r.total) + '</td>';
-      h += '</tr>';
+  if(fieldRows.length>0){
+    h+='<tr><td colspan="7"></td></tr>';
+    h+='<tr><td colspan="7" class="section">🚗 外勤工作明细（'+fieldRows.length+' 条）</td></tr>';
+    h+='<tr><td class="th">日期</td><td class="th">星期</td><td class="th">描述</td><td class="th">计薪方式</td><td class="th">时长(小时)</td><td class="th">单价(元)</td><td class="th">金额(元)</td></tr>';
+    fieldRows.forEach((r,i)=>{
+      const dt=parseDateKey(r.dateKey);const wd=weekdays[dt.getDay()];const isWeekend=dt.getDay()===0||dt.getDay()===6;
+      const payLabel=r.paymentType==='hourly'?'按时薪':'按次数';
+      const hoursText=r.paymentType==='hourly'?fmtH(r.hours):'—';
+      const rateText=r.paymentType==='hourly'?fmtMoney(r.rate):fmtMoney(r.fixed);
+      h+='<tr class="'+(i%2===1?'alt':'')+'">';
+      h+='<td class="center'+(isWeekend?' weekend':'')+'">'+(month+1)+'月'+r.day+'日</td>';
+      h+='<td class="center'+(isWeekend?' weekend':'')+'">'+wd+'</td>';
+      h+='<td>'+escapeHtml(r.description||'')+'</td>';
+      h+='<td class="center">'+payLabel+'</td>';
+      h+='<td class="center">'+hoursText+'</td>';
+      h+='<td class="center">'+rateText+'</td>';
+      h+='<td class="center money">'+fmtMoney(r.total)+'</td>';
+      h+='</tr>';
     });
   }
-
-  h += '<tr><td colspan="7"></td></tr>';
-  h += '<tr><td colspan="7" class="section">📊 工时汇总</td></tr>';
-
-  function sumRow(label, value, sub) {
-    const labelCls = sub ? 'sum-label sum-sub' : 'sum-label';
-    const valCls = sub ? 'sum-val sum-sub' : 'sum-val';
-    return '<tr><td colspan="4" class="' + labelCls + '">' + label + '</td><td colspan="3" class="' + valCls + '">' + value + '</td></tr>';
+  h+='<tr><td colspan="7"></td></tr>';
+  h+='<tr><td colspan="7" class="section">📊 工时汇总</td></tr>';
+  function sumRow(label,value,sub){const lc=sub?'sum-label sum-sub':'sum-label';const vc=sub?'sum-val sum-sub':'sum-val';return '<tr><td colspan="4" class="'+lc+'">'+label+'</td><td colspan="3" class="'+vc+'">'+value+'</td></tr>';}
+  h+=sumRow('正常工时',fmtH(normalHours)+' 小时');
+  h+=sumRow('法定加班工时',fmtH(otHoliday)+' 小时');
+  h+=sumRow('合计（正常 + 法定）',fmtH(hoursForBase)+' 小时');
+  h+=sumRow('基础工时',basicHours+' 小时');
+  h+=sumRow('超时工时（正常超出基础部分）',fmtH(overtimeHours)+' 小时');
+  h+=sumRow('外勤工时（仅按时薪）',fmtH(fieldHoursSum)+' 小时');
+  h+=sumRow('驻站次数',stationCount+' 次');
+  h+='<tr><td colspan="7"></td></tr>';
+  h+='<tr><td colspan="7" class="section">💰 工资明细</td></tr>';
+  if(basePayFull){
+    h+=sumRow('基础工资（合计 '+fmtH(hoursForBase)+' ≥ '+basicHours+'，全额）',fmtMoney(basePay)+' 元');
+  }else{
+    h+=sumRow('基础工资（正常 '+fmtH(normalHours)+' / '+basicHours+' = '+(normalHours/basicHours*100).toFixed(1)+'%）',fmtMoney(basePay)+' 元');
   }
-
-  h += sumRow('正常工时', fmtH(normalHours) + ' 小时');
-  h += sumRow('法定加班工时', fmtH(otHoliday) + ' 小时');
-  h += sumRow('合计（正常 + 法定）', fmtH(hoursForBase) + ' 小时');
-  h += sumRow('基础工时', basicHours + ' 小时');
-  h += sumRow('超时工时（正常超出基础部分）', fmtH(overtimeHours) + ' 小时');
-  h += sumRow('外勤工时（仅按时薪）', fmtH(fieldHoursSum) + ' 小时');
-  h += sumRow('驻站次数', stationCount + ' 次');
-
-  h += '<tr><td colspan="7"></td></tr>';
-  h += '<tr><td colspan="7" class="section">💰 工资明细</td></tr>';
-
-  h += sumRow(
-    basePayFull ? '基础工资（合计 ≥ 基础工时，全额）' : '基础工资（按 ' + (hoursForBase / basicHours * 100).toFixed(1) + '% 比例）',
-    fmtMoney(basePay) + ' 元'
-  );
-  h += sumRow('超时加班费（' + fmtH(overtimeHours) + 'H × ' + fmtMoney(s.overtimeRate) + '）', fmtMoney(regularOTPay) + ' 元');
-  h += sumRow('法定节假日加班费（' + fmtH(otHoliday) + 'H × ' + fmtMoney(s.otRateHoliday) + '）', fmtMoney(otHolidayPay) + ' 元');
-  h += sumRow('驻站补贴', fmtMoney(stationPay) + ' 元');
-  h += sumRow('外勤工资', fmtMoney(fieldPay) + ' 元');
-  h += sumRow('额外补贴', fmtMoney(allowanceTotal) + ' 元');
-  h += sumRow('应发合计', fmtMoney(gross) + ' 元');
-  h += sumRow('社保扣除', '− ' + fmtMoney(social) + ' 元');
-
-  h += '<tr><td colspan="4" class="total-row">💰 预计实发</td><td colspan="3" class="total-row" style="text-align:right;">' + fmtMoney(net) + ' 元</td></tr>';
-
-  if (allowances.length > 0) {
-    h += '<tr><td colspan="7"></td></tr>';
-    h += '<tr><td colspan="7" class="section">🎁 额外补贴明细（每周期）</td></tr>';
-    allowances.forEach(a => {
-      h += sumRow('　' + escapeHtml(a.name || '补贴'), fmtMoney(a.amount) + ' 元', true);
-    });
-    h += sumRow('　补贴合计', fmtMoney(allowanceTotal) + ' 元', true);
+  h+=sumRow('超时加班费（'+fmtH(overtimeHours)+'H × '+fmtMoney(s.overtimeRate)+'）',fmtMoney(regularOTPay)+' 元');
+  h+=sumRow('法定节假日加班费（'+fmtH(otHoliday)+'H × '+fmtMoney(s.otRateHoliday)+'）',fmtMoney(otHolidayPay)+' 元');
+  h+=sumRow('驻站补贴',fmtMoney(stationPay)+' 元');
+  h+=sumRow('外勤工资',fmtMoney(fieldPay)+' 元');
+  h+=sumRow('额外补贴',fmtMoney(allowanceTotal)+' 元');
+  h+=sumRow('应发合计',fmtMoney(gross)+' 元');
+  h+=sumRow('社保扣除','− '+fmtMoney(social)+' 元');
+  h+='<tr><td colspan="4" class="total-row">💰 预计实发</td><td colspan="3" class="total-row" style="text-align:right;">'+fmtMoney(net)+' 元</td></tr>';
+  if(allowances.length>0){
+    h+='<tr><td colspan="7"></td></tr>';
+    h+='<tr><td colspan="7" class="section">🎁 额外补贴明细（每周期）</td></tr>';
+    allowances.forEach(a=>{h+=sumRow('　'+escapeHtml(a.name||'补贴'),fmtMoney(a.amount)+' 元',true);});
+    h+=sumRow('　补贴合计',fmtMoney(allowanceTotal)+' 元',true);
   }
-
-  h += '<tr><td colspan="7" class="footer">本表由「个人工时记录」生成 · 仅包含 ' + year + '年' + (month + 1) + '月 的数据 · 金额按当前设置估算</td></tr>';
-
-  h += '</table></body></html>';
-
-  const blob = new Blob(['\uFEFF' + h], { type: 'application/vnd.ms-excel;charset=utf-8' });
-  downloadBlob(blob, `工时记录_${year}${pad2(month + 1)}.xls`);
-  showToast(`已导出 ${year}年${month + 1}月 的工时记录（${rows.length} 条）`);
+  h+='<tr><td colspan="7" class="footer">本表由「个人工时记录」生成 · 仅包含 '+year+'年'+(month+1)+'月 的数据 · 金额按当前设置估算</td></tr>';
+  h+='</table></body></html>';
+  const blob=new Blob(['\uFEFF'+h],{type:'application/vnd.ms-excel;charset=utf-8'});
+  downloadBlob(blob,`工时记录_${year}${pad2(month+1)}.xls`);
+  showToast(`已导出 ${year}年${month+1}月 的工时记录（${rows.length} 条）`);
 }
 
-/* ============================================================
- * JSON 备份 / 恢复
- * ============================================================ */
-function exportToJSON() {
-  const payload = {
-    app: APP_ID,
-    version: SCHEMA_VERSION,
-    exportedAt: new Date().toISOString(),
-    settings: state.settings,
-    workData: state.workData
+function exportToJSON(){const payload={app:APP_ID,version:SCHEMA_VERSION,exportedAt:new Date().toISOString(),settings:state.settings,workData:state.workData};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});downloadBlob(blob,`工时备份_${todayStamp()}.json`);showToast('备份已导出');}
+function todayStamp(){const d=new Date();return `${d.getFullYear()}${pad2(d.getMonth()+1)}${pad2(d.getDate())}`;}
+function downloadBlob(blob,filename){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1500);}
+
+function handleImportFile(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const raw=JSON.parse(reader.result);const payload=normalizeImportPayload(raw);
+      const mode=confirm('数据校验通过：\n· 记录日期：'+Object.keys(payload.workData).length+' 天\n· 补贴项：'+payload.settings.extraAllowances.length+' 项\n· 备份版本：v'+payload.version+'\n\n点击【确定】= 覆盖现有数据\n点击【取消】= 与现有数据合并')?'replace':'merge';
+      if(mode==='replace'){state.workData=payload.workData;state.settings=payload.settings;}
+      else{for(const dk in payload.workData){if(!state.workData[dk])state.workData[dk]=[];const existing=new Set(state.workData[dk].map(r=>r.id));payload.workData[dk].forEach(r=>{if(!existing.has(r.id))state.workData[dk].push(r);});}state.settings=payload.settings;}
+      saveState();fillSettingsForm();refreshAll();showToast(mode==='replace'?'数据已覆盖导入':'数据已合并导入');
+    }catch(err){console.error(err);showToast('导入失败：'+(err.message||'文件格式错误'),{type:'error'});}
   };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
-  downloadBlob(blob, `工时备份_${todayStamp()}.json`);
-  showToast('备份已导出');
+  reader.onerror=()=>showToast('读取文件失败',{type:'error'});
+  reader.readAsText(file,'utf-8');
 }
-
-function todayStamp() {
-  const d = new Date();
-  return `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}`;
-}
-
-function downloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1500);
-}
-
-function handleImportFile(file) {
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const raw = JSON.parse(reader.result);
-      const payload = normalizeImportPayload(raw);
-      const mode = confirm(
-        '数据校验通过：\n' +
-        `· 记录日期：${Object.keys(payload.workData).length} 天\n` +
-        `· 补贴项：${payload.settings.extraAllowances.length} 项\n` +
-        `· 备份版本：v${payload.version}\n\n` +
-        '点击【确定】= 覆盖现有数据\n点击【取消】= 与现有数据合并'
-      ) ? 'replace' : 'merge';
-      if (mode === 'replace') {
-        state.workData = payload.workData;
-        state.settings = payload.settings;
-      } else {
-        for (const dk in payload.workData) {
-          if (!state.workData[dk]) state.workData[dk] = [];
-          const existing = new Set(state.workData[dk].map(r => r.id));
-          payload.workData[dk].forEach(r => {
-            if (!existing.has(r.id)) state.workData[dk].push(r);
-          });
-        }
-        state.settings = payload.settings;
-      }
-      saveState();
-      fillSettingsForm();
-      refreshAll();
-      showToast(mode === 'replace' ? '数据已覆盖导入' : '数据已合并导入');
-    } catch (err) {
-      console.error(err);
-      showToast('导入失败：' + (err.message || '文件格式错误'), { type: 'error' });
-    }
-  };
-  reader.onerror = () => showToast('读取文件失败', { type: 'error' });
-  reader.readAsText(file, 'utf-8');
-}
-
-function normalizeImportPayload(raw) {
-  if (!raw || typeof raw !== 'object') throw new Error('文件内容不是有效对象');
-  let version = parseInt(raw.version || raw.schemaVersion || 1, 10) || 1;
-  let workData = raw.workData;
-  let settings = raw.settings || {};
-  if (!workData || typeof workData !== 'object' || Array.isArray(workData)) {
-    throw new Error('缺少 workData 字段');
-  }
-  if (version < 2) {
-    settings = migrateSettingsV1toV2(settings);
-    const wd = {};
-    for (const dk in workData) {
-      if (!Array.isArray(workData[dk])) continue;
-      wd[dk] = workData[dk].map(migrateRecordV1toV2);
-    }
-    workData = wd;
-    version = 2;
-  }
-  const clean = {};
-  for (const dk in workData) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(dk)) continue;
-    if (!Array.isArray(workData[dk])) continue;
-    const list = workData[dk].filter(r => r && typeof r === 'object' && (r.type === 'normal' || r.type === 'field'));
-    if (list.length === 0) continue;
-    clean[dk] = list.map(r => {
-      const rec = { ...r };
-      if (!rec.id) rec.id = generateId();
-      if (rec.type === 'normal') {
-        rec.hours = Math.max(0, Number(rec.hours) || 0);
-        rec.stationSalary = Math.max(0, Math.round(Number(rec.stationSalary) || 0));
-        rec.isStation = !!rec.isStation;
-        rec.ot = rec.ot === 'holiday' ? 'holiday' : 'none';
-      } else {
-        rec.hours = Math.max(0, Number(rec.hours) || 0);
-        if (rec.paymentType !== 'hourly' && rec.paymentType !== 'fixed') rec.paymentType = 'fixed';
-        rec.rate = Math.max(0, Math.round(Number(rec.rate) || 0));
-        rec.fixed = Math.max(0, Math.round(Number(rec.fixed) || 0));
-        rec.total = Math.max(0, Math.round(Number(rec.total) || 0));
-      }
+function normalizeImportPayload(raw){
+  if(!raw||typeof raw!=='object')throw new Error('文件内容不是有效对象');
+  let version=parseInt(raw.version||raw.schemaVersion||1,10)||1;
+  let workData=raw.workData;let settings=raw.settings||{};
+  if(!workData||typeof workData!=='object'||Array.isArray(workData))throw new Error('缺少 workData 字段');
+  if(version<2){settings=migrateSettingsV1toV2(settings);const wd={};for(const dk in workData){if(!Array.isArray(workData[dk]))continue;wd[dk]=workData[dk].map(migrateRecordV1toV2);}workData=wd;version=2;}
+  const clean={};
+  for(const dk in workData){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(dk))continue;
+    if(!Array.isArray(workData[dk]))continue;
+    const list=workData[dk].filter(r=>r&&typeof r==='object'&&(r.type==='normal'||r.type==='field'));
+    if(list.length===0)continue;
+    clean[dk]=list.map(r=>{
+      const rec={...r};if(!rec.id)rec.id=generateId();
+      if(rec.type==='normal'){rec.hours=Math.max(0,Number(rec.hours)||0);rec.stationSalary=Math.max(0,Math.round(Number(rec.stationSalary)||0));rec.isStation=!!rec.isStation;rec.ot=rec.ot==='holiday'?'holiday':'none';}
+      else{rec.hours=Math.max(0,Number(rec.hours)||0);if(rec.paymentType!=='hourly'&&rec.paymentType!=='fixed')rec.paymentType='fixed';rec.rate=Math.max(0,Math.round(Number(rec.rate)||0));rec.fixed=Math.max(0,Math.round(Number(rec.fixed)||0));rec.total=Math.max(0,Math.round(Number(rec.total)||0));}
       return sanitizeRecordOt(rec);
     });
   }
-  return { version: SCHEMA_VERSION, workData: clean, settings: normalizeSettings(settings) };
+  return{version:SCHEMA_VERSION,workData:clean,settings:normalizeSettings(settings)};
 }
 
-/* ============================================================
- * 补贴项渲染
- * ============================================================ */
-function renderAllowanceList() {
-  el.allowanceList.innerHTML = '';
-  const allowances = state.settings.extraAllowances || [];
-  if (allowances.length === 0) {
-    const empty = document.createElement('div');
-    empty.className = 'allowance-empty';
-    empty.textContent = '暂无补贴项，点击下方按钮添加';
-    el.allowanceList.appendChild(empty);
-    return;
-  }
-  const frag = document.createDocumentFragment();
-  allowances.forEach(a => {
-    frag.appendChild(createAllowanceRow(a));
+function renderAllowanceList(){el.allowanceList.innerHTML='';const allowances=state.settings.extraAllowances||[];if(allowances.length===0){const empty=document.createElement('div');empty.className='allowance-empty';empty.textContent='暂无补贴项，点击下方按钮添加';el.allowanceList.appendChild(empty);return;}const frag=document.createDocumentFragment();allowances.forEach(a=>{frag.appendChild(createAllowanceRow(a));});el.allowanceList.appendChild(frag);}
+function createAllowanceRow(a){const row=document.createElement('div');row.className='allowance-item';row.dataset.id=a.id||generateId();const nameInput=document.createElement('input');nameInput.type='text';nameInput.className='allowance-name';nameInput.placeholder='补贴名称';nameInput.maxLength=20;nameInput.value=a.name||'';const amountInput=document.createElement('input');amountInput.type='number';amountInput.className='allowance-amount';amountInput.placeholder='金额';amountInput.min='0';amountInput.step='0.01';amountInput.inputMode='decimal';amountInput.value=a.amount?cent2yuan(a.amount).toFixed(2):'';const delBtn=document.createElement('button');delBtn.type='button';delBtn.className='allowance-del';delBtn.innerHTML='<i class="fas fa-times"></i>';delBtn.setAttribute('aria-label','删除此补贴项');delBtn.addEventListener('click',()=>{row.remove();if(el.allowanceList.querySelectorAll('.allowance-item').length===0){const empty=document.createElement('div');empty.className='allowance-empty';empty.textContent='暂无补贴项，点击下方按钮添加';el.allowanceList.appendChild(empty);}});row.appendChild(nameInput);row.appendChild(amountInput);row.appendChild(delBtn);return row;}
+function collectAllowances(){const empty=el.allowanceList.querySelector('.allowance-empty');if(empty)empty.remove();const rows=el.allowanceList.querySelectorAll('.allowance-item');const result=[];rows.forEach(row=>{const name=(row.querySelector('.allowance-name').value||'').trim();const amount=yuan2cent(row.querySelector('.allowance-amount').value);if(!name&&amount===0)return;result.push({id:row.dataset.id||generateId(),name:name||'补贴',amount:Math.max(0,amount)});});return result;}
+
+function fillSettingsForm(){const s=state.settings;el.basicHoursInput.value=s.basicHours;el.basicSalaryInput.value=cent2yuan(s.basicSalary).toFixed(2);el.overtimeRateInput.value=cent2yuan(s.overtimeRate).toFixed(2);el.stationSalaryInput.value=cent2yuan(s.stationSalary).toFixed(2);el.otHolidayInput.value=cent2yuan(s.otRateHoliday).toFixed(2);el.cycleStartInput.value=s.cycleStartDay;el.deductSocialSecurity.checked=s.deductSocialSecurity;el.socialSecurityInput.value=cent2yuan(s.socialSecurityAmount).toFixed(2);el.socialSecurityAmountGroup.style.display=s.deductSocialSecurity?'block':'none';el.stationHint.textContent=fmtMoney(s.stationSalary);el.themeSelect.value=localStorage.getItem(LS_THEME)||'auto';renderAllowanceList();updateOtRateHint();}
+function saveSettings(){const s=state.settings;s.basicHours=Math.max(1,parseFloat(el.basicHoursInput.value)||174);s.basicSalary=yuan2cent(el.basicSalaryInput.value);s.overtimeRate=yuan2cent(el.overtimeRateInput.value);s.stationSalary=yuan2cent(el.stationSalaryInput.value);s.otRateHoliday=yuan2cent(el.otHolidayInput.value);s.cycleStartDay=clamp(parseInt(el.cycleStartInput.value,10)||1,1,28);s.deductSocialSecurity=el.deductSocialSecurity.checked;s.socialSecurityAmount=yuan2cent(el.socialSecurityInput.value);s.extraAllowances=collectAllowances();saveState();el.stationHint.textContent=fmtMoney(s.stationSalary);updateOtRateHint();refreshAll();showToast('设置已保存');}
+function clearAllData(){if(!confirm('确定要清除所有数据吗？此操作不可恢复！\n建议先导出 JSON 备份。'))return;try{localStorage.removeItem(LS_DATA);localStorage.removeItem(LS_SETTINGS);localStorage.removeItem(LS_VERSION);}catch(e){}state.workData={};state.settings=normalizeSettings({});saveState();fillSettingsForm();refreshAll();showToast('所有数据已清除');}
+
+function changeMonth(delta){const d=state.currentDate;state.currentDate=new Date(d.getFullYear(),d.getMonth()+delta,1);refreshAll();}
+function goToToday(){state.currentDate=new Date();refreshAll();}
+
+function setupPWA(){try{const iconSvg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="104" fill="#3498db"/><text x="256" y="340" font-size="250" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="700">工</text></svg>`;const iconUrl='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(iconSvg)));$('apple-icon').href=iconUrl;const manifest={name:'个人工时记录系统',short_name:'工时记录',start_url:'.',scope:'.',display:'standalone',orientation:'portrait',background_color:'#f5f7fa',theme_color:'#3498db',description:'记录工作时间，自动计算工资',icons:[{src:iconUrl,sizes:'512x512',type:'image/svg+xml',purpose:'any'},{src:iconUrl,sizes:'512x512',type:'image/svg+xml',purpose:'maskable'}]};const manifestBlob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});$('manifest-link').href=URL.createObjectURL(manifestBlob);}catch(e){console.warn('PWA manifest 生成失败',e);}}
+
+function setupEventListeners(){
+  el.prevMonth.addEventListener('click',()=>changeMonth(-1));
+  el.nextMonth.addEventListener('click',()=>changeMonth(1));
+  el.todayBtn.addEventListener('click',goToToday);
+  el.calendarGrid.addEventListener('click',e=>{const cell=e.target.closest('.calendar-day');if(!cell||cell.classList.contains('other-month'))return;const dk=cell.dataset.datekey;if(!dk)return;const d=parseDateKey(dk);openWorkModal(d.getFullYear(),d.getMonth(),d.getDate());});
+  el.calendarGrid.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const cell=e.target.closest('.calendar-day');if(!cell||cell.classList.contains('other-month'))return;e.preventDefault();const dk=cell.dataset.datekey;if(!dk)return;const d=parseDateKey(dk);openWorkModal(d.getFullYear(),d.getMonth(),d.getDate());});
+  let lpTimer=null,lpStartX=0,lpStartY=0,lpCell=null;
+  el.calendarGrid.addEventListener('touchstart',e=>{const cell=e.target.closest('.calendar-day');if(!cell||cell.classList.contains('other-month'))return;const t=e.touches[0];lpStartX=t.clientX;lpStartY=t.clientY;lpCell=cell;lpTimer=setTimeout(()=>{lpTimer=null;if(lpCell&&lpCell.dataset.datekey){if(navigator.vibrate){try{navigator.vibrate(12);}catch(err){}}openCtxMenu(lpCell.dataset.datekey,lpStartX,lpStartY);}},480);},{passive:true});
+  const cancelLP=()=>{if(lpTimer){clearTimeout(lpTimer);lpTimer=null;}lpCell=null;};
+  el.calendarGrid.addEventListener('touchend',cancelLP);
+  el.calendarGrid.addEventListener('touchcancel',cancelLP);
+  el.calendarGrid.addEventListener('touchmove',e=>{if(!lpTimer)return;const t=e.touches[0];if(Math.abs(t.clientX-lpStartX)>10||Math.abs(t.clientY-lpStartY)>10)cancelLP();},{passive:true});
+  el.calendarGrid.addEventListener('contextmenu',e=>{const cell=e.target.closest('.calendar-day');if(!cell||cell.classList.contains('other-month'))return;if(!cell.dataset.datekey)return;e.preventDefault();openCtxMenu(cell.dataset.datekey,e.clientX,e.clientY);});
+  document.addEventListener('click',e=>{if(!el.ctxMenu.classList.contains('open'))return;if(el.ctxMenu.contains(e.target))return;closeCtxMenu();});
+  document.addEventListener('scroll',closeCtxMenu,true);
+  window.addEventListener('resize',closeCtxMenu);
+  let swX=0,swY=0,swActive=false;
+  el.calendarSection.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;swX=e.touches[0].clientX;swY=e.touches[0].clientY;swActive=true;},{passive:true});
+  el.calendarSection.addEventListener('touchend',e=>{if(!swActive)return;swActive=false;const dx=e.changedTouches[0].clientX-swX;const dy=e.changedTouches[0].clientY-swY;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.6){changeMonth(dx<0?1:-1);}},{passive:true});
+  el.closeModal.addEventListener('click',closeWorkModal);
+  el.workModal.addEventListener('click',e=>{if(e.target===el.workModal)closeWorkModal();});
+  el.saveWork.addEventListener('click',saveWorkRecord);
+  document.addEventListener('keydown',e=>{
+    if(!el.workModal.classList.contains('open'))return;
+    if(e.key==='Escape'){e.preventDefault();closeWorkModal();return;}
+    if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();saveWorkRecord();return;}
+    if(e.key==='Tab'){const focusables=el.workModal.querySelectorAll('button:not([disabled]), input:not([disabled]):not([type="hidden"]), select, textarea, [tabindex]:not([tabindex="-1"])');const list=Array.from(focusables).filter(n=>n.offsetParent!==null||n===document.activeElement);if(list.length===0)return;const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
   });
-  el.allowanceList.appendChild(frag);
+  el.workDate.addEventListener('change',()=>renderRecordsList(el.workDate.value));
+  el.workTypeSeg.addEventListener('click',e=>{const btn=e.target.closest('.seg-btn');if(!btn)return;setSegActive(el.workTypeSeg,'type',btn.dataset.type);toggleWorkType(btn.dataset.type);});
+  el.otSeg.addEventListener('click',e=>{const btn=e.target.closest('.seg-btn');if(!btn)return;setSegActive(el.otSeg,'ot',btn.dataset.ot);updateOtRateHint();});
+  el.paymentSeg.addEventListener('click',e=>{const btn=e.target.closest('.seg-btn');if(!btn)return;setSegActive(el.paymentSeg,'pay',btn.dataset.pay);togglePaymentType(btn.dataset.pay);});
+  el.fieldHours.addEventListener('input',calculateFieldTotal);
+  el.fieldRate.addEventListener('input',calculateFieldTotal);
+  el.fieldFixed.addEventListener('input',calculateFieldTotal);
+  el.recordsList.addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const id=btn.dataset.id;const dateKey=el.workDate.value;if(!dateKey||!id)return;if(btn.dataset.action==='edit'){const rec=(state.workData[dateKey]||[]).find(r=>r.id===id);if(rec)editRecord(dateKey,rec);}else if(btn.dataset.action==='delete'){deleteRecord(dateKey,id);}});
+  el.addRecord.addEventListener('click',()=>{state.editing.record=null;state.editing.originalDateKey=null;el.workDate.disabled=false;el.modalTitle.innerHTML='<i class="fas fa-edit"></i> 记录工时';resetWorkForm();el.workHours.focus();});
+  el.tabs.forEach(tab=>{tab.addEventListener('click',()=>{const id=tab.dataset.tab;el.tabs.forEach(t=>{const on=t===tab;t.classList.toggle('active',on);t.setAttribute('aria-selected',on?'true':'false');});el.tabContents.forEach(c=>c.classList.toggle('active',c.id===`${id}-tab`));if(id==='stats')requestAnimationFrame(()=>drawChart(state._lastDaily||[]));});});
+  el.deductSocialSecurity.addEventListener('change',function(){el.socialSecurityAmountGroup.style.display=this.checked?'block':'none';});
+  el.saveSettings.addEventListener('click',saveSettings);
+  el.clearData.addEventListener('click',clearAllData);
+  el.addAllowance.addEventListener('click',()=>{const empty=el.allowanceList.querySelector('.allowance-empty');if(empty)empty.remove();const row=createAllowanceRow({id:generateId(),name:'',amount:0});el.allowanceList.appendChild(row);const nameInput=row.querySelector('.allowance-name');if(nameInput)nameInput.focus();});
+  el.themeSelect.addEventListener('change',()=>{localStorage.setItem(LS_THEME,el.themeSelect.value);applyTheme();});
+  el.exportData.addEventListener('click',exportMonthToXLS);
+  el.exportJson.addEventListener('click',exportToJSON);
+  el.importJson.addEventListener('click',()=>el.importFile.click());
+  el.importFile.addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];handleImportFile(f);e.target.value='';});
+  const mq=window.matchMedia('(prefers-color-scheme: dark)');
+  if(mq.addEventListener)mq.addEventListener('change',applyTheme);
+  else if(mq.addListener)mq.addListener(applyTheme);
+  let rzTimer=null;
+  window.addEventListener('resize',()=>{if(rzTimer)clearTimeout(rzTimer);rzTimer=setTimeout(()=>drawChart(state._lastDaily||[]),120);});
+  document.addEventListener('keydown',e=>{if(el.workModal.classList.contains('open'))return;const tag=(document.activeElement&&document.activeElement.tagName)||'';if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;if(e.key==='ArrowLeft'&&e.altKey){changeMonth(-1);}else if(e.key==='ArrowRight'&&e.altKey){changeMonth(1);}});
 }
 
-function createAllowanceRow(a) {
-  const row = document.createElement('div');
-  row.className = 'allowance-item';
-  row.dataset.id = a.id || generateId();
-  const nameInput = document.createElement('input');
-  nameInput.type = 'text';
-  nameInput.className = 'allowance-name';
-  nameInput.placeholder = '补贴名称';
-  nameInput.maxLength = 20;
-  nameInput.value = a.name || '';
-  const amountInput = document.createElement('input');
-  amountInput.type = 'number';
-  amountInput.className = 'allowance-amount';
-  amountInput.placeholder = '金额';
-  amountInput.min = '0';
-  amountInput.step = '0.01';
-  amountInput.inputMode = 'decimal';
-  amountInput.value = a.amount ? cent2yuan(a.amount).toFixed(2) : '';
-  const delBtn = document.createElement('button');
-  delBtn.type = 'button';
-  delBtn.className = 'allowance-del';
-  delBtn.innerHTML = '<i class="fas fa-times"></i>';
-  delBtn.setAttribute('aria-label', '删除此补贴项');
-  delBtn.addEventListener('click', () => {
-    row.remove();
-    if (el.allowanceList.querySelectorAll('.allowance-item').length === 0) {
-      const empty = document.createElement('div');
-      empty.className = 'allowance-empty';
-      empty.textContent = '暂无补贴项，点击下方按钮添加';
-      el.allowanceList.appendChild(empty);
-    }
-  });
-  row.appendChild(nameInput);
-  row.appendChild(amountInput);
-  row.appendChild(delBtn);
-  return row;
-}
-
-function collectAllowances() {
-  const empty = el.allowanceList.querySelector('.allowance-empty');
-  if (empty) empty.remove();
-  const rows = el.allowanceList.querySelectorAll('.allowance-item');
-  const result = [];
-  rows.forEach(row => {
-    const name = (row.querySelector('.allowance-name').value || '').trim();
-    const amount = yuan2cent(row.querySelector('.allowance-amount').value);
-    if (!name && amount === 0) return;
-    result.push({
-      id: row.dataset.id || generateId(),
-      name: name || '补贴',
-      amount: Math.max(0, amount)
-    });
-  });
-  return result;
-}
-
-/* ============================================================
- * 设置表单
- * ============================================================ */
-function fillSettingsForm() {
-  const s = state.settings;
-  el.basicHoursInput.value = s.basicHours;
-  el.basicSalaryInput.value = cent2yuan(s.basicSalary).toFixed(2);
-  el.overtimeRateInput.value = cent2yuan(s.overtimeRate).toFixed(2);
-  el.stationSalaryInput.value = cent2yuan(s.stationSalary).toFixed(2);
-  el.otHolidayInput.value = cent2yuan(s.otRateHoliday).toFixed(2);
-  el.cycleStartInput.value = s.cycleStartDay;
-  el.deductSocialSecurity.checked = s.deductSocialSecurity;
-  el.socialSecurityInput.value = cent2yuan(s.socialSecurityAmount).toFixed(2);
-  el.socialSecurityAmountGroup.style.display = s.deductSocialSecurity ? 'block' : 'none';
-  el.stationHint.textContent = fmtMoney(s.stationSalary);
-  el.themeSelect.value = localStorage.getItem(LS_THEME) || 'auto';
-  renderAllowanceList();
-  updateOtRateHint();
-}
-
-function saveSettings() {
-  const s = state.settings;
-  s.basicHours = Math.max(1, parseFloat(el.basicHoursInput.value) || 174);
-  s.basicSalary = yuan2cent(el.basicSalaryInput.value);
-  s.overtimeRate = yuan2cent(el.overtimeRateInput.value);
-  s.stationSalary = yuan2cent(el.stationSalaryInput.value);
-  s.otRateHoliday = yuan2cent(el.otHolidayInput.value);
-  s.cycleStartDay = clamp(parseInt(el.cycleStartInput.value, 10) || 1, 1, 28);
-  s.deductSocialSecurity = el.deductSocialSecurity.checked;
-  s.socialSecurityAmount = yuan2cent(el.socialSecurityInput.value);
-  s.extraAllowances = collectAllowances();
-  saveState();
-  el.stationHint.textContent = fmtMoney(s.stationSalary);
-  updateOtRateHint();
-  refreshAll();
-  showToast('设置已保存');
-}
-
-function clearAllData() {
-  if (!confirm('确定要清除所有数据吗？此操作不可恢复！\n建议先导出 JSON 备份。')) return;
-  try {
-    localStorage.removeItem(LS_DATA);
-    localStorage.removeItem(LS_SETTINGS);
-    localStorage.removeItem(LS_VERSION);
-  } catch (e) {}
-  state.workData = {};
-  state.settings = normalizeSettings({});
-  saveState();
-  fillSettingsForm();
-  refreshAll();
-  showToast('所有数据已清除');
-}
-
-/* ============================================================
- * 月份切换
- * ============================================================ */
-function changeMonth(delta) {
-  const d = state.currentDate;
-  state.currentDate = new Date(d.getFullYear(), d.getMonth() + delta, 1);
-  refreshAll();
-}
-
-function goToToday() {
-  state.currentDate = new Date();
-  refreshAll();
-}
-
-/* ============================================================
- * PWA
- * ============================================================ */
-function setupPWA() {
-  try {
-    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="104" fill="#3498db"/><text x="256" y="340" font-size="250" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="700">工</text></svg>`;
-    const iconUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(iconSvg)));
-    $('apple-icon').href = iconUrl;
-    const manifest = {
-      name: '个人工时记录系统',
-      short_name: '工时记录',
-      start_url: '.',
-      scope: '.',
-      display: 'standalone',
-      orientation: 'portrait',
-      background_color: '#f5f7fa',
-      theme_color: '#3498db',
-      description: '记录工作时间，自动计算工资',
-      icons: [
-        { src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any' },
-        { src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'maskable' }
-      ]
-    };
-    const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-    $('manifest-link').href = URL.createObjectURL(manifestBlob);
-  } catch (e) {
-    console.warn('PWA manifest 生成失败', e);
-  }
-}
-
-/* ============================================================
- * 事件绑定
- * ============================================================ */
-function setupEventListeners() {
-  el.prevMonth.addEventListener('click', () => changeMonth(-1));
-  el.nextMonth.addEventListener('click', () => changeMonth(1));
-  el.todayBtn.addEventListener('click', goToToday);
-
-  el.calendarGrid.addEventListener('click', e => {
-    const cell = e.target.closest('.calendar-day');
-    if (!cell || cell.classList.contains('other-month')) return;
-    const dk = cell.dataset.datekey;
-    if (!dk) return;
-    const d = parseDateKey(dk);
-    openWorkModal(d.getFullYear(), d.getMonth(), d.getDate());
-  });
-
-  el.calendarGrid.addEventListener('keydown', e => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const cell = e.target.closest('.calendar-day');
-    if (!cell || cell.classList.contains('other-month')) return;
-    e.preventDefault();
-    const dk = cell.dataset.datekey;
-    if (!dk) return;
-    const d = parseDateKey(dk);
-    openWorkModal(d.getFullYear(), d.getMonth(), d.getDate());
-  });
-
-  let lpTimer = null, lpStartX = 0, lpStartY = 0, lpCell = null;
-  el.calendarGrid.addEventListener('touchstart', e => {
-    const cell = e.target.closest('.calendar-day');
-    if (!cell || cell.classList.contains('other-month')) return;
-    const t = e.touches[0];
-    lpStartX = t.clientX; lpStartY = t.clientY; lpCell = cell;
-    lpTimer = setTimeout(() => {
-      lpTimer = null;
-      if (lpCell && lpCell.dataset.datekey) {
-        if (navigator.vibrate) { try { navigator.vibrate(12); } catch (err) {} }
-        openCtxMenu(lpCell.dataset.datekey, lpStartX, lpStartY);
-      }
-    }, 480);
-  }, { passive: true });
-
-  const cancelLP = () => { if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; } lpCell = null; };
-  el.calendarGrid.addEventListener('touchend', cancelLP);
-  el.calendarGrid.addEventListener('touchcancel', cancelLP);
-  el.calendarGrid.addEventListener('touchmove', e => {
-    if (!lpTimer) return;
-    const t = e.touches[0];
-    if (Math.abs(t.clientX - lpStartX) > 10 || Math.abs(t.clientY - lpStartY) > 10) cancelLP();
-  }, { passive: true });
-
-  el.calendarGrid.addEventListener('contextmenu', e => {
-    const cell = e.target.closest('.calendar-day');
-    if (!cell || cell.classList.contains('other-month')) return;
-    if (!cell.dataset.datekey) return;
-    e.preventDefault();
-    openCtxMenu(cell.dataset.datekey, e.clientX, e.clientY);
-  });
-
-  document.addEventListener('click', e => {
-    if (!el.ctxMenu.classList.contains('open')) return;
-    if (el.ctxMenu.contains(e.target)) return;
-    closeCtxMenu();
-  });
-  document.addEventListener('scroll', closeCtxMenu, true);
-  window.addEventListener('resize', closeCtxMenu);
-
-  let swX = 0, swY = 0, swActive = false;
-  el.calendarSection.addEventListener('touchstart', e => {
-    if (e.touches.length !== 1) return;
-    swX = e.touches[0].clientX;
-    swY = e.touches[0].clientY;
-    swActive = true;
-  }, { passive: true });
-  el.calendarSection.addEventListener('touchend', e => {
-    if (!swActive) return;
-    swActive = false;
-    const dx = e.changedTouches[0].clientX - swX;
-    const dy = e.changedTouches[0].clientY - swY;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) {
-      changeMonth(dx < 0 ? 1 : -1);
-    }
-  }, { passive: true });
-
-  el.closeModal.addEventListener('click', closeWorkModal);
-  el.workModal.addEventListener('click', e => {
-    if (e.target === el.workModal) closeWorkModal();
-  });
-  el.saveWork.addEventListener('click', saveWorkRecord);
-
-  document.addEventListener('keydown', e => {
-    if (!el.workModal.classList.contains('open')) return;
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      closeWorkModal();
-      return;
-    }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault();
-      saveWorkRecord();
-      return;
-    }
-    if (e.key === 'Tab') {
-      const focusables = el.workModal.querySelectorAll(
-        'button:not([disabled]), input:not([disabled]):not([type="hidden"]), select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      const list = Array.from(focusables).filter(n => n.offsetParent !== null || n === document.activeElement);
-      if (list.length === 0) return;
-      const first = list[0], last = list[list.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault(); last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault(); first.focus();
-      }
-    }
-  });
-
-  el.workDate.addEventListener('change', () => renderRecordsList(el.workDate.value));
-
-  el.workTypeSeg.addEventListener('click', e => {
-    const btn = e.target.closest('.seg-btn');
-    if (!btn) return;
-    setSegActive(el.workTypeSeg, 'type', btn.dataset.type);
-    toggleWorkType(btn.dataset.type);
-  });
-
-  el.otSeg.addEventListener('click', e => {
-    const btn = e.target.closest('.seg-btn');
-    if (!btn) return;
-    setSegActive(el.otSeg, 'ot', btn.dataset.ot);
-    updateOtRateHint();
-  });
-
-  el.paymentSeg.addEventListener('click', e => {
-    const btn = e.target.closest('.seg-btn');
-    if (!btn) return;
-    setSegActive(el.paymentSeg, 'pay', btn.dataset.pay);
-    togglePaymentType(btn.dataset.pay);
-  });
-
-  el.fieldHours.addEventListener('input', calculateFieldTotal);
-  el.fieldRate.addEventListener('input', calculateFieldTotal);
-  el.fieldFixed.addEventListener('input', calculateFieldTotal);
-
-  el.recordsList.addEventListener('click', e => {
-    const btn = e.target.closest('[data-action]');
-    if (!btn) return;
-    const id = btn.dataset.id;
-    const dateKey = el.workDate.value;
-    if (!dateKey || !id) return;
-    if (btn.dataset.action === 'edit') {
-      const rec = (state.workData[dateKey] || []).find(r => r.id === id);
-      if (rec) editRecord(dateKey, rec);
-    } else if (btn.dataset.action === 'delete') {
-      deleteRecord(dateKey, id);
-    }
-  });
-
-  el.addRecord.addEventListener('click', () => {
-    state.editing.record = null;
-    state.editing.originalDateKey = null;
-    el.workDate.disabled = false;
-    el.modalTitle.innerHTML = '<i class="fas fa-edit"></i> 记录工时';
-    resetWorkForm();
-    el.workHours.focus();
-  });
-
-  el.tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const id = tab.dataset.tab;
-      el.tabs.forEach(t => {
-        const on = t === tab;
-        t.classList.toggle('active', on);
-        t.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-      el.tabContents.forEach(c => c.classList.toggle('active', c.id === `${id}-tab`));
-      if (id === 'stats') requestAnimationFrame(() => drawChart(state._lastDaily || []));
-    });
-  });
-
-  el.deductSocialSecurity.addEventListener('change', function () {
-    el.socialSecurityAmountGroup.style.display = this.checked ? 'block' : 'none';
-  });
-  el.saveSettings.addEventListener('click', saveSettings);
-  el.clearData.addEventListener('click', clearAllData);
-
-  el.addAllowance.addEventListener('click', () => {
-    const empty = el.allowanceList.querySelector('.allowance-empty');
-    if (empty) empty.remove();
-    const row = createAllowanceRow({ id: generateId(), name: '', amount: 0 });
-    el.allowanceList.appendChild(row);
-    const nameInput = row.querySelector('.allowance-name');
-    if (nameInput) nameInput.focus();
-  });
-
-  el.themeSelect.addEventListener('change', () => {
-    localStorage.setItem(LS_THEME, el.themeSelect.value);
-    applyTheme();
-  });
-
-  el.exportData.addEventListener('click', exportMonthToXLS);
-  el.exportJson.addEventListener('click', exportToJSON);
-  el.importJson.addEventListener('click', () => el.importFile.click());
-  el.importFile.addEventListener('change', e => {
-    const f = e.target.files && e.target.files[0];
-    handleImportFile(f);
-    e.target.value = '';
-  });
-
-  const mq = window.matchMedia('(prefers-color-scheme: dark)');
-  if (mq.addEventListener) mq.addEventListener('change', applyTheme);
-  else if (mq.addListener) mq.addListener(applyTheme);
-
-  let rzTimer = null;
-  window.addEventListener('resize', () => {
-    if (rzTimer) clearTimeout(rzTimer);
-    rzTimer = setTimeout(() => drawChart(state._lastDaily || []), 120);
-  });
-
-  document.addEventListener('keydown', e => {
-    if (el.workModal.classList.contains('open')) return;
-    const tag = (document.activeElement && document.activeElement.tagName) || '';
-    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
-    if (e.key === 'ArrowLeft' && e.altKey) { changeMonth(-1); }
-    else if (e.key === 'ArrowRight' && e.altKey) { changeMonth(1); }
-  });
-}
-
-/* ============================================================
- * 启动
- * ============================================================ */
-function init() {
-  applyTheme();
-  loadState();
-  fillSettingsForm();
-  setupPWA();
-  setupEventListeners();
-  refreshAll();
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+function init(){applyTheme();loadState();fillSettingsForm();setupPWA();setupEventListeners();refreshAll();}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
 </script>
 </body>
 </html>
