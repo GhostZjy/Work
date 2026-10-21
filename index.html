@@ -65,7 +65,7 @@ header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
 .stats-value.success{color:var(--secondary);}
 .stats-value.danger{color:var(--danger);}
 .stats-value.warning{color:var(--warning);}
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
 .stat-cell{background:var(--surface-2);border-radius:9px;padding:8px 10px;display:flex;flex-direction:column;gap:1px;}
 .stat-cell span{font-size:.68rem;color:var(--text-3);}
 .stat-cell b{font-size:.95rem;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;}
@@ -204,7 +204,6 @@ header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
 
         <div class="stats-grid">
           <div class="stat-cell"><span>正常工时</span><b id="normal-hours">0</b></div>
-          <div class="stat-cell"><span>法定加班</span><b id="ot-hours">0</b></div>
           <div class="stat-cell"><span>超时工时</span><b id="ot-over-hours">0</b></div>
           <div class="stat-cell"><span>外勤工时</span><b id="field-hours">0</b></div>
         </div>
@@ -217,9 +216,9 @@ header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
           <div class="stats-label"><span>超时加班</span><span class="stats-value" id="regular-ot-pay" style="font-size:.95rem;">0.00 元</span></div>
           <div class="ot-rate-detail" id="regular-ot-detail"></div>
         </div>
-        <div class="stats-item" id="ot-pay-item" hidden>
-          <div class="stats-label"><span>法定加班</span><span class="stats-value" id="ot-pay" style="font-size:.95rem;">0.00 元</span></div>
-          <div class="ot-rate-detail" id="ot-rate-detail"></div>
+        <div class="stats-item" id="ot-holiday-item" hidden>
+          <div class="stats-label"><span>法定加班</span><span class="stats-value warning" id="ot-holiday-pay" style="font-size:.95rem;">0.00 元</span></div>
+          <div class="ot-rate-detail" id="ot-holiday-detail"></div>
         </div>
         <div class="stats-item" id="station-item" hidden>
           <div class="stats-label"><span>驻站补贴</span><span class="stats-value" id="station-salary" style="font-size:.95rem;">0.00 元</span></div>
@@ -431,8 +430,8 @@ const el = {
   workModal:$('work-modal'),closeModal:$('close-modal'),saveWork:$('save-work'),modalTitle:$('modal-title'),workTypeSeg:$('work-type-seg'),otSeg:$('ot-seg'),otRateHint:$('ot-rate-hint'),paymentSeg:$('payment-seg'),normalBlock:$('normal-block'),fieldBlock:$('field-block'),workDate:$('work-date'),workHours:$('work-hours'),workDescription:$('work-description'),isStation:$('is-station'),stationHint:$('station-hint'),fieldDescription:$('field-description'),fieldHours:$('field-hours'),fieldHoursGroup:$('field-hours-group'),fieldRate:$('field-rate'),fieldRateGroup:$('field-rate-group'),fieldFixed:$('field-fixed'),fieldFixedGroup:$('field-fixed-group'),fieldTotal:$('field-total'),recordsList:$('records-list'),addRecord:$('add-record'),
   basicHoursInput:$('basic-hours-input'),basicSalaryInput:$('basic-salary-input'),overtimeRateInput:$('overtime-rate-input'),stationSalaryInput:$('station-salary-input'),otHolidayInput:$('ot-holiday-input'),cycleStartInput:$('cycle-start-input'),deductSocialSecurity:$('deduct-social-security'),socialSecurityInput:$('social-security-input'),socialSecurityAmountGroup:$('social-security-amount-group'),themeSelect:$('theme-select'),saveSettings:$('save-settings'),clearData:$('clear-data'),
   allowanceList:$('allowance-list'),addAllowance:$('add-allowance'),allowanceItem:$('allowance-item'),allowanceTotal:$('allowance-total'),allowanceDetail:$('allowance-detail'),
-  basePay:$('base-pay'),basePayHint:$('base-pay-hint'),basePayFormula:$('base-pay-formula'),regularOtItem:$('regular-ot-item'),regularOtPay:$('regular-ot-pay'),regularOtDetail:$('regular-ot-detail'),otPayItem:$('ot-pay-item'),otPay:$('ot-pay'),otRateDetail:$('ot-rate-detail'),stationItem:$('station-item'),stationDetail:$('station-detail'),fieldItem:$('field-item'),fieldPay:$('field-pay'),fieldDetail:$('field-detail'),
-  basicHours:$('basic-hours'),basicHoursPercent:$('basic-hours-percent'),basicHoursProgress:$('basic-hours-progress'),normalHours:$('normal-hours'),otHours:$('ot-hours'),otOverHours:$('ot-over-hours'),fieldHours:$('field-hours'),stationCount:$('station-count'),fieldSalary:$('field-salary'),stationSalary:$('station-salary'),socialSecurityItem:$('social-security-item'),socialSecurityDeduction:$('social-security-deduction'),totalSalary:$('total-salary'),cycleLine:$('cycle-line'),
+  basePay:$('base-pay'),basePayHint:$('base-pay-hint'),basePayFormula:$('base-pay-formula'),regularOtItem:$('regular-ot-item'),regularOtPay:$('regular-ot-pay'),regularOtDetail:$('regular-ot-detail'),otHolidayItem:$('ot-holiday-item'),otHolidayPay:$('ot-holiday-pay'),otHolidayDetail:$('ot-holiday-detail'),stationItem:$('station-item'),stationDetail:$('station-detail'),fieldItem:$('field-item'),fieldPay:$('field-pay'),fieldDetail:$('field-detail'),
+  basicHours:$('basic-hours'),basicHoursPercent:$('basic-hours-percent'),basicHoursProgress:$('basic-hours-progress'),normalHours:$('normal-hours'),otOverHours:$('ot-over-hours'),fieldHours:$('field-hours'),stationCount:$('station-count'),fieldSalary:$('field-salary'),stationSalary:$('station-salary'),socialSecurityItem:$('social-security-item'),socialSecurityDeduction:$('social-security-deduction'),totalSalary:$('total-salary'),cycleLine:$('cycle-line'),
   tabs:document.querySelectorAll('.tab'),tabContents:document.querySelectorAll('.tab-content'),exportData:$('export-data'),exportJson:$('export-json'),importJson:$('import-json'),importFile:$('import-file'),toastHost:$('toast-host'),ctxMenu:$('ctx-menu')
 };
 
@@ -506,7 +505,6 @@ function updateStats(){
     ?'✅ 合计已达基础工时，基础工资全额发放'
     :`⚠️ 未达基础工时，基础工资按正常工时 ${fmtH(s.normalHours)} / ${basicHours} 比例发放`;
   el.normalHours.textContent=fmtH(s.normalHours);
-  el.otHours.textContent=fmtH(s.otHoliday);
   el.otOverHours.textContent=fmtH(s.overtimeHours);
   el.fieldHours.textContent=fmtH(s.fieldHoursTotal);
   el.basePay.textContent=`${fmtMoney(s.basePay)} 元`;
@@ -520,11 +518,11 @@ function updateStats(){
     el.regularOtPay.textContent=`${fmtMoney(s.regularOTPay)} 元`;
     el.regularOtDetail.innerHTML=`<span>${fmtH(s.overtimeHours)}H × ${fmtMoney(state.settings.overtimeRate)} = ${fmtMoney(s.regularOTPay)}元</span><span>（正常工时 ${fmtH(s.normalHours)} − 基础工时 ${basicHours}）</span>`;
   }else{el.regularOtItem.hidden=true;el.regularOtDetail.innerHTML='';}
-  if(s.otHolidayPay>0){
-    el.otPayItem.hidden=false;
-    el.otPay.textContent=`${fmtMoney(s.otHolidayPay)} 元`;
-    el.otRateDetail.innerHTML=`<span>${fmtH(s.otHoliday)}H × ${fmtMoney(state.settings.otRateHoliday)} = ${fmtMoney(s.otHolidayPay)}元</span>`;
-  }else{el.otPayItem.hidden=true;el.otRateDetail.innerHTML='';}
+  if(s.otHoliday>0){
+    el.otHolidayItem.hidden=false;
+    el.otHolidayPay.textContent=`${fmtMoney(s.otHolidayPay)} 元`;
+    el.otHolidayDetail.innerHTML=`<span>${fmtH(s.otHoliday)}H × ${fmtMoney(state.settings.otRateHoliday)} = ${fmtMoney(s.otHolidayPay)}元</span>`;
+  }else{el.otHolidayItem.hidden=true;el.otHolidayDetail.innerHTML='';}
   if(s.stationPay>0){
     el.stationItem.hidden=false;
     el.stationSalary.textContent=`${fmtMoney(s.stationPay)} 元`;
