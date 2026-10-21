@@ -256,7 +256,7 @@ header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
         <div class="settings-group">
           <label for="basic-hours-input"><i class="fas fa-clock"></i> 基础工时（小时/周期）</label>
           <input type="number" id="basic-hours-input" min="1" step="1">
-          <span class="hint">正常 + 法定 达到此数 → 基础工资全额；未达到时按「正常工时 / 基础工时」比例发放。</span>
+          <span class="hint">正常工时达到此数 → 基础工资全额；未达到时按「正常工时 / 基础工时」比例发放。法定加班独立计算。</span>
         </div>
         <div class="settings-group">
           <label for="basic-salary-input"><i class="fas fa-money-bill-wave"></i> 基础工资（元/周期）</label>
@@ -276,7 +276,7 @@ header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
         <div class="settings-group">
           <label for="ot-holiday-input"><i class="fas fa-umbrella-beach"></i> 法定节假日加班时薪（元/小时）</label>
           <input type="number" id="ot-holiday-input" min="0" step="0.01">
-          <span class="hint">法定工时计入基础工时达标判断，加班费按此时薪单独计算。</span>
+          <span class="hint">法定加班独立计算，不计入基础工时达标判断，加班费按此时薪单独计算。</span>
         </div>
 
         <div class="settings-subtitle">额外补贴（每周期固定发放）</div>
@@ -474,8 +474,8 @@ function computeStats(){
   });
   const basicHours=s.basicHours;
   const basicSalary=s.basicSalary;
-  const hoursForBase=normalHours+otHoliday;
-  const basePayFull=hoursForBase>=basicHours;
+  const hoursForBase=normalHours;
+  const basePayFull=normalHours>=basicHours;
   let basePay=0,basePayRatio=0;
   if(basicHours>0){
     if(basePayFull){basePayRatio=1;basePay=basicSalary;}
@@ -497,19 +497,19 @@ function updateStats(){
   const s=computeStats();
   state._lastDaily=s.daily;
   const basicHours=state.settings.basicHours;
-  const pct=basicHours>0?Math.min(100,Math.round((s.hoursForBase/basicHours)*100)):0;
-  el.basicHours.textContent=`${fmtH(s.hoursForBase)} / ${basicHours} 小时`;
+  const pct=basicHours>0?Math.min(100,Math.round((s.normalHours/basicHours)*100)):0;
+  el.basicHours.textContent=`${fmtH(s.normalHours)} / ${basicHours} 小时`;
   el.basicHoursPercent.textContent=`${pct}%`;
   el.basicHoursProgress.style.width=`${pct}%`;
   el.basePayHint.textContent=s.basePayFull
-    ?'✅ 合计已达基础工时，基础工资全额发放'
-    :`⚠️ 未达基础工时，基础工资按正常工时 ${fmtH(s.normalHours)} / ${basicHours} 比例发放`;
+    ?'✅ 正常工时已达基础工时，基础工资全额发放'
+    :`⚠️ 正常工时未达基础工时，基础工资按正常工时 ${fmtH(s.normalHours)} / ${basicHours} 比例发放`;
   el.normalHours.textContent=fmtH(s.normalHours);
   el.otOverHours.textContent=fmtH(s.overtimeHours);
   el.fieldHours.textContent=fmtH(s.fieldHoursTotal);
   el.basePay.textContent=`${fmtMoney(s.basePay)} 元`;
   if(s.basePayFull){
-    el.basePayFormula.textContent=`基础工资全额（正常 ${fmtH(s.normalHours)} + 法定 ${fmtH(s.otHoliday)} = ${fmtH(s.hoursForBase)} ≥ ${basicHours}）`;
+    el.basePayFormula.textContent=`基础工资全额（正常工时 ${fmtH(s.normalHours)} ≥ ${basicHours}）`;
   }else{
     el.basePayFormula.textContent=`基础工资 × ${fmtH(s.normalHours)} / ${basicHours} = ${fmtMoney(s.basePay)} 元`;
   }
@@ -574,7 +574,7 @@ function getSegActive(c,attr){const a=c.querySelector('.seg-btn.active');return 
 function toggleWorkType(type){if(type==='normal'){el.normalBlock.hidden=false;el.fieldBlock.hidden=true;}else{el.normalBlock.hidden=true;el.fieldBlock.hidden=false;togglePaymentType(getSegActive(el.paymentSeg,'pay')||'hourly');}}
 function togglePaymentType(type){if(type==='hourly'){el.fieldHoursGroup.hidden=false;el.fieldRateGroup.hidden=false;el.fieldFixedGroup.hidden=true;el.fieldFixed.value='';}else{el.fieldHoursGroup.hidden=true;el.fieldRateGroup.hidden=true;el.fieldFixedGroup.hidden=false;el.fieldHours.value='';}calculateFieldTotal();}
 function calculateFieldTotal(){const type=getSegActive(el.paymentSeg,'pay')||'hourly';let total=0;if(type==='hourly'){const h=parseFloat(el.fieldHours.value)||0;const r=parseFloat(el.fieldRate.value)||0;total=h*r;}else{total=parseFloat(el.fieldFixed.value)||0;}el.fieldTotal.value=total.toFixed(2);}
-function updateOtRateHint(){const ot=getSegActive(el.otSeg,'ot')||'none';const s=state.settings;if(ot==='holiday'){el.otRateHint.textContent=`法定时薪：${fmtMoney(s.otRateHoliday)} 元/小时（工时计入达标判断，加班费单独算）`;}else{el.otRateHint.textContent=`正常工时，超出 ${s.basicHours} 小时后按 ${fmtMoney(s.overtimeRate)} 元/小时计超时加班`;}}
+function updateOtRateHint(){const ot=getSegActive(el.otSeg,'ot')||'none';const s=state.settings;if(ot==='holiday'){el.otRateHint.textContent=`法定时薪：${fmtMoney(s.otRateHoliday)} 元/小时（独立计算，不计入基础工时）`;}else{el.otRateHint.textContent=`正常工时，超出 ${s.basicHours} 小时后按 ${fmtMoney(s.overtimeRate)} 元/小时计超时加班`;}}
 
 function openWorkModal(year,month,day){const dateKey=formatDateKey(year,month,day);el.workDate.value=dateKey;el.workDate.disabled=false;state.editing.record=null;state.editing.originalDateKey=null;el.modalTitle.innerHTML='<i class="fas fa-edit"></i> 记录工时';resetWorkForm();renderRecordsList(dateKey);state.lastModalFocus=document.activeElement;el.workModal.classList.add('open');setTimeout(()=>el.workHours&&el.workHours.focus(),60);}
 function closeWorkModal(){el.workModal.classList.remove('open');state.editing.record=null;state.editing.originalDateKey=null;el.workDate.disabled=false;if(state.lastModalFocus&&typeof state.lastModalFocus.focus==='function'){try{state.lastModalFocus.focus();}catch(e){}}state.lastModalFocus=null;}
@@ -636,7 +636,7 @@ function saveWorkRecord(){
     state.workData[dateKey].push(record);
     showToast('记录已保存');
   }
-  saveState();refreshAll();renderRecordsList(dateKey);resetWorkForm();el.workHours.focus();
+  saveState();refreshAll();renderRecordsList(dateKey);resetWorkForm();closeWorkModal();
 }
 
 function editRecord(dateKey,record){
@@ -700,9 +700,9 @@ function exportMonthToXLS(){
   let normalHours=0,otHoliday=0,stationCount=0,stationPay=0,fieldPay=0,fieldHoursSum=0;
   normalRows.forEach(r=>{if(r.ot==='holiday')otHoliday+=r.hours||0;else normalHours+=r.hours||0;if(r.isStation){stationCount++;stationPay+=r.stationSalary||0;}});
   fieldRows.forEach(r=>{fieldPay+=r.total||0;if(r.paymentType==='hourly')fieldHoursSum+=r.hours||0;});
-  const s=state.settings;const basicHours=s.basicHours;const hoursForBase=normalHours+otHoliday;
+  const s=state.settings;const basicHours=s.basicHours;const hoursForBase=normalHours;
   let basePay=0,basePayFull=false;
-  if(basicHours>0){basePayFull=hoursForBase>=basicHours;if(basePayFull)basePay=s.basicSalary;else basePay=Math.round(s.basicSalary*(normalHours/basicHours));}
+  if(basicHours>0){basePayFull=normalHours>=basicHours;if(basePayFull)basePay=s.basicSalary;else basePay=Math.round(s.basicSalary*(normalHours/basicHours));}
   const overtimeHours=Math.max(0,normalHours-basicHours);
   const regularOTPay=Math.round(overtimeHours*s.overtimeRate);
   const otHolidayPay=Math.round(otHoliday*s.otRateHoliday);
@@ -779,8 +779,7 @@ function exportMonthToXLS(){
   h+='<tr><td colspan="7" class="section">📊 工时汇总</td></tr>';
   function sumRow(label,value,sub){const lc=sub?'sum-label sum-sub':'sum-label';const vc=sub?'sum-val sum-sub':'sum-val';return '<tr><td colspan="4" class="'+lc+'">'+label+'</td><td colspan="3" class="'+vc+'">'+value+'</td></tr>';}
   h+=sumRow('正常工时',fmtH(normalHours)+' 小时');
-  h+=sumRow('法定加班工时',fmtH(otHoliday)+' 小时');
-  h+=sumRow('合计（正常 + 法定）',fmtH(hoursForBase)+' 小时');
+  h+=sumRow('法定加班工时（独立计算）',fmtH(otHoliday)+' 小时');
   h+=sumRow('基础工时',basicHours+' 小时');
   h+=sumRow('超时工时（正常超出基础部分）',fmtH(overtimeHours)+' 小时');
   h+=sumRow('外勤工时（仅按时薪）',fmtH(fieldHoursSum)+' 小时');
@@ -788,7 +787,7 @@ function exportMonthToXLS(){
   h+='<tr><td colspan="7"></td></tr>';
   h+='<tr><td colspan="7" class="section">💰 工资明细</td></tr>';
   if(basePayFull){
-    h+=sumRow('基础工资（合计 '+fmtH(hoursForBase)+' ≥ '+basicHours+'，全额）',fmtMoney(basePay)+' 元');
+    h+=sumRow('基础工资（正常 '+fmtH(normalHours)+' ≥ '+basicHours+'，全额）',fmtMoney(basePay)+' 元');
   }else{
     h+=sumRow('基础工资（正常 '+fmtH(normalHours)+' / '+basicHours+' = '+(normalHours/basicHours*100).toFixed(1)+'%）',fmtMoney(basePay)+' 元');
   }
