@@ -154,6 +154,33 @@ header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
 .ctx-item i{width:14px;text-align:center;color:var(--text-3);}
 .ctx-item:hover i{color:inherit;}
 .ctx-sep{height:1px;background:var(--border);margin:4px 6px;}
+.mini-btn-row{display:flex;align-items:center;gap:2px;}
+#batch-btn.on{background:var(--secondary);color:#fff;border-radius:20px;}
+.btn:disabled{opacity:.42;cursor:not-allowed;filter:none;}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{background:var(--surface-2);border:1px solid var(--border-strong);color:var(--text-2);border-radius:20px;padding:6px 12px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.chip:hover{background:var(--primary-soft);border-color:var(--primary);color:var(--primary);}
+.chip i{font-size:.7rem;}
+.chip .chip-sub{font-weight:400;color:var(--text-3);font-size:.68rem;}
+.chip-empty{font-size:.74rem;color:var(--text-3);padding:4px 0;}
+.calendar-day.selected{border:2px solid var(--secondary);background:var(--tag-normal-bg);}
+.batch-bar{position:fixed;left:0;right:0;bottom:0;z-index:300;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -4px 18px rgba(20,30,45,.16);padding:9px 10px calc(9px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:8px;}
+.batch-count{font-size:.8rem;font-weight:700;color:var(--text-2);white-space:nowrap;flex-shrink:0;}
+.batch-actions{display:flex;gap:5px;flex:1;min-width:0;overflow-x:auto;}
+.btn-sm{padding:7px 9px;font-size:.72rem;border-radius:8px;white-space:nowrap;flex-shrink:0;}
+.btn-soft{background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);}
+.btn-soft:hover{background:var(--surface-3);color:var(--primary);border-color:var(--primary);}
+body.batch-mode{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px));}
+.batch-tip{font-size:.82rem;color:var(--text-2);background:var(--surface-2);border-radius:9px;padding:9px 11px;margin-bottom:13px;line-height:1.6;}
+.form-group select{width:100%;padding:9px 10px;border:1px solid var(--border-strong);border-radius:9px;font-size:.9rem;background:var(--surface);color:var(--text);font-family:inherit;}
+.form-group select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(52,152,219,.13);}
+.tpl-item{border:1px solid var(--border);border-radius:10px;padding:8px;margin-bottom:8px;background:var(--surface-2);}
+.tpl-row{display:grid;grid-template-columns:1fr 74px 88px;gap:6px;margin-bottom:6px;}
+.tpl-row2{display:grid;grid-template-columns:1fr auto 30px;gap:6px;align-items:center;}
+.tpl-item input,.tpl-item select{padding:7px 8px;border:1px solid var(--border-strong);border-radius:8px;font-size:.82rem;background:var(--surface);color:var(--text);font-family:inherit;min-width:0;width:100%;}
+.tpl-item input:focus,.tpl-item select:focus{outline:none;border-color:var(--primary);}
+.tpl-station{display:flex;align-items:center;gap:5px;font-size:.76rem;color:var(--text-2);white-space:nowrap;}
+.tpl-station input{width:16px;height:16px;accent-color:var(--primary);cursor:pointer;}
 @media (min-width:768px){.container{max-width:760px;display:grid;grid-template-columns:1fr 320px;gap:14px;align-items:start;}header{grid-column:1/-1;}.calendar-section{margin-bottom:0;}.sidebar{max-height:calc(100vh - 130px);overflow-y:auto;padding-right:2px;}}
 @media (max-width:480px){.modal{padding:0;}.modal-content{border-radius:0;max-height:100vh;height:100%;max-width:100%;}.btn-ghost{font-size:.7rem;}}
 ::-webkit-scrollbar{width:6px;height:6px;}
@@ -173,7 +200,10 @@ header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
       <button class="btn" id="prev-month" aria-label="上个月"><i class="fas fa-chevron-left"></i></button>
       <div class="month-title-wrap">
         <h2 id="current-month">—</h2>
-        <button class="today-btn" id="today-btn"><i class="fas fa-dot-circle"></i> 今天</button>
+        <div class="mini-btn-row">
+          <button class="today-btn" id="today-btn"><i class="fas fa-dot-circle"></i> 今天</button>
+          <button class="today-btn" id="batch-btn"><i class="fas fa-layer-group"></i> 批量</button>
+        </div>
       </div>
       <button class="btn" id="next-month" aria-label="下个月"><i class="fas fa-chevron-right"></i></button>
     </div>
@@ -205,7 +235,7 @@ header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
         <div class="stats-grid">
           <div class="stat-cell"><span>正常工时</span><b id="normal-hours">0</b></div>
           <div class="stat-cell"><span>超时工时</span><b id="ot-over-hours">0</b></div>
-          <div class="stat-cell"><span>外勤工时</span><b id="field-hours">0</b></div>
+          <div class="stat-cell"><span>外勤工时</span><b id="field-hours-total">0</b></div>
         </div>
 
         <div class="stats-item">
@@ -235,11 +265,13 @@ header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
         </div>
 
         <div class="stats-item" id="social-security-item" hidden>
-          <div class="stats-label"><span>社保扣除</span><span class="stats-value danger" id="social-security-deduction" style="font-size:.95rem;">0.00 元</span></div>
+          <div class="stats-label"><span>扣除项</span><span class="stats-value danger" id="social-security-deduction" style="font-size:.95rem;">0.00 元</span></div>
+          <div class="allowance-detail" id="deduction-detail"></div>
         </div>
 
         <div class="stats-item" style="border-top:2px solid var(--border); padding-top:10px;">
-          <div class="stats-label"><span style="font-weight:700; color:var(--text);">预计实发</span><span class="stats-value warning" id="total-salary" style="font-size:1.15rem;">0.00 元</span></div>
+          <div class="stats-label"><span>应发合计</span><span class="stats-value" id="gross-salary" style="font-size:.95rem;">0.00 元</span></div>
+          <div class="stats-label" style="margin-top:6px;"><span style="font-weight:700; color:var(--text);">预计实发</span><span class="stats-value warning" id="total-salary" style="font-size:1.15rem;">0.00 元</span></div>
         </div>
 
         <div class="btn-row">
@@ -286,20 +318,25 @@ header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
         </button>
         <span class="hint">例如：交通补贴、餐补、房补等。金额按每周期计入总工资。</span>
 
+        <div class="settings-subtitle">扣除项（每周期固定扣除）</div>
+        <div id="deduction-list"></div>
+        <button type="button" class="add-allowance-btn" id="add-deduction">
+          <i class="fas fa-plus"></i> 添加扣除项
+        </button>
+        <span class="hint">例如：社保、公积金、个税、罚款等。所有扣除项合计后从应发中减去，不需要时删除即可。</span>
+
+        <div class="settings-subtitle">快捷录入模板</div>
+        <div id="template-list"></div>
+        <button type="button" class="add-allowance-btn" id="add-template">
+          <i class="fas fa-plus"></i> 添加模板
+        </button>
+        <span class="hint">保存后在记录弹窗顶部点一下即可一键填充工时、描述、类型和驻站；批量模式下也能一次性应用到多天。</span>
+
         <div class="settings-subtitle">其他</div>
         <div class="settings-group">
           <label for="cycle-start-input"><i class="fas fa-calendar-check"></i> 工资周期起始日</label>
           <input type="number" id="cycle-start-input" min="1" max="28" step="1">
           <span class="hint">1 = 自然月；26 = 上月 26 日至本月 25 日</span>
-        </div>
-
-        <div class="checkbox-group">
-          <input type="checkbox" id="deduct-social-security">
-          <label for="deduct-social-security">扣除社保</label>
-        </div>
-        <div class="settings-group" id="social-security-amount-group">
-          <label for="social-security-input"><i class="fas fa-shield-alt"></i> 社保金额（元）</label>
-          <input type="number" id="social-security-input" min="0" step="0.01">
         </div>
 
         <div class="settings-subtitle">外观</div>
@@ -336,6 +373,11 @@ header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
     </div>
 
     <div id="normal-block">
+      <div class="form-group" id="template-chips-group">
+        <label><i class="fas fa-bolt"></i> 快捷模板</label>
+        <div class="chip-row" id="template-chips"></div>
+        <span class="hint" id="template-chips-hint">在「设置 → 快捷录入模板」中添加后，这里点一下就能一键填充。</span>
+      </div>
       <div class="form-group">
         <label for="work-hours"><i class="fas fa-clock"></i> 工作时长（小时）</label>
         <input type="number" id="work-hours" step="0.5" min="0" inputmode="decimal" placeholder="例如 8">
@@ -398,15 +440,50 @@ header p{font-size:.8rem;color:var(--text-3);margin-top:2px;}
   </div>
 </div>
 
+<div class="batch-bar" id="batch-bar" hidden>
+  <span class="batch-count" id="batch-count">已选 0 天</span>
+  <div class="batch-actions">
+    <button class="btn btn-sm" id="batch-template"><i class="fas fa-bolt"></i> 应用模板</button>
+    <button class="btn btn-sm btn-soft" id="batch-copy"><i class="fas fa-copy"></i> 复制前一天</button>
+    <button class="btn btn-sm btn-danger" id="batch-clear"><i class="fas fa-eraser"></i> 清空</button>
+    <button class="btn btn-sm btn-soft" id="batch-exit">退出</button>
+  </div>
+</div>
+
+<div class="modal" id="batch-modal" role="dialog" aria-modal="true" aria-labelledby="batch-modal-title">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="batch-modal-title"><i class="fas fa-bolt"></i> 批量应用模板</h3>
+      <button class="close-btn" id="close-batch-modal" aria-label="关闭">&times;</button>
+    </div>
+    <p class="batch-tip" id="batch-tip">—</p>
+    <div class="form-group">
+      <label for="batch-template-select"><i class="fas fa-bolt"></i> 选择模板</label>
+      <select id="batch-template-select"></select>
+    </div>
+    <div class="form-group">
+      <label for="batch-note"><i class="fas fa-file-alt"></i> 工作描述（留空则用模板描述）</label>
+      <input type="text" id="batch-note" maxlength="40" placeholder="例如 上班">
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="batch-skip-existing" checked>
+      <label for="batch-skip-existing">跳过已有记录的日期</label>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-success" id="batch-apply"><i class="fas fa-check"></i> 确认应用</button>
+    </div>
+  </div>
+</div>
+
 <div class="ctx-menu" id="ctx-menu" role="menu"></div>
 <div class="toast-host" id="toast-host" aria-live="polite"></div>
 <input type="file" id="import-file" accept=".json,application/json" hidden>
 
 <script>
 'use strict';
-const SCHEMA_VERSION = 6;
+const SCHEMA_VERSION = 7;
 const LS_DATA='workData', LS_SETTINGS='settings', LS_VERSION='schemaVersion', LS_THEME='theme', APP_ID='worktime-tracker';
-const DEFAULT_SETTINGS = Object.freeze({basicHours:174,basicSalary:320000,overtimeRate:2155,stationSalary:2000,otRateHoliday:6465,deductSocialSecurity:false,socialSecurityAmount:74000,cycleStartDay:1,extraAllowances:[]});
+const DEFAULT_SETTINGS = Object.freeze({basicHours:174,basicSalary:320000,overtimeRate:2155,stationSalary:2000,otRateHoliday:6465,deductSocialSecurity:false,socialSecurityAmount:74000,cycleStartDay:1,extraAllowances:[],deductions:[],shiftTemplates:[]});
 const $ = id => document.getElementById(id);
 const pad2 = n => String(n).padStart(2,'0');
 const yuan2cent = v => Math.round((parseFloat(v)||0)*100);
@@ -428,17 +505,23 @@ const state = {currentDate:new Date(),workData:{},settings:{...DEFAULT_SETTINGS,
 const el = {
   calendarSection:$('calendar-section'),calendarGrid:$('calendar-grid'),currentMonth:$('current-month'),cycleBadge:$('cycle-badge'),prevMonth:$('prev-month'),nextMonth:$('next-month'),todayBtn:$('today-btn'),chart:$('chart'),chartMax:$('chart-max'),
   workModal:$('work-modal'),closeModal:$('close-modal'),saveWork:$('save-work'),modalTitle:$('modal-title'),workTypeSeg:$('work-type-seg'),otSeg:$('ot-seg'),otRateHint:$('ot-rate-hint'),paymentSeg:$('payment-seg'),normalBlock:$('normal-block'),fieldBlock:$('field-block'),workDate:$('work-date'),workHours:$('work-hours'),workDescription:$('work-description'),isStation:$('is-station'),stationHint:$('station-hint'),fieldDescription:$('field-description'),fieldHours:$('field-hours'),fieldHoursGroup:$('field-hours-group'),fieldRate:$('field-rate'),fieldRateGroup:$('field-rate-group'),fieldFixed:$('field-fixed'),fieldFixedGroup:$('field-fixed-group'),fieldTotal:$('field-total'),recordsList:$('records-list'),addRecord:$('add-record'),
-  basicHoursInput:$('basic-hours-input'),basicSalaryInput:$('basic-salary-input'),overtimeRateInput:$('overtime-rate-input'),stationSalaryInput:$('station-salary-input'),otHolidayInput:$('ot-holiday-input'),cycleStartInput:$('cycle-start-input'),deductSocialSecurity:$('deduct-social-security'),socialSecurityInput:$('social-security-input'),socialSecurityAmountGroup:$('social-security-amount-group'),themeSelect:$('theme-select'),saveSettings:$('save-settings'),clearData:$('clear-data'),
+  basicHoursInput:$('basic-hours-input'),basicSalaryInput:$('basic-salary-input'),overtimeRateInput:$('overtime-rate-input'),stationSalaryInput:$('station-salary-input'),otHolidayInput:$('ot-holiday-input'),cycleStartInput:$('cycle-start-input'),deductionList:$('deduction-list'),addDeduction:$('add-deduction'),templateList:$('template-list'),addTemplate:$('add-template'),themeSelect:$('theme-select'),saveSettings:$('save-settings'),clearData:$('clear-data'),
   allowanceList:$('allowance-list'),addAllowance:$('add-allowance'),allowanceItem:$('allowance-item'),allowanceTotal:$('allowance-total'),allowanceDetail:$('allowance-detail'),
+  deductionDetail:$('deduction-detail'),grossSalary:$('gross-salary'),templateChips:$('template-chips'),templateChipsHint:$('template-chips-hint'),templateChipsGroup:$('template-chips-group'),batchBtn:$('batch-btn'),batchBar:$('batch-bar'),batchCount:$('batch-count'),batchModal:$('batch-modal'),closeBatchModal:$('close-batch-modal'),batchTip:$('batch-tip'),batchTemplateSelect:$('batch-template-select'),batchNote:$('batch-note'),batchSkipExisting:$('batch-skip-existing'),batchApply:$('batch-apply'),batchTemplate:$('batch-template'),batchCopy:$('batch-copy'),batchClear:$('batch-clear'),batchExit:$('batch-exit'),
   basePay:$('base-pay'),basePayHint:$('base-pay-hint'),basePayFormula:$('base-pay-formula'),regularOtItem:$('regular-ot-item'),regularOtPay:$('regular-ot-pay'),regularOtDetail:$('regular-ot-detail'),otHolidayItem:$('ot-holiday-item'),otHolidayPay:$('ot-holiday-pay'),otHolidayDetail:$('ot-holiday-detail'),stationItem:$('station-item'),stationDetail:$('station-detail'),fieldItem:$('field-item'),fieldPay:$('field-pay'),fieldDetail:$('field-detail'),
-  basicHours:$('basic-hours'),basicHoursPercent:$('basic-hours-percent'),basicHoursProgress:$('basic-hours-progress'),normalHours:$('normal-hours'),otOverHours:$('ot-over-hours'),fieldHours:$('field-hours'),stationCount:$('station-count'),fieldSalary:$('field-salary'),stationSalary:$('station-salary'),socialSecurityItem:$('social-security-item'),socialSecurityDeduction:$('social-security-deduction'),totalSalary:$('total-salary'),cycleLine:$('cycle-line'),
+  basicHours:$('basic-hours'),basicHoursPercent:$('basic-hours-percent'),basicHoursProgress:$('basic-hours-progress'),normalHours:$('normal-hours'),otOverHours:$('ot-over-hours'),fieldHoursTotal:$('field-hours-total'),stationSalary:$('station-salary'),socialSecurityItem:$('social-security-item'),socialSecurityDeduction:$('social-security-deduction'),totalSalary:$('total-salary'),cycleLine:$('cycle-line'),
   tabs:document.querySelectorAll('.tab'),tabContents:document.querySelectorAll('.tab-content'),exportData:$('export-data'),exportJson:$('export-json'),importJson:$('import-json'),importFile:$('import-file'),toastHost:$('toast-host'),ctxMenu:$('ctx-menu')
 };
 
 function showToast(msg,opts={}){const{type='success',action=null,duration=2400}=opts;const node=document.createElement('div');node.className='toast'+(type==='error'?' error':'');const span=document.createElement('span');span.textContent=msg;node.appendChild(span);let timer=null;function remove(){if(timer)clearTimeout(timer);if(!node.parentNode)return;node.classList.add('out');setTimeout(()=>node.remove(),200);}if(action){const btn=document.createElement('button');btn.className='toast-action';btn.textContent=action.label;btn.addEventListener('click',()=>{remove();action.onClick();});node.appendChild(btn);}el.toastHost.appendChild(node);timer=setTimeout(remove,duration);return{remove};}
 function applyTheme(){const saved=localStorage.getItem(LS_THEME)||'auto';let actual=saved;if(saved==='auto'){actual=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.dataset.theme=actual;if(el.themeSelect)el.themeSelect.value=saved;requestAnimationFrame(()=>drawChart(state._lastDaily||[]));}
 
-function normalizeSettings(raw){const out={...DEFAULT_SETTINGS,extraAllowances:[]};if(raw&&typeof raw==='object'){for(const k in out){if(Object.prototype.hasOwnProperty.call(raw,k)&&raw[k]!==undefined&&raw[k]!==null){out[k]=raw[k];}}}if(raw&&typeof raw==='object'&&raw.otRateHoliday===undefined){const baseRate=Math.max(0,Math.round(Number(raw.overtimeRate)||out.overtimeRate));if(raw.otMultHoliday!==undefined){const ho=Number(raw.otMultHoliday);out.otRateHoliday=Math.round(baseRate*(isFinite(ho)&&ho>0?ho:3));}else if(raw.otRateWeekend!==undefined){out.otRateHoliday=Math.max(0,Math.round(Number(raw.otRateWeekend)||out.otRateHoliday));}}out.basicHours=Math.max(1,Number(out.basicHours)||174);out.basicSalary=Math.max(0,Math.round(Number(out.basicSalary)||0));out.overtimeRate=Math.max(0,Math.round(Number(out.overtimeRate)||0));out.stationSalary=Math.max(0,Math.round(Number(out.stationSalary)||0));out.otRateHoliday=Math.max(0,Math.round(Number(out.otRateHoliday)||0));out.socialSecurityAmount=Math.max(0,Math.round(Number(out.socialSecurityAmount)||0));out.deductSocialSecurity=!!out.deductSocialSecurity;out.cycleStartDay=clamp(parseInt(out.cycleStartDay,10)||1,1,28);out.extraAllowances=Array.isArray(out.extraAllowances)?out.extraAllowances.filter(a=>a&&typeof a==='object').map(a=>({id:String(a.id||generateId()),name:String(a.name||'').slice(0,20),amount:Math.max(0,Math.round(Number(a.amount)||0))})):[];return out;}
+function normalizeSettings(raw){const out={...DEFAULT_SETTINGS,extraAllowances:[]};if(raw&&typeof raw==='object'){for(const k in out){if(Object.prototype.hasOwnProperty.call(raw,k)&&raw[k]!==undefined&&raw[k]!==null){out[k]=raw[k];}}}if(raw&&typeof raw==='object'&&raw.otRateHoliday===undefined){const baseRate=Math.max(0,Math.round(Number(raw.overtimeRate)||out.overtimeRate));if(raw.otMultHoliday!==undefined){const ho=Number(raw.otMultHoliday);out.otRateHoliday=Math.round(baseRate*(isFinite(ho)&&ho>0?ho:3));}else if(raw.otRateWeekend!==undefined){out.otRateHoliday=Math.max(0,Math.round(Number(raw.otRateWeekend)||out.otRateHoliday));}}out.basicHours=Math.max(1,Number(out.basicHours)||174);out.basicSalary=Math.max(0,Math.round(Number(out.basicSalary)||0));out.overtimeRate=Math.max(0,Math.round(Number(out.overtimeRate)||0));out.stationSalary=Math.max(0,Math.round(Number(out.stationSalary)||0));out.otRateHoliday=Math.max(0,Math.round(Number(out.otRateHoliday)||0));out.socialSecurityAmount=Math.max(0,Math.round(Number(out.socialSecurityAmount)||0));out.deductSocialSecurity=!!out.deductSocialSecurity;out.cycleStartDay=clamp(parseInt(out.cycleStartDay,10)||1,1,28);out.extraAllowances=Array.isArray(out.extraAllowances)?out.extraAllowances.filter(a=>a&&typeof a==='object').map(a=>({id:String(a.id||generateId()),name:String(a.name||'').slice(0,20),amount:Math.max(0,Math.round(Number(a.amount)||0))})):[];
+if(raw&&Array.isArray(raw.deductions)){out.deductions=raw.deductions.filter(d=>d&&typeof d==='object').map(d=>({id:String(d.id||generateId()),name:String(d.name||'').slice(0,20),amount:Math.max(0,Math.round(Number(d.amount)||0))}));}
+else{const legacyOn=!!(raw&&raw.deductSocialSecurity);const legacyAmt=Math.max(0,Math.round(Number(raw&&raw.socialSecurityAmount)||0));out.deductions=(legacyOn&&legacyAmt>0)?[{id:generateId(),name:'社保',amount:legacyAmt}]:[];}
+if(raw&&Array.isArray(raw.shiftTemplates)){out.shiftTemplates=raw.shiftTemplates.filter(t=>t&&typeof t==='object').map(t=>({id:String(t.id||generateId()),name:String(t.name||'').slice(0,12),hours:Math.max(0,Math.round((Number(t.hours)||0)*2)/2),ot:t.ot==='holiday'?'holiday':'none',isStation:!!t.isStation,description:String(t.description||'').slice(0,40)}));}
+else{out.shiftTemplates=[];}
+return out;}
 function sanitizeRecordOt(rec){if(rec&&rec.type==='normal'){if(rec.ot!=='holiday')rec.ot='none';}return rec;}
 function migrateRecordV1toV2(r){const rec={...r};if(rec.type==='normal'){if(typeof rec.stationSalary==='number')rec.stationSalary=Math.round(rec.stationSalary*100);else rec.stationSalary=0;if(!rec.ot)rec.ot='none';}else{if(typeof rec.rate==='number')rec.rate=Math.round(rec.rate*100);if(typeof rec.fixed==='number')rec.fixed=Math.round(rec.fixed*100);if(typeof rec.total==='number')rec.total=Math.round(rec.total*100);}if(!rec.id)rec.id=generateId();return rec;}
 function migrateSettingsV1toV2(s){const out={...s};['basicSalary','overtimeRate','stationSalary','socialSecurityAmount'].forEach(k=>{if(typeof out[k]==='number')out[k]=Math.round(out[k]*100);});return out;}
@@ -447,7 +530,7 @@ function loadState(){let version=1;try{version=parseInt(localStorage.getItem(LS_
 function saveState(){try{localStorage.setItem(LS_DATA,JSON.stringify(state.workData));localStorage.setItem(LS_SETTINGS,JSON.stringify(state.settings));localStorage.setItem(LS_VERSION,String(SCHEMA_VERSION));}catch(e){showToast('保存失败，请检查存储权限',{type:'error'});}}
 
 function renderCalendar(){el.calendarGrid.innerHTML='';const monthNames=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];const year=state.currentDate.getFullYear();const month=state.currentDate.getMonth();el.currentMonth.textContent=`${year}年 ${monthNames[month]}`;const range=getCycleRange(state.currentDate,state.settings.cycleStartDay);el.cycleBadge.textContent=`统计周期：${fmtDateShort(range.start)} — ${fmtDateShort(range.end)}`;['日','一','二','三','四','五','六'].forEach(d=>{const n=document.createElement('div');n.className='weekday-header';n.setAttribute('role','columnheader');n.textContent=d;el.calendarGrid.appendChild(n);});const firstDay=new Date(year,month,1);const lastDate=new Date(year,month+1,0);const firstDayOfWeek=firstDay.getDay();const prevLast=new Date(year,month,0).getDate();for(let i=firstDayOfWeek-1;i>=0;i--){el.calendarGrid.appendChild(createDayElement(prevLast-i,true,year,month));}for(let i=1;i<=lastDate.getDate();i++){el.calendarGrid.appendChild(createDayElement(i,false,year,month));}const totalCells=42;const remaining=totalCells-(firstDayOfWeek+lastDate.getDate());for(let i=1;i<=remaining;i++){el.calendarGrid.appendChild(createDayElement(i,true,year,month));}}
-function createDayElement(day,isOtherMonth,year,month){const node=document.createElement('div');node.className='calendar-day';if(isOtherMonth)node.classList.add('other-month');const today=new Date();const isToday=!isOtherMonth&&day===today.getDate()&&month===today.getMonth()&&year===today.getFullYear();if(isToday)node.classList.add('today');const dayNumber=document.createElement('div');dayNumber.className='day-number';dayNumber.textContent=day;node.appendChild(dayNumber);const workInfo=document.createElement('div');workInfo.className='work-info';if(!isOtherMonth){const dateKey=formatDateKey(year,month,day);const records=state.workData[dateKey];if(records&&records.length>0){node.classList.add('has-records');const normalH=records.filter(r=>r.type==='normal').reduce((s,r)=>s+(r.hours||0),0);const hasStation=records.some(r=>r.type==='normal'&&r.isStation);const items=[];if(normalH>0)items.push({cls:'normal-work',text:`${fmtH(normalH)}H`});if(hasStation)items.push({cls:'normal-work-station',text:'驻站'});records.filter(r=>r.type==='field').forEach(r=>{if(r.paymentType==='hourly')items.push({cls:'field-hourly',text:`${fmtH(r.hours)}H`});else items.push({cls:'field-fixed',text:`${fmtMoney(r.total)}元`});});items.slice(0,2).forEach(it=>{const p=document.createElement('p');p.className=it.cls;p.textContent=it.text;workInfo.appendChild(p);});if(items.length>2){const m=document.createElement('p');m.className='more-indicator';m.textContent=`+${items.length-2}`;workInfo.appendChild(m);}node.setAttribute('aria-label',`${month+1}月${day}日，${records.length}条记录，工时${fmtH(normalH)}小时`);}else{node.setAttribute('aria-label',`${month+1}月${day}日，无记录`);}node.dataset.datekey=dateKey;node.setAttribute('role','gridcell');node.setAttribute('tabindex','0');}node.appendChild(workInfo);return node;}
+function createDayElement(day,isOtherMonth,year,month){const node=document.createElement('div');node.className='calendar-day';if(isOtherMonth)node.classList.add('other-month');const today=new Date();const isToday=!isOtherMonth&&day===today.getDate()&&month===today.getMonth()&&year===today.getFullYear();if(isToday)node.classList.add('today');if(!isOtherMonth&&batchState.active&&batchState.selected.has(formatDateKey(year,month,day)))node.classList.add('selected');const dayNumber=document.createElement('div');dayNumber.className='day-number';dayNumber.textContent=day;node.appendChild(dayNumber);const workInfo=document.createElement('div');workInfo.className='work-info';if(!isOtherMonth){const dateKey=formatDateKey(year,month,day);const records=state.workData[dateKey];if(records&&records.length>0){node.classList.add('has-records');const normalH=records.filter(r=>r.type==='normal').reduce((s,r)=>s+(r.hours||0),0);const hasStation=records.some(r=>r.type==='normal'&&r.isStation);const items=[];if(normalH>0)items.push({cls:'normal-work',text:`${fmtH(normalH)}H`});if(hasStation)items.push({cls:'normal-work-station',text:'驻站'});records.filter(r=>r.type==='field').forEach(r=>{if(r.paymentType==='hourly')items.push({cls:'field-hourly',text:`${fmtH(r.hours)}H`});else items.push({cls:'field-fixed',text:`${fmtMoney(r.total)}元`});});items.slice(0,2).forEach(it=>{const p=document.createElement('p');p.className=it.cls;p.textContent=it.text;workInfo.appendChild(p);});if(items.length>2){const m=document.createElement('p');m.className='more-indicator';m.textContent=`+${items.length-2}`;workInfo.appendChild(m);}node.setAttribute('aria-label',`${month+1}月${day}日，${records.length}条记录，工时${fmtH(normalH)}小时`);}else{node.setAttribute('aria-label',`${month+1}月${day}日，无记录`);}node.dataset.datekey=dateKey;node.setAttribute('role','gridcell');node.setAttribute('tabindex','0');}node.appendChild(workInfo);return node;}
 
 /* ============================================================
  * 统计与工资计算
@@ -486,11 +569,13 @@ function computeStats(){
   const otHolidayPay=Math.round(otHoliday*s.otRateHoliday);
   const allowances=(s.extraAllowances||[]).filter(a=>a.name||a.amount>0);
   const allowanceTotal=allowances.reduce((sum,a)=>sum+(a.amount||0),0);
-  const social=s.deductSocialSecurity?s.socialSecurityAmount:0;
+  const deductions=(s.deductions||[]).filter(d=>d.name||d.amount>0);
+  const social=deductions.reduce((sum,d)=>sum+(d.amount||0),0);
   const gross=basePay+regularOTPay+otHolidayPay+stationPay+fieldPay+allowanceTotal;
   const net=Math.max(0,gross-social);
   const totalHours=normalHours+otHoliday;
-  return{range,daily,normalHours,otHoliday,totalHours,hoursForBase,overtimeHours,fieldHoursTotal,stationPay,stationCount,fieldPay,basePay,basePayRatio,basePayFull,regularOTPay,otHolidayPay,social,allowanceTotal,allowances,gross,net};
+  const workDays=daily.filter(d=>d.hours>0).length;
+  return{range,daily,normalHours,otHoliday,totalHours,hoursForBase,overtimeHours,fieldHoursTotal,stationPay,stationCount,fieldPay,basePay,basePayRatio,basePayFull,regularOTPay,otHolidayPay,social,deductions,allowanceTotal,allowances,gross,net,workDays};
 }
 
 function updateStats(){
@@ -506,7 +591,7 @@ function updateStats(){
     :`⚠️ 正常工时未达基础工时，基础工资按正常工时 ${fmtH(s.normalHours)} / ${basicHours} 比例发放`;
   el.normalHours.textContent=fmtH(s.normalHours);
   el.otOverHours.textContent=fmtH(s.overtimeHours);
-  el.fieldHours.textContent=fmtH(s.fieldHoursTotal);
+  el.fieldHoursTotal.textContent=fmtH(s.fieldHoursTotal);
   el.basePay.textContent=`${fmtMoney(s.basePay)} 元`;
   if(s.basePayFull){
     el.basePayFormula.textContent=`基础工资全额（正常工时 ${fmtH(s.normalHours)} ≥ ${basicHours}）`;
@@ -538,10 +623,14 @@ function updateStats(){
     el.allowanceTotal.textContent=`${fmtMoney(s.allowanceTotal)} 元`;
     el.allowanceDetail.innerHTML=s.allowances.map(a=>`<span>${escapeHtml(a.name||'补贴')}：${fmtMoney(a.amount)}元</span>`).join('');
   }else{el.allowanceItem.hidden=true;el.allowanceDetail.innerHTML='';}
-  if(state.settings.deductSocialSecurity){el.socialSecurityItem.hidden=false;el.socialSecurityDeduction.textContent=`${fmtMoney(s.social)} 元`;}
-  else{el.socialSecurityItem.hidden=true;}
+  if(s.social>0||s.deductions.length>0){
+    el.socialSecurityItem.hidden=false;
+    el.socialSecurityDeduction.textContent=`− ${fmtMoney(s.social)} 元`;
+    el.deductionDetail.innerHTML=s.deductions.map(d=>`<span>${escapeHtml(d.name||'扣除项')}：−${fmtMoney(d.amount)}元</span>`).join('');
+  }else{el.socialSecurityItem.hidden=true;el.deductionDetail.innerHTML='';}
+  el.grossSalary.textContent=`${fmtMoney(s.gross)} 元`;
   el.totalSalary.textContent=`${fmtMoney(s.net)} 元`;
-  el.cycleLine.textContent=`${fmtDateShort(s.range.start)} — ${fmtDateShort(s.range.end)} · 共 ${s.daily.length} 天`;
+  el.cycleLine.textContent=`${fmtDateShort(s.range.start)} — ${fmtDateShort(s.range.end)} · 共 ${s.daily.length} 天 · 出勤 ${s.workDays} 天`;
   drawChart(s.daily);
 }
 
@@ -576,7 +665,7 @@ function togglePaymentType(type){if(type==='hourly'){el.fieldHoursGroup.hidden=f
 function calculateFieldTotal(){const type=getSegActive(el.paymentSeg,'pay')||'hourly';let total=0;if(type==='hourly'){const h=parseFloat(el.fieldHours.value)||0;const r=parseFloat(el.fieldRate.value)||0;total=h*r;}else{total=parseFloat(el.fieldFixed.value)||0;}el.fieldTotal.value=total.toFixed(2);}
 function updateOtRateHint(){const ot=getSegActive(el.otSeg,'ot')||'none';const s=state.settings;if(ot==='holiday'){el.otRateHint.textContent=`法定时薪：${fmtMoney(s.otRateHoliday)} 元/小时（独立计算，不计入基础工时）`;}else{el.otRateHint.textContent=`正常工时，超出 ${s.basicHours} 小时后按 ${fmtMoney(s.overtimeRate)} 元/小时计超时加班`;}}
 
-function openWorkModal(year,month,day){const dateKey=formatDateKey(year,month,day);el.workDate.value=dateKey;el.workDate.disabled=false;state.editing.record=null;state.editing.originalDateKey=null;el.modalTitle.innerHTML='<i class="fas fa-edit"></i> 记录工时';resetWorkForm();renderRecordsList(dateKey);state.lastModalFocus=document.activeElement;el.workModal.classList.add('open');setTimeout(()=>el.workHours&&el.workHours.focus(),60);}
+function openWorkModal(year,month,day){const dateKey=formatDateKey(year,month,day);el.workDate.value=dateKey;el.workDate.disabled=false;state.editing.record=null;state.editing.originalDateKey=null;el.modalTitle.innerHTML='<i class="fas fa-edit"></i> 记录工时';resetWorkForm();renderTemplateChips();renderRecordsList(dateKey);state.lastModalFocus=document.activeElement;el.workModal.classList.add('open');setTimeout(()=>el.workHours&&el.workHours.focus(),60);}
 function closeWorkModal(){el.workModal.classList.remove('open');state.editing.record=null;state.editing.originalDateKey=null;el.workDate.disabled=false;if(state.lastModalFocus&&typeof state.lastModalFocus.focus==='function'){try{state.lastModalFocus.focus();}catch(e){}}state.lastModalFocus=null;}
 function resetWorkForm(){el.workHours.value='';el.workDescription.value='';el.isStation.checked=false;el.fieldDescription.value='';el.fieldHours.value='';el.fieldRate.value='';el.fieldFixed.value='';el.fieldTotal.value='';setSegActive(el.workTypeSeg,'type','normal');setSegActive(el.otSeg,'ot','none');setSegActive(el.paymentSeg,'pay','hourly');el.stationHint.textContent=fmtMoney(state.settings.stationSalary);toggleWorkType('normal');updateOtRateHint();}
 
@@ -691,26 +780,61 @@ function exportMonthToXLS(){
   const monthNames=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
   const weekdays=['日','一','二','三','四','五','六'];
   const lastDay=new Date(year,month+1,0).getDate();
-  const rows=[];
-  for(let d=1;d<=lastDay;d++){const key=formatDateKey(year,month,d);const list=state.workData[key];if(!list||list.length===0)continue;list.forEach(r=>rows.push({dateKey:key,day:d,...r}));}
-  if(rows.length===0){showToast(`${year}年${month+1}月 没有数据可导出`,{type:'error'});return;}
+  const s=state.settings;
+  const rows=[];const dayKeys=[];
+  for(let d=1;d<=lastDay;d++){const key=formatDateKey(year,month,d);const list=state.workData[key];if(!list||list.length===0)continue;dayKeys.push(key);list.forEach(r=>rows.push({dateKey:key,day:d,...r}));}
+  if(rows.length===0){showToast(year+'年'+(month+1)+'月 没有数据可导出',{type:'error'});return;}
   rows.sort((a,b)=>a.dateKey.localeCompare(b.dateKey));
-  const normalRows=rows.filter(r=>r.type==='normal');
+
+  const allNormalRows=rows.filter(r=>r.type==='normal');
+  const holidayRows=allNormalRows.filter(r=>r.ot==='holiday');
+  const normalRows=allNormalRows.filter(r=>r.ot!=='holiday');
   const fieldRows=rows.filter(r=>r.type==='field');
-  let normalHours=0,otHoliday=0,stationCount=0,stationPay=0,fieldPay=0,fieldHoursSum=0;
-  normalRows.forEach(r=>{if(r.ot==='holiday')otHoliday+=r.hours||0;else normalHours+=r.hours||0;if(r.isStation){stationCount++;stationPay+=r.stationSalary||0;}});
-  fieldRows.forEach(r=>{fieldPay+=r.total||0;if(r.paymentType==='hourly')fieldHoursSum+=r.hours||0;});
-  const s=state.settings;const basicHours=s.basicHours;const hoursForBase=normalHours;
-  let basePay=0,basePayFull=false;
-  if(basicHours>0){basePayFull=normalHours>=basicHours;if(basePayFull)basePay=s.basicSalary;else basePay=Math.round(s.basicSalary*(normalHours/basicHours));}
+
+  let normalHours=0,otHoliday=0,stationCount=0,stationPay=0,fieldPay=0,fieldHoursSum=0,fieldCountSum=0;
+  allNormalRows.forEach(r=>{if(r.ot==='holiday')otHoliday+=r.hours||0;else normalHours+=r.hours||0;if(r.isStation){stationCount++;stationPay+=r.stationSalary||0;}});
+  fieldRows.forEach(r=>{fieldPay+=r.total||0;if(r.paymentType==='hourly')fieldHoursSum+=r.hours||0;else fieldCountSum++;});
+
+  const basicHours=s.basicHours;
+  const basePayFull=normalHours>=basicHours;
+  const basePay=basicHours>0?(basePayFull?s.basicSalary:Math.round(s.basicSalary*(normalHours/basicHours))):0;
   const overtimeHours=Math.max(0,normalHours-basicHours);
   const regularOTPay=Math.round(overtimeHours*s.overtimeRate);
   const otHolidayPay=Math.round(otHoliday*s.otRateHoliday);
   const allowances=(s.extraAllowances||[]).filter(a=>a.name||a.amount>0);
   const allowanceTotal=allowances.reduce((sum,a)=>sum+(a.amount||0),0);
-  const social=s.deductSocialSecurity?s.socialSecurityAmount:0;
+  const deductions=(s.deductions||[]).filter(d=>d.name||d.amount>0);
+  const deductionTotal=deductions.reduce((sum,d)=>sum+(d.amount||0),0);
   const gross=basePay+regularOTPay+otHolidayPay+stationPay+fieldPay+allowanceTotal;
-  const net=Math.max(0,gross-social);
+  const net=Math.max(0,gross-deductionTotal);
+  const totalHours=normalHours+otHoliday+fieldHoursSum;
+  const workDays=dayKeys.length;
+  const weekendDays=dayKeys.filter(k=>{const dt=parseDateKey(k);return dt.getDay()===0||dt.getDay()===6;}).length;
+  const avgHours=workDays>0?totalHours/workDays:0;
+  const achievePct=basicHours>0?(normalHours/basicHours)*100:0;
+
+  const dayHours={};
+  dayKeys.forEach(k=>{
+    let h=0;(state.workData[k]||[]).forEach(r=>{if(r.type==='normal')h+=r.hours||0;else if(r.paymentType==='hourly')h+=r.hours||0;});
+    dayHours[k]=h;
+  });
+
+  const M=v=>fmtMoney(v);
+  const cellDay=(r,extraCls)=>{
+    const dt=parseDateKey(r.dateKey);const isWe=dt.getDay()===0||dt.getDay()===6;
+    const cls=['weekend',extraCls].filter(Boolean).join(' ');
+    return '<td'+(cls?' class="'+cls+'"':'')+'>'+(month+1)+'月'+r.day+'日</td>';
+  };
+  const cellWeek=(r,extraCls)=>{
+    const dt=parseDateKey(r.dateKey);const isWe=dt.getDay()===0||dt.getDay()===6;
+    const cls=[isWe?'weekend':'',extraCls].filter(Boolean).join(' ');
+    return '<td'+(cls?' class="'+cls+'"':'')+'>'+weekdays[dt.getDay()]+'</td>';
+  };
+  const moneyRow=(label,formula,amount,cls)=>'<tr'+(cls?' class="'+cls+'"':'')+'><td colspan="2" class="left strong">'+label+'</td><td colspan="3" class="left formula">'+formula+'</td><td colspan="2" class="money">'+amount+'</td></tr>';
+  const kpi=(label,value,colspan,cls)=>'<td colspan="'+colspan+'" class="kpi-box'+(cls?' '+cls:'')+'"><span class="kpi-label">'+label+'</span><br><span class="kpi-val">'+value+'</span></td>';
+  const headRow=cols=>'<tr>'+cols.map(c=>'<td class="th">'+c+'</td>').join('')+'</tr>';
+  const sectionRow=(icon,text)=>'<tr><td colspan="7" class="section">'+icon+' '+text+'</td></tr>';
+  const gapRow='<tr><td colspan="7" class="gap"></td></tr>';
 
   let h='';
   h+='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">';
@@ -718,98 +842,148 @@ function exportMonthToXLS(){
   h+='<style>';
   h+='body{font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;}';
   h+='table{border-collapse:collapse;}';
-  /* 所有单元格统一：居中 + 加粗黑色框线 */
   h+='td{border:1.5px solid #7f8c8d;padding:8px 10px;font-size:11pt;vertical-align:middle;text-align:center;}';
   h+='.title{font-size:18pt;font-weight:bold;background:#3498db;color:#ffffff;padding:14px;letter-spacing:2px;}';
   h+='.subtitle{background:#eaf4fd;color:#2c3e50;font-size:10pt;padding:6px;}';
-  h+='.section{font-size:12pt;font-weight:bold;background:#ecf0f1;color:#2c3e50;padding:9px 12px;}';
+  h+='.section{font-size:12pt;font-weight:bold;background:#34495e;color:#ffffff;padding:9px 12px;text-align:left;letter-spacing:1px;}';
   h+='.th{background:#3498db;color:#ffffff;font-weight:bold;font-size:10.5pt;padding:8px;}';
   h+='.alt{background:#f8f9fa;}';
   h+='.weekend{color:#e74c3c;}';
   h+='.money{color:#c0392b;font-weight:bold;}';
-  h+='.sum-label{background:#f8f9fa;font-weight:bold;color:#2c3e50;font-size:10.5pt;padding:8px 12px;}';
-  h+='.sum-val{background:#ffffff;color:#2c3e50;font-size:10.5pt;padding:8px 12px;}';
-  h+='.sum-sub{background:#fdfdfd;color:#5b6b7c;font-size:10pt;}';
-  h+='.total-row{background:#f39c12;color:#ffffff;font-weight:bold;font-size:13pt;padding:12px;}';
+  h+='.strong{font-weight:bold;color:#2c3e50;}';
+  h+='.left{text-align:left;}';
+  h+='.formula{color:#7f8c8d;font-size:9.5pt;}';
+  h+='.gap{border:none;background:transparent;height:8px;padding:0;}';
+  h+='.grand-label{background:#fdebd0;color:#b9770e;font-size:11pt;font-weight:bold;padding:8px;letter-spacing:1px;}';
+  h+='.grand{background:#f39c12;color:#ffffff;font-size:24pt;font-weight:bold;padding:18px;letter-spacing:1px;}';
+  h+='.kpi-box{background:#ffffff;padding:9px 6px;}';
+  h+='.kpi-label{font-size:9pt;color:#7f8c8d;}';
+  h+='.kpi-val{font-size:14pt;font-weight:bold;color:#2c3e50;}';
+  h+='.kpi-hl{background:#eaf4fd;}';
+  h+='.kpi-hl .kpi-val{color:#2b7fbd;}';
+  h+='.holiday-row{background:#fdeceb;}';
+  h+='.subtotal{background:#eaf4fd;font-weight:bold;color:#2c3e50;font-size:10.5pt;}';
+  h+='.total-row{background:#27ae60;color:#ffffff;font-weight:bold;font-size:13pt;padding:11px;}';
+  h+='.neg{color:#c0392b;font-weight:bold;}';
+  h+='.rule{background:#fbfcfd;color:#5b6b7c;font-size:9.5pt;text-align:left;padding:7px 10px;line-height:1.6;}';
   h+='.footer{color:#95a5a6;font-size:9pt;background:#fafbfc;padding:8px;}';
   h+='</style></head><body>';
-  h+='<table><colgroup><col style="width:85px"><col style="width:50px"><col style="width:95px"><col style="width:80px"><col style="width:210px"><col style="width:60px"><col style="width:100px"></colgroup>';
+  h+='<table><colgroup><col style="width:80px"><col style="width:46px"><col style="width:86px"><col style="width:86px"><col style="width:180px"><col style="width:64px"><col style="width:104px"></colgroup>';
 
   h+='<tr><td colspan="7" class="title">工时记录 · '+year+'年'+monthNames[month]+'</td></tr>';
-  h+='<tr><td colspan="7" class="subtitle">导出时间：'+new Date().toLocaleString('zh-CN')+'</td></tr>';
+  h+='<tr><td colspan="7" class="subtitle">统计月份：'+year+'年'+(month+1)+'月1日 — '+(month+1)+'月'+lastDay+'日　|　记录 '+rows.length+' 条　|　导出时间：'+new Date().toLocaleString('zh-CN')+'</td></tr>';
 
-  if(normalRows.length>0){
-    h+='<tr><td colspan="7" class="section">📋 正常工时明细（'+normalRows.length+' 条）</td></tr>';
-    h+='<tr><td class="th">日期</td><td class="th">星期</td><td class="th">工时类型</td><td class="th">时长(小时)</td><td class="th">描述</td><td class="th">驻站</td><td class="th">驻站补贴(元)</td></tr>';
-    normalRows.forEach((r,i)=>{
-      const dt=parseDateKey(r.dateKey);const wd=weekdays[dt.getDay()];const isWeekend=dt.getDay()===0||dt.getDay()===6;
-      const otLabel=r.ot==='holiday'?'法定加班':'正常';
-      h+='<tr class="'+(i%2===1?'alt':'')+'">';
-      h+='<td'+(isWeekend?' class="weekend"':'')+'>'+(month+1)+'月'+r.day+'日</td>';
-      h+='<td'+(isWeekend?' class="weekend"':'')+'>'+wd+'</td>';
-      h+='<td>'+otLabel+'</td>';
-      h+='<td>'+fmtH(r.hours)+'</td>';
-      h+='<td>'+escapeHtml(r.description||'')+'</td>';
-      h+='<td>'+(r.isStation?'是':'')+'</td>';
-      h+='<td class="money">'+(r.isStation?fmtMoney(r.stationSalary):'')+'</td>';
-      h+='</tr>';
-    });
-  }
-  if(fieldRows.length>0){
-    h+='<tr><td colspan="7"></td></tr>';
-    h+='<tr><td colspan="7" class="section">🚗 外勤工作明细（'+fieldRows.length+' 条）</td></tr>';
-    h+='<tr><td class="th">日期</td><td class="th">星期</td><td class="th">描述</td><td class="th">计薪方式</td><td class="th">时长(小时)</td><td class="th">单价(元)</td><td class="th">金额(元)</td></tr>';
-    fieldRows.forEach((r,i)=>{
-      const dt=parseDateKey(r.dateKey);const wd=weekdays[dt.getDay()];const isWeekend=dt.getDay()===0||dt.getDay()===6;
-      const payLabel=r.paymentType==='hourly'?'按时薪':'按次数';
-      const hoursText=r.paymentType==='hourly'?fmtH(r.hours):'—';
-      const rateText=r.paymentType==='hourly'?fmtMoney(r.rate):fmtMoney(r.fixed);
-      h+='<tr class="'+(i%2===1?'alt':'')+'">';
-      h+='<td'+(isWeekend?' class="weekend"':'')+'>'+(month+1)+'月'+r.day+'日</td>';
-      h+='<td'+(isWeekend?' class="weekend"':'')+'>'+wd+'</td>';
-      h+='<td>'+escapeHtml(r.description||'')+'</td>';
-      h+='<td>'+payLabel+'</td>';
-      h+='<td>'+hoursText+'</td>';
-      h+='<td>'+rateText+'</td>';
-      h+='<td class="money">'+fmtMoney(r.total)+'</td>';
-      h+='</tr>';
-    });
-  }
-  h+='<tr><td colspan="7"></td></tr>';
-  h+='<tr><td colspan="7" class="section">📊 工时汇总</td></tr>';
-  function sumRow(label,value,sub){const lc=sub?'sum-label sum-sub':'sum-label';const vc=sub?'sum-val sum-sub':'sum-val';return '<tr><td colspan="4" class="'+lc+'">'+label+'</td><td colspan="3" class="'+vc+'">'+value+'</td></tr>';}
-  h+=sumRow('正常工时',fmtH(normalHours)+' 小时');
-  h+=sumRow('法定加班工时（独立计算）',fmtH(otHoliday)+' 小时');
-  h+=sumRow('基础工时',basicHours+' 小时');
-  h+=sumRow('超时工时（正常超出基础部分）',fmtH(overtimeHours)+' 小时');
-  h+=sumRow('外勤工时（仅按时薪）',fmtH(fieldHoursSum)+' 小时');
-  h+=sumRow('驻站次数',stationCount+' 次');
-  h+='<tr><td colspan="7"></td></tr>';
-  h+='<tr><td colspan="7" class="section">💰 工资明细</td></tr>';
-  if(basePayFull){
-    h+=sumRow('基础工资（正常 '+fmtH(normalHours)+' ≥ '+basicHours+'，全额）',fmtMoney(basePay)+' 元');
+  /* ---------- 一、本月概览 ---------- */
+  h+=sectionRow('📌','本月概览 · 一眼看结果');
+  h+='<tr><td colspan="7" class="grand-label">💰 预计实发（应发合计 − 扣除项合计）</td></tr>';
+  h+='<tr><td colspan="7" class="grand">￥ '+M(net)+'</td></tr>';
+  h+='<tr>'+kpi('应发合计',M(gross)+' 元',2)+kpi('扣除项合计',M(deductionTotal)+' 元',2)+kpi('记录天数',workDays+' 天',3)+'</tr>';
+  h+='<tr>'+kpi('正常工时',fmtH(normalHours)+' H',2,'kpi-hl')+kpi('法定加班工时',fmtH(otHoliday)+' H',2,'kpi-hl')+kpi('超时工时',fmtH(overtimeHours)+' H',3,'kpi-hl')+'</tr>';
+  h+='<tr>'+kpi('外勤工时',fmtH(fieldHoursSum)+' H',2)+kpi('驻站次数',stationCount+' 次',2)+kpi('日均工时',fmtH(Math.round(avgHours*10)/10)+' H',3)+'</tr>';
+  h+='<tr>'+kpi('基础工时',basicHours+' H',2)+kpi('基础达成率',achievePct.toFixed(1)+'%',2)+kpi('休息日出勤',weekendDays+' 天',3)+'</tr>';
+  h+=gapRow;
+
+  /* ---------- 二、工资明细 ---------- */
+  h+=sectionRow('💰','工资明细 · 项目 / 计算方式 / 金额');
+  h+=headRow(['项目','','计算方式','','','金额(元)','']);
+  h+=moneyRow('基础工资',basePayFull?('正常工时 '+fmtH(normalHours)+'H ≥ 基础工时 '+basicHours+'H → 全额发放'):('正常工时 '+fmtH(normalHours)+'H ÷ 基础工时 '+basicHours+'H = '+achievePct.toFixed(1)+'% → 按比例折算'),M(basePay)+' 元');
+  h+=moneyRow('超时加班费',overtimeHours>0?('超时 '+fmtH(overtimeHours)+'H × '+M(s.overtimeRate)+' 元/H（正常工时超出 '+basicHours+'H 的部分）'):'未超出基础工时，无超时加班',M(regularOTPay)+' 元','alt');
+  h+=moneyRow('法定加班费（独立）',otHoliday>0?('法定 '+fmtH(otHoliday)+'H × '+M(s.otRateHoliday)+' 元/H'):'本月无法定加班',M(otHolidayPay)+' 元');
+  h+=moneyRow('驻站补贴',stationCount>0?(stationCount+' 次 × '+M(s.stationSalary)+' 元/次'):'本月无驻站',M(stationPay)+' 元','alt');
+  h+=moneyRow('外勤工资',fieldRows.length>0?('外勤 '+fieldRows.length+' 条（按时薪 '+fmtH(fieldHoursSum)+'H'+(fieldCountSum>0?'，按次数 '+fieldCountSum+' 次':'')+'）'):'本月无外勤',M(fieldPay)+' 元');
+  h+=moneyRow('额外补贴',allowances.length>0?allowances.map(a=>(a.name||'补贴')+' '+M(a.amount)).join(' + '):'未设置补贴项',M(allowanceTotal)+' 元','alt');
+  h+='<tr class="subtotal"><td colspan="5" class="left">应发合计</td><td colspan="2" class="money">'+M(gross)+' 元</td></tr>';
+  if(deductions.length>0){
+    deductions.forEach((d,i)=>{h+=moneyRow('扣除：'+(d.name||'扣除项'),'每周期固定扣除','− '+M(d.amount)+' 元',i%2===1?'alt':'');});
   }else{
-    h+=sumRow('基础工资（正常 '+fmtH(normalHours)+' / '+basicHours+' = '+(normalHours/basicHours*100).toFixed(1)+'%）',fmtMoney(basePay)+' 元');
+    h+=moneyRow('扣除项','未设置扣除项','− 0.00 元');
   }
-  h+=sumRow('超时加班费（'+fmtH(overtimeHours)+'H × '+fmtMoney(s.overtimeRate)+'）',fmtMoney(regularOTPay)+' 元');
-  h+=sumRow('法定节假日加班费（'+fmtH(otHoliday)+'H × '+fmtMoney(s.otRateHoliday)+'）',fmtMoney(otHolidayPay)+' 元');
-  h+=sumRow('驻站补贴',fmtMoney(stationPay)+' 元');
-  h+=sumRow('外勤工资',fmtMoney(fieldPay)+' 元');
-  h+=sumRow('额外补贴',fmtMoney(allowanceTotal)+' 元');
-  h+=sumRow('应发合计',fmtMoney(gross)+' 元');
-  h+=sumRow('社保扣除','− '+fmtMoney(social)+' 元');
-  h+='<tr><td colspan="4" class="total-row">💰 预计实发</td><td colspan="3" class="total-row">'+fmtMoney(net)+' 元</td></tr>';
-  if(allowances.length>0){
-    h+='<tr><td colspan="7"></td></tr>';
-    h+='<tr><td colspan="7" class="section">🎁 额外补贴明细（每周期）</td></tr>';
-    allowances.forEach(a=>{h+=sumRow('　'+escapeHtml(a.name||'补贴'),fmtMoney(a.amount)+' 元',true);});
-    h+=sumRow('　补贴合计',fmtMoney(allowanceTotal)+' 元',true);
+  h+='<tr><td colspan="5" class="total-row">💰 预计实发</td><td colspan="2" class="total-row">'+M(net)+' 元</td></tr>';
+  h+=gapRow;
+
+  /* ---------- 三、正常工时明细 ---------- */
+  if(normalRows.length>0){
+    h+=sectionRow('📋','正常工时明细（'+normalRows.length+' 条 · 合计 '+fmtH(normalHours)+' 小时）');
+    h+=headRow(['日期','星期','时长(H)','当天合计(H)','工作描述','驻站','驻站补贴(元)']);
+    normalRows.forEach((r,i)=>{
+      h+='<tr class="'+(i%2===1?'alt':'')+'">';
+      h+=cellDay(r)+cellWeek(r);
+      h+='<td>'+fmtH(r.hours)+'</td>';
+      h+='<td class="formula">'+fmtH(dayHours[r.dateKey]||0)+'</td>';
+      h+='<td class="left">'+escapeHtml(r.description||'')+'</td>';
+      h+='<td>'+(r.isStation?'是':'')+'</td>';
+      h+='<td class="money">'+(r.isStation?M(r.stationSalary):'')+'</td>';
+      h+='</tr>';
+    });
+    h+='<tr class="subtotal"><td colspan="2">小计</td><td>'+fmtH(normalHours)+' H</td><td colspan="2">出勤 '+normalRows.length+' 条</td><td>'+stationCount+' 次</td><td class="money">'+M(stationPay)+' 元</td></tr>';
+    h+=gapRow;
   }
-  h+='<tr><td colspan="7" class="footer">本表由「个人工时记录」生成 · 仅包含 '+year+'年'+(month+1)+'月 的数据 · 金额按当前设置估算</td></tr>';
+
+  /* ---------- 四、法定加班明细（独立） ---------- */
+  if(holidayRows.length>0){
+    h+=sectionRow('🎉','法定加班明细 · 独立计算（'+holidayRows.length+' 条 · 合计 '+fmtH(otHoliday)+' 小时）');
+    h+=headRow(['日期','星期','时长(H)','法定时薪(元)','工作描述','驻站','加班费(元)']);
+    holidayRows.forEach(r=>{
+      h+='<tr class="holiday-row">';
+      h+=cellDay(r)+cellWeek(r);
+      h+='<td>'+fmtH(r.hours)+'</td>';
+      h+='<td class="formula">'+M(s.otRateHoliday)+'</td>';
+      h+='<td class="left">'+escapeHtml(r.description||'')+'</td>';
+      h+='<td>'+(r.isStation?'是':'')+'</td>';
+      h+='<td class="money">'+M(Math.round((r.hours||0)*s.otRateHoliday))+'</td>';
+      h+='</tr>';
+    });
+    h+='<tr class="subtotal"><td colspan="2">小计</td><td>'+fmtH(otHoliday)+' H</td><td class="formula">× '+M(s.otRateHoliday)+'</td><td colspan="2">'+holidayRows.length+' 条</td><td class="money">'+M(otHolidayPay)+' 元</td></tr>';
+    h+=gapRow;
+  }
+
+  /* ---------- 五、外勤明细 ---------- */
+  if(fieldRows.length>0){
+    h+=sectionRow('🚗','外勤工作明细（'+fieldRows.length+' 条 · 合计 '+M(fieldPay)+' 元）');
+    h+=headRow(['日期','星期','计薪方式','时长(H)','外勤活动','单价(元)','金额(元)']);
+    fieldRows.forEach((r,i)=>{
+      const hourly=r.paymentType==='hourly';
+      h+='<tr class="'+(i%2===1?'alt':'')+'">';
+      h+=cellDay(r)+cellWeek(r);
+      h+='<td>'+(hourly?'按时薪':'按次数')+'</td>';
+      h+='<td>'+(hourly?fmtH(r.hours):'—')+'</td>';
+      h+='<td class="left">'+escapeHtml(r.description||'')+'</td>';
+      h+='<td class="formula">'+(hourly?M(r.rate):M(r.fixed))+'</td>';
+      h+='<td class="money">'+M(r.total)+'</td>';
+      h+='</tr>';
+    });
+    h+='<tr class="subtotal"><td colspan="2">小计</td><td colspan="2">'+fieldRows.length+' 条</td><td colspan="2">按时薪 '+fmtH(fieldHoursSum)+'H / 按次数 '+fieldCountSum+' 次</td><td class="money">'+M(fieldPay)+' 元</td></tr>';
+    h+=gapRow;
+  }
+
+  /* ---------- 六、补贴与扣除项 ---------- */
+  if(allowances.length>0||deductions.length>0){
+    h+=sectionRow('🎁','补贴与扣除项明细（每周期固定）');
+    h+=headRow(['类型','项目名称','','金额(元)','','说明','']);
+    allowances.forEach((a,i)=>{h+='<tr class="'+(i%2===1?'alt':'')+'"><td>补贴</td><td colspan="2" class="left">'+escapeHtml(a.name||'补贴')+'</td><td class="money">+ '+M(a.amount)+'</td><td colspan="3" class="formula left">计入应发合计</td></tr>';});
+    deductions.forEach((d,i)=>{h+='<tr class="'+(i%2===1?'alt':'')+'"><td>扣除</td><td colspan="2" class="left">'+escapeHtml(d.name||'扣除项')+'</td><td class="neg">− '+M(d.amount)+'</td><td colspan="3" class="formula left">从应发合计中减去</td></tr>';});
+    h+='<tr class="subtotal"><td>合计</td><td colspan="2">补贴 '+M(allowanceTotal)+' 元 / 扣除 '+M(deductionTotal)+' 元</td><td class="money">'+M(allowanceTotal-deductionTotal)+'</td><td colspan="3" class="formula left">净额计入实发</td></tr>';
+    h+=gapRow;
+  }
+
+  /* ---------- 七、计算规则 ---------- */
+  h+=sectionRow('📖','计算规则说明（按当前设置）');
+  const rules=[
+    '1. 基础工资：正常工时 ≥ 基础工时（'+basicHours+'H）→ 全额 '+M(s.basicSalary)+' 元；未达标按「正常工时 ÷ 基础工时」比例折算。法定加班工时不计入达标判断。',
+    '2. 超时加班费：仅正常工时超出基础工时的部分，'+fmtH(overtimeHours)+'H × '+M(s.overtimeRate)+' 元/H = '+M(regularOTPay)+' 元。',
+    '3. 法定加班费：完全独立计算，法定工时 '+fmtH(otHoliday)+'H × '+M(s.otRateHoliday)+' 元/H = '+M(otHolidayPay)+' 元，不参与基础工时达标与超时计算。',
+    '4. 驻站补贴：驻站 '+stationCount+' 次 × '+M(s.stationSalary)+' 元/次 = '+M(stationPay)+' 元。',
+    '5. 外勤工资：按时薪 = 时长 × 时薪；按次数 = 单次工资，独立于基础工资体系累加。',
+    '6. 额外补贴与扣除项：按设置中每周期固定金额计入，扣除项合计从应发中减去。',
+    '7. 预计实发 = 基础工资 + 超时加班费 + 法定加班费 + 驻站补贴 + 外勤工资 + 额外补贴 − 扣除项合计 = '+M(net)+' 元。'
+  ];
+  rules.forEach(t=>{h+='<tr><td colspan="7" class="rule">'+escapeHtml(t)+'</td></tr>';});
+
+  h+='<tr><td colspan="7" class="footer">本表由「个人工时记录」生成 · 仅包含 '+year+'年'+(month+1)+'月 的数据 · 金额按当前设置估算 · 时薪与基础工资单位：元</td></tr>';
   h+='</table></body></html>';
   const blob=new Blob(['\uFEFF'+h],{type:'application/vnd.ms-excel;charset=utf-8'});
-  downloadBlob(blob,`工时记录_${year}${pad2(month+1)}.xls`);
-  showToast(`已导出 ${year}年${month+1}月 的工时记录（${rows.length} 条）`);
+  downloadBlob(blob,'工时记录_'+year+pad2(month+1)+'.xls');
+  showToast('已导出 '+year+'年'+(month+1)+'月 的工时记录（'+rows.length+' 条）');
 }
 
 function exportToJSON(){const payload={app:APP_ID,version:SCHEMA_VERSION,exportedAt:new Date().toISOString(),settings:state.settings,workData:state.workData};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});downloadBlob(blob,`工时备份_${todayStamp()}.json`);showToast('备份已导出');}
@@ -857,8 +1031,169 @@ function renderAllowanceList(){el.allowanceList.innerHTML='';const allowances=st
 function createAllowanceRow(a){const row=document.createElement('div');row.className='allowance-item';row.dataset.id=a.id||generateId();const nameInput=document.createElement('input');nameInput.type='text';nameInput.className='allowance-name';nameInput.placeholder='补贴名称';nameInput.maxLength=20;nameInput.value=a.name||'';const amountInput=document.createElement('input');amountInput.type='number';amountInput.className='allowance-amount';amountInput.placeholder='金额';amountInput.min='0';amountInput.step='0.01';amountInput.inputMode='decimal';amountInput.value=a.amount?cent2yuan(a.amount).toFixed(2):'';const delBtn=document.createElement('button');delBtn.type='button';delBtn.className='allowance-del';delBtn.innerHTML='<i class="fas fa-times"></i>';delBtn.setAttribute('aria-label','删除此补贴项');delBtn.addEventListener('click',()=>{row.remove();if(el.allowanceList.querySelectorAll('.allowance-item').length===0){const empty=document.createElement('div');empty.className='allowance-empty';empty.textContent='暂无补贴项，点击下方按钮添加';el.allowanceList.appendChild(empty);}});row.appendChild(nameInput);row.appendChild(amountInput);row.appendChild(delBtn);return row;}
 function collectAllowances(){const empty=el.allowanceList.querySelector('.allowance-empty');if(empty)empty.remove();const rows=el.allowanceList.querySelectorAll('.allowance-item');const result=[];rows.forEach(row=>{const name=(row.querySelector('.allowance-name').value||'').trim();const amount=yuan2cent(row.querySelector('.allowance-amount').value);if(!name&&amount===0)return;result.push({id:row.dataset.id||generateId(),name:name||'补贴',amount:Math.max(0,amount)});});return result;}
 
-function fillSettingsForm(){const s=state.settings;el.basicHoursInput.value=s.basicHours;el.basicSalaryInput.value=cent2yuan(s.basicSalary).toFixed(2);el.overtimeRateInput.value=cent2yuan(s.overtimeRate).toFixed(2);el.stationSalaryInput.value=cent2yuan(s.stationSalary).toFixed(2);el.otHolidayInput.value=cent2yuan(s.otRateHoliday).toFixed(2);el.cycleStartInput.value=s.cycleStartDay;el.deductSocialSecurity.checked=s.deductSocialSecurity;el.socialSecurityInput.value=cent2yuan(s.socialSecurityAmount).toFixed(2);el.socialSecurityAmountGroup.style.display=s.deductSocialSecurity?'block':'none';el.stationHint.textContent=fmtMoney(s.stationSalary);el.themeSelect.value=localStorage.getItem(LS_THEME)||'auto';renderAllowanceList();updateOtRateHint();}
-function saveSettings(){const s=state.settings;s.basicHours=Math.max(1,parseFloat(el.basicHoursInput.value)||174);s.basicSalary=yuan2cent(el.basicSalaryInput.value);s.overtimeRate=yuan2cent(el.overtimeRateInput.value);s.stationSalary=yuan2cent(el.stationSalaryInput.value);s.otRateHoliday=yuan2cent(el.otHolidayInput.value);s.cycleStartDay=clamp(parseInt(el.cycleStartInput.value,10)||1,1,28);s.deductSocialSecurity=el.deductSocialSecurity.checked;s.socialSecurityAmount=yuan2cent(el.socialSecurityInput.value);s.extraAllowances=collectAllowances();saveState();el.stationHint.textContent=fmtMoney(s.stationSalary);updateOtRateHint();refreshAll();showToast('设置已保存');}
+/* ---------- 扣除项（自定义，可多条） ---------- */
+function renderDeductionList(){
+  el.deductionList.innerHTML='';
+  const list=state.settings.deductions||[];
+  if(list.length===0){const empty=document.createElement('div');empty.className='allowance-empty';empty.textContent='暂无扣除项，点击下方按钮添加';el.deductionList.appendChild(empty);return;}
+  const frag=document.createDocumentFragment();list.forEach(d=>frag.appendChild(createDeductionRow(d)));el.deductionList.appendChild(frag);
+}
+function createDeductionRow(d){
+  const row=document.createElement('div');row.className='allowance-item';row.dataset.id=d.id||generateId();
+  const nameInput=document.createElement('input');nameInput.type='text';nameInput.className='deduction-name';nameInput.placeholder='扣除项名称（如 社保）';nameInput.maxLength=20;nameInput.value=d.name||'';
+  const amountInput=document.createElement('input');amountInput.type='number';amountInput.className='deduction-amount';amountInput.placeholder='金额';amountInput.min='0';amountInput.step='0.01';amountInput.inputMode='decimal';amountInput.value=d.amount?cent2yuan(d.amount).toFixed(2):'';
+  const delBtn=document.createElement('button');delBtn.type='button';delBtn.className='allowance-del';delBtn.innerHTML='<i class="fas fa-times"></i>';delBtn.setAttribute('aria-label','删除此扣除项');
+  delBtn.addEventListener('click',()=>{row.remove();if(el.deductionList.querySelectorAll('.allowance-item').length===0){const empty=document.createElement('div');empty.className='allowance-empty';empty.textContent='暂无扣除项，点击下方按钮添加';el.deductionList.appendChild(empty);}});
+  row.appendChild(nameInput);row.appendChild(amountInput);row.appendChild(delBtn);return row;
+}
+function collectDeductions(){
+  const empty=el.deductionList.querySelector('.allowance-empty');if(empty)empty.remove();
+  const rows=el.deductionList.querySelectorAll('.allowance-item');const result=[];
+  rows.forEach(row=>{const name=(row.querySelector('.deduction-name').value||'').trim();const amount=yuan2cent(row.querySelector('.deduction-amount').value);if(!name&&amount===0)return;result.push({id:row.dataset.id||generateId(),name:name||'扣除项',amount:Math.max(0,amount)});});
+  return result;
+}
+
+/* ---------- 快捷录入模板 ---------- */
+function validTemplates(){return (state.settings.shiftTemplates||[]).filter(t=>t&&(t.name||t.hours>0));}
+function renderTemplateList(){
+  el.templateList.innerHTML='';
+  const list=validTemplates();
+  if(list.length===0){const empty=document.createElement('div');empty.className='allowance-empty';empty.textContent='暂无模板，点击下方按钮添加';el.templateList.appendChild(empty);return;}
+  const frag=document.createDocumentFragment();list.forEach(t=>frag.appendChild(createTemplateRow(t)));el.templateList.appendChild(frag);
+}
+function createTemplateRow(t){
+  const box=document.createElement('div');box.className='tpl-item';box.dataset.id=t.id||generateId();
+  const row1=document.createElement('div');row1.className='tpl-row';
+  const nameInput=document.createElement('input');nameInput.type='text';nameInput.className='tpl-name';nameInput.placeholder='模板名（如 早班）';nameInput.maxLength=12;nameInput.value=t.name||'';
+  const hoursInput=document.createElement('input');hoursInput.type='number';hoursInput.className='tpl-hours';hoursInput.placeholder='小时';hoursInput.min='0';hoursInput.step='0.5';hoursInput.inputMode='decimal';hoursInput.value=t.hours?t.hours:'';
+  const otSelect=document.createElement('select');otSelect.className='tpl-ot';
+  [['none','正常'],['holiday','法定加班']].forEach(pair=>{const o=document.createElement('option');o.value=pair[0];o.textContent=pair[1];if((t.ot||'none')===pair[0])o.selected=true;otSelect.appendChild(o);});
+  row1.appendChild(nameInput);row1.appendChild(hoursInput);row1.appendChild(otSelect);
+  const row2=document.createElement('div');row2.className='tpl-row2';
+  const descInput=document.createElement('input');descInput.type='text';descInput.className='tpl-desc';descInput.placeholder='工作描述（可留空）';descInput.maxLength=40;descInput.value=t.description||'';
+  const stLabel=document.createElement('label');stLabel.className='tpl-station';
+  const stInput=document.createElement('input');stInput.type='checkbox';stInput.className='tpl-station-cb';stInput.checked=!!t.isStation;
+  stLabel.appendChild(stInput);stLabel.appendChild(document.createTextNode('驻站'));
+  const delBtn=document.createElement('button');delBtn.type='button';delBtn.className='allowance-del';delBtn.innerHTML='<i class="fas fa-times"></i>';delBtn.setAttribute('aria-label','删除此模板');
+  delBtn.addEventListener('click',()=>{box.remove();if(el.templateList.querySelectorAll('.tpl-item').length===0){const empty=document.createElement('div');empty.className='allowance-empty';empty.textContent='暂无模板，点击下方按钮添加';el.templateList.appendChild(empty);}});
+  row2.appendChild(descInput);row2.appendChild(stLabel);row2.appendChild(delBtn);
+  box.appendChild(row1);box.appendChild(row2);return box;
+}
+function collectTemplates(){
+  const empty=el.templateList.querySelector('.allowance-empty');if(empty)empty.remove();
+  const boxes=el.templateList.querySelectorAll('.tpl-item');const result=[];
+  boxes.forEach(box=>{
+    const name=(box.querySelector('.tpl-name').value||'').trim();
+    const hours=Math.max(0,parseFloat(box.querySelector('.tpl-hours').value)||0);
+    const ot=box.querySelector('.tpl-ot').value==='holiday'?'holiday':'none';
+    const isStation=!!box.querySelector('.tpl-station-cb').checked;
+    const description=(box.querySelector('.tpl-desc').value||'').trim().slice(0,40);
+    if(!name&&hours<=0)return;
+    result.push({id:box.dataset.id||generateId(),name:name||'模板',hours:Math.round(hours*2)/2,ot:ot,isStation:isStation,description:description});
+  });
+  return result;
+}
+function renderTemplateChips(){
+  if(!el.templateChips)return;
+  el.templateChips.innerHTML='';
+  const list=validTemplates();
+  if(list.length===0){el.templateChipsGroup.hidden=true;return;}
+  el.templateChipsGroup.hidden=false;
+  list.forEach(t=>{
+    const b=document.createElement('button');b.type='button';b.className='chip';
+    const parts=[];if(t.hours)parts.push(t.hours+'H');if(t.ot==='holiday')parts.push('法定');if(t.isStation)parts.push('驻站');
+    b.innerHTML=`<i class="fas fa-bolt"></i>${escapeHtml(t.name||'模板')}${parts.length?'<span class="chip-sub">'+escapeHtml(parts.join('·'))+'</span>':''}`;
+    b.addEventListener('click',()=>applyTemplateToForm(t));
+    el.templateChips.appendChild(b);
+  });
+  el.templateChipsHint.textContent='点一下即可填充下方内容，填充后仍可修改。';
+}
+function applyTemplateToForm(t){
+  setSegActive(el.workTypeSeg,'type','normal');toggleWorkType('normal');
+  el.workHours.value=t.hours||'';el.workDescription.value=t.description||'';el.isStation.checked=!!t.isStation;
+  setSegActive(el.otSeg,'ot',t.ot==='holiday'?'holiday':'none');updateOtRateHint();
+  showToast('已填充模板：'+(t.name||'模板'));
+  el.workHours.focus();
+}
+
+/* ---------- 批量操作 ---------- */
+const batchState={active:false,selected:new Set()};
+function selectedKeys(){return [...batchState.selected].sort();}
+function updateBatchCount(){const n=batchState.selected.size;el.batchCount.textContent=`已选 ${n} 天`;[el.batchTemplate,el.batchCopy,el.batchClear].forEach(b=>{if(b)b.disabled=n===0;});}
+function setBatchMode(on){
+  batchState.active=on;
+  if(!on)batchState.selected.clear();
+  document.body.classList.toggle('batch-mode',on);
+  el.batchBar.hidden=!on;
+  el.batchBtn.innerHTML=on?'<i class="fas fa-check"></i> 完成':'<i class="fas fa-layer-group"></i> 批量';
+  el.batchBtn.classList.toggle('on',on);
+  updateBatchCount();renderCalendar();
+}
+function toggleSelectDay(dk,cell){
+  if(batchState.selected.has(dk)){batchState.selected.delete(dk);if(cell)cell.classList.remove('selected');}
+  else{batchState.selected.add(dk);if(cell)cell.classList.add('selected');}
+  updateBatchCount();
+}
+function openBatchModal(){
+  const keys=selectedKeys();
+  if(keys.length===0){showToast('请先在日历上点选日期',{type:'error'});return;}
+  const list=validTemplates();
+  if(list.length===0){showToast('还没有快捷模板，请先到「设置 → 快捷录入模板」添加',{type:'error'});return;}
+  el.batchTemplateSelect.innerHTML='';
+  list.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=`${t.name||'模板'} · ${t.hours}H${t.ot==='holiday'?' · 法定加班':''}${t.isStation?' · 驻站':''}`;el.batchTemplateSelect.appendChild(o);});
+  el.batchTip.textContent=`已选中 ${keys.length} 天（${keys[0]} 至 ${keys[keys.length-1]}），将各添加一条正常工时记录。`;
+  el.batchNote.value='';
+  el.batchModal.classList.add('open');
+}
+function closeBatchModal(){el.batchModal.classList.remove('open');}
+function applyBatchTemplate(){
+  const tpl=validTemplates().find(t=>t.id===el.batchTemplateSelect.value);
+  if(!tpl){showToast('模板不存在',{type:'error'});return;}
+  if(!(tpl.hours>0)){showToast('该模板时长为 0，请先在设置里补全',{type:'error'});return;}
+  const keys=selectedKeys();const skip=el.batchSkipExisting.checked;
+  const note=(el.batchNote.value||'').trim()||tpl.description||'';
+  let added=0,skipped=0;
+  keys.forEach(dk=>{
+    const existing=state.workData[dk]||[];
+    if(skip&&existing.length>0){skipped++;return;}
+    const rec={id:generateId(),type:'normal',hours:tpl.hours,description:note,isStation:!!tpl.isStation,stationSalary:tpl.isStation?state.settings.stationSalary:0,ot:tpl.ot==='holiday'?'holiday':'none',createdAt:Date.now()};
+    if(!state.workData[dk])state.workData[dk]=[];
+    state.workData[dk].push(rec);added++;
+  });
+  saveState();closeBatchModal();refreshAll();
+  showToast(`已应用模板：新增 ${added} 天记录${skipped?`，跳过 ${skipped} 天`:''}`);
+}
+function batchCopyPrev(){
+  const keys=selectedKeys();
+  if(keys.length===0){showToast('请先在日历上点选日期',{type:'error'});return;}
+  let copied=0,none=0,recCount=0;
+  keys.forEach(dk=>{
+    const prev=new Date(parseDateKey(dk));prev.setDate(prev.getDate()-1);
+    const pk=formatDateKey(prev.getFullYear(),prev.getMonth(),prev.getDate());
+    const src=state.workData[pk];
+    if(!src||src.length===0){none++;return;}
+    if(!state.workData[dk])state.workData[dk]=[];
+    src.forEach(r=>{state.workData[dk].push({...r,id:generateId(),createdAt:Date.now()});recCount++;});
+    copied++;
+  });
+  saveState();refreshAll();
+  if(copied>0)showToast(`已复制前一天记录到 ${copied} 天（共 ${recCount} 条）${none?`，${none} 天无前一天记录`:''}`);
+  else showToast('所选日期都没有前一天记录',{type:'error'});
+}
+function batchClearDays(){
+  const keys=selectedKeys();
+  if(keys.length===0){showToast('请先在日历上点选日期',{type:'error'});return;}
+  const total=keys.reduce((n,dk)=>n+((state.workData[dk]||[]).length),0);
+  if(total===0){showToast('所选日期没有记录可清空',{type:'error'});return;}
+  if(!confirm(`确定清空所选 ${keys.length} 天的 ${total} 条记录吗？`))return;
+  const backup=keys.map(dk=>({dk:dk,list:(state.workData[dk]||[]).slice()}));
+  keys.forEach(dk=>{delete state.workData[dk];});
+  saveState();refreshAll();
+  showToast(`已清空 ${keys.length} 天共 ${total} 条记录`,{duration:6000,action:{label:'撤销',onClick:()=>{backup.forEach(b=>{if(b.list.length>0)state.workData[b.dk]=b.list;});saveState();refreshAll();showToast('已恢复');}}});
+}
+
+function fillSettingsForm(){const s=state.settings;el.basicHoursInput.value=s.basicHours;el.basicSalaryInput.value=cent2yuan(s.basicSalary).toFixed(2);el.overtimeRateInput.value=cent2yuan(s.overtimeRate).toFixed(2);el.stationSalaryInput.value=cent2yuan(s.stationSalary).toFixed(2);el.otHolidayInput.value=cent2yuan(s.otRateHoliday).toFixed(2);el.cycleStartInput.value=s.cycleStartDay;el.stationHint.textContent=fmtMoney(s.stationSalary);el.themeSelect.value=localStorage.getItem(LS_THEME)||'auto';renderAllowanceList();renderDeductionList();renderTemplateList();renderTemplateChips();updateOtRateHint();}
+function saveSettings(){const s=state.settings;s.basicHours=Math.max(1,parseFloat(el.basicHoursInput.value)||174);s.basicSalary=yuan2cent(el.basicSalaryInput.value);s.overtimeRate=yuan2cent(el.overtimeRateInput.value);s.stationSalary=yuan2cent(el.stationSalaryInput.value);s.otRateHoliday=yuan2cent(el.otHolidayInput.value);s.cycleStartDay=clamp(parseInt(el.cycleStartInput.value,10)||1,1,28);s.extraAllowances=collectAllowances();s.deductions=collectDeductions();s.shiftTemplates=collectTemplates();saveState();el.stationHint.textContent=fmtMoney(s.stationSalary);renderTemplateChips();updateOtRateHint();refreshAll();showToast('设置已保存');}
 function clearAllData(){if(!confirm('确定要清除所有数据吗？此操作不可恢复！\n建议先导出 JSON 备份。'))return;try{localStorage.removeItem(LS_DATA);localStorage.removeItem(LS_SETTINGS);localStorage.removeItem(LS_VERSION);}catch(e){}state.workData={};state.settings=normalizeSettings({});saveState();fillSettingsForm();refreshAll();showToast('所有数据已清除');}
 
 function changeMonth(delta){const d=state.currentDate;state.currentDate=new Date(d.getFullYear(),d.getMonth()+delta,1);refreshAll();}
@@ -870,15 +1205,15 @@ function setupEventListeners(){
   el.prevMonth.addEventListener('click',()=>changeMonth(-1));
   el.nextMonth.addEventListener('click',()=>changeMonth(1));
   el.todayBtn.addEventListener('click',goToToday);
-  el.calendarGrid.addEventListener('click',e=>{const cell=e.target.closest('.calendar-day');if(!cell||cell.classList.contains('other-month'))return;const dk=cell.dataset.datekey;if(!dk)return;const d=parseDateKey(dk);openWorkModal(d.getFullYear(),d.getMonth(),d.getDate());});
-  el.calendarGrid.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const cell=e.target.closest('.calendar-day');if(!cell||cell.classList.contains('other-month'))return;e.preventDefault();const dk=cell.dataset.datekey;if(!dk)return;const d=parseDateKey(dk);openWorkModal(d.getFullYear(),d.getMonth(),d.getDate());});
+  el.calendarGrid.addEventListener('click',e=>{const cell=e.target.closest('.calendar-day');if(!cell||cell.classList.contains('other-month'))return;const dk=cell.dataset.datekey;if(!dk)return;if(batchState.active){toggleSelectDay(dk,cell);return;}const d=parseDateKey(dk);openWorkModal(d.getFullYear(),d.getMonth(),d.getDate());});
+  el.calendarGrid.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const cell=e.target.closest('.calendar-day');if(!cell||cell.classList.contains('other-month'))return;e.preventDefault();const dk=cell.dataset.datekey;if(!dk)return;if(batchState.active){toggleSelectDay(dk,cell);return;}const d=parseDateKey(dk);openWorkModal(d.getFullYear(),d.getMonth(),d.getDate());});
   let lpTimer=null,lpStartX=0,lpStartY=0,lpCell=null;
-  el.calendarGrid.addEventListener('touchstart',e=>{const cell=e.target.closest('.calendar-day');if(!cell||cell.classList.contains('other-month'))return;const t=e.touches[0];lpStartX=t.clientX;lpStartY=t.clientY;lpCell=cell;lpTimer=setTimeout(()=>{lpTimer=null;if(lpCell&&lpCell.dataset.datekey){if(navigator.vibrate){try{navigator.vibrate(12);}catch(err){}}openCtxMenu(lpCell.dataset.datekey,lpStartX,lpStartY);}},480);},{passive:true});
+  el.calendarGrid.addEventListener('touchstart',e=>{if(batchState.active)return;const cell=e.target.closest('.calendar-day');if(!cell||cell.classList.contains('other-month'))return;const t=e.touches[0];lpStartX=t.clientX;lpStartY=t.clientY;lpCell=cell;lpTimer=setTimeout(()=>{lpTimer=null;if(lpCell&&lpCell.dataset.datekey){if(navigator.vibrate){try{navigator.vibrate(12);}catch(err){}}openCtxMenu(lpCell.dataset.datekey,lpStartX,lpStartY);}},480);},{passive:true});
   const cancelLP=()=>{if(lpTimer){clearTimeout(lpTimer);lpTimer=null;}lpCell=null;};
   el.calendarGrid.addEventListener('touchend',cancelLP);
   el.calendarGrid.addEventListener('touchcancel',cancelLP);
   el.calendarGrid.addEventListener('touchmove',e=>{if(!lpTimer)return;const t=e.touches[0];if(Math.abs(t.clientX-lpStartX)>10||Math.abs(t.clientY-lpStartY)>10)cancelLP();},{passive:true});
-  el.calendarGrid.addEventListener('contextmenu',e=>{const cell=e.target.closest('.calendar-day');if(!cell||cell.classList.contains('other-month'))return;if(!cell.dataset.datekey)return;e.preventDefault();openCtxMenu(cell.dataset.datekey,e.clientX,e.clientY);});
+  el.calendarGrid.addEventListener('contextmenu',e=>{if(batchState.active)return;const cell=e.target.closest('.calendar-day');if(!cell||cell.classList.contains('other-month'))return;if(!cell.dataset.datekey)return;e.preventDefault();openCtxMenu(cell.dataset.datekey,e.clientX,e.clientY);});
   document.addEventListener('click',e=>{if(!el.ctxMenu.classList.contains('open'))return;if(el.ctxMenu.contains(e.target))return;closeCtxMenu();});
   document.addEventListener('scroll',closeCtxMenu,true);
   window.addEventListener('resize',closeCtxMenu);
@@ -888,6 +1223,7 @@ function setupEventListeners(){
   el.closeModal.addEventListener('click',closeWorkModal);
   el.workModal.addEventListener('click',e=>{if(e.target===el.workModal)closeWorkModal();});
   el.saveWork.addEventListener('click',saveWorkRecord);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&el.batchModal.classList.contains('open')){e.preventDefault();closeBatchModal();}});
   document.addEventListener('keydown',e=>{
     if(!el.workModal.classList.contains('open'))return;
     if(e.key==='Escape'){e.preventDefault();closeWorkModal();return;}
@@ -904,10 +1240,19 @@ function setupEventListeners(){
   el.recordsList.addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const id=btn.dataset.id;const dateKey=el.workDate.value;if(!dateKey||!id)return;if(btn.dataset.action==='edit'){const rec=(state.workData[dateKey]||[]).find(r=>r.id===id);if(rec)editRecord(dateKey,rec);}else if(btn.dataset.action==='delete'){deleteRecord(dateKey,id);}});
   el.addRecord.addEventListener('click',()=>{state.editing.record=null;state.editing.originalDateKey=null;el.workDate.disabled=false;el.modalTitle.innerHTML='<i class="fas fa-edit"></i> 记录工时';resetWorkForm();el.workHours.focus();});
   el.tabs.forEach(tab=>{tab.addEventListener('click',()=>{const id=tab.dataset.tab;el.tabs.forEach(t=>{const on=t===tab;t.classList.toggle('active',on);t.setAttribute('aria-selected',on?'true':'false');});el.tabContents.forEach(c=>c.classList.toggle('active',c.id===`${id}-tab`));if(id==='stats')requestAnimationFrame(()=>drawChart(state._lastDaily||[]));});});
-  el.deductSocialSecurity.addEventListener('change',function(){el.socialSecurityAmountGroup.style.display=this.checked?'block':'none';});
   el.saveSettings.addEventListener('click',saveSettings);
   el.clearData.addEventListener('click',clearAllData);
   el.addAllowance.addEventListener('click',()=>{const empty=el.allowanceList.querySelector('.allowance-empty');if(empty)empty.remove();const row=createAllowanceRow({id:generateId(),name:'',amount:0});el.allowanceList.appendChild(row);const nameInput=row.querySelector('.allowance-name');if(nameInput)nameInput.focus();});
+  el.addDeduction.addEventListener('click',()=>{const empty=el.deductionList.querySelector('.allowance-empty');if(empty)empty.remove();const row=createDeductionRow({id:generateId(),name:'',amount:0});el.deductionList.appendChild(row);const nameInput=row.querySelector('.deduction-name');if(nameInput)nameInput.focus();});
+  el.addTemplate.addEventListener('click',()=>{const empty=el.templateList.querySelector('.allowance-empty');if(empty)empty.remove();const box=createTemplateRow({id:generateId(),name:'',hours:8,ot:'none',isStation:false,description:''});el.templateList.appendChild(box);const nameInput=box.querySelector('.tpl-name');if(nameInput)nameInput.focus();});
+  el.batchBtn.addEventListener('click',()=>setBatchMode(!batchState.active));
+  el.batchExit.addEventListener('click',()=>setBatchMode(false));
+  el.batchTemplate.addEventListener('click',openBatchModal);
+  el.batchCopy.addEventListener('click',batchCopyPrev);
+  el.batchClear.addEventListener('click',batchClearDays);
+  el.batchApply.addEventListener('click',applyBatchTemplate);
+  el.closeBatchModal.addEventListener('click',closeBatchModal);
+  el.batchModal.addEventListener('click',e=>{if(e.target===el.batchModal)closeBatchModal();});
   el.themeSelect.addEventListener('change',()=>{localStorage.setItem(LS_THEME,el.themeSelect.value);applyTheme();});
   el.exportData.addEventListener('click',exportMonthToXLS);
   el.exportJson.addEventListener('click',exportToJSON);
